@@ -100,7 +100,7 @@ export default function PriorityPage() {
           whileTap={{ scale: 0.98 }}
         >
           <span className="hidden md:inline">Visit TARE</span>
-          <span className="inline md:hidden">TARE</span>
+          <span className="inline md:hidden">Visit TARE</span>
           <span>→</span>
         </motion.a>
       </motion.div>
