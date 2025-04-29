@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const formData: CollabFormData = await request.json();
     
     // Log API call for debugging
-    console.log('Collaboration form submission initiated');
+    console.log('Collaboration form submission initiated - v2');
     
     // Validate required fields
     if (!formData.firstName || !formData.lastName || !formData.email) {
@@ -55,13 +55,15 @@ export async function POST(request: Request) {
     // Check for both NEXT_PUBLIC and regular environment variables
     // This provides more flexibility between local dev and production
     const apiKey = process.env.AIRTABLE_API_KEY || process.env.NEXT_PUBLIC_AIRTABLE_PAT;
-    const baseId = process.env.COLLAB_AIRTABLE_BASE_ID;
-    const tableName = process.env.COLLAB_AIRTABLE_TABLE;
+    
+    // Hardcoded values for simplicity and reliability
+    const baseId = "app5FlzWXABXOwfXw"; // TARE PRIVATE Base ID
+    const tableName = "TARE PRIVATE Inquiries"; // Table name
     
     console.log('Environment check:');
     console.log('- API Key exists:', !!apiKey);
-    console.log('- Base ID:', baseId);
-    console.log('- Table Name:', tableName);
+    console.log('- Using Base ID:', baseId);
+    console.log('- Using Table Name:', tableName);
     
     if (!apiKey) {
       console.error('Missing Airtable API key');
