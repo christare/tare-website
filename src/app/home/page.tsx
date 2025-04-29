@@ -13,31 +13,12 @@ export default function HomePage() {
     setIsProduction(hostname.includes('tarecoffeeroom.com'));
   }, []);
 
-  const priorityListUrl = isProduction ? "https://tarecoffeeroom.com/" : "http://localhost:3000/";
+  const priorityListUrl = isProduction ? "https://tarecoffeeroom.com/" : "/";
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/home" className="text-white text-xl font-light">
-              TARE
-            </Link>
-            <div>
-              <Link 
-                href={priorityListUrl}
-                className="text-sm text-gray-400 hover:text-white transition-colors duration-300"
-              >
-                PRIORITY LIST
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <main className="min-h-screen bg-black text-white pt-24">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center">
+      <section className="relative min-h-[75vh] flex items-center justify-center">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.h1
             className="text-4xl md:text-6xl font-light mb-8"
@@ -134,10 +115,10 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <p className="mb-6">
-            We don’t publicly post availability — most rooms fill privately through the Priority List before ever being announced.
+              We don't publicly post availability — most rooms fill privately through the Priority List before ever being announced.
             </p>
             <p>
-            Join the Priority List for early access and first invitations when new rooms open.
+              Join the Priority List for early access and first invitations when new rooms open.
             </p>
           </motion.div>
           <motion.div
@@ -148,7 +129,7 @@ export default function HomePage() {
           >
             <Link href={priorityListUrl}>
               <button className="border border-white px-10 py-4 text-sm hover:bg-white hover:text-black transition-all duration-300">
-                PRIORITY LIST
+                JOIN THE LIST
               </button>
             </Link>
           </motion.div>

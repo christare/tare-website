@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Header from "@/components/Header";
 
 export default function ClientLayout({
   children,
@@ -27,6 +28,7 @@ export default function ClientLayout({
   
   return (
     <>
+      <Header />
       {children}
       
       {/* Global Footer with Social Links */}
@@ -82,7 +84,7 @@ export default function ClientLayout({
         </div>
       </footer>
       
-      {/* Toast Notification with Animation */}
+      {/* Toast Notification */}
       <AnimatePresence>
         {showToast && (
           <motion.div 
