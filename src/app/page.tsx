@@ -87,6 +87,24 @@ export default function PriorityPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-black px-4 py-16 text-white overflow-hidden">
+      <motion.div
+        className="absolute top-8 right-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <motion.a
+          href="https://www.tarecoffeeroom.com/home"
+          className="text-gray-400 text-sm tracking-wider hover:text-white transition-colors duration-300 flex items-center gap-2"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <span className="hidden md:inline">Visit TARE</span>
+          <span className="inline md:hidden">TARE</span>
+          <span>→</span>
+        </motion.a>
+      </motion.div>
+
       <AnimatePresence mode="wait">
         {!submitted ? (
           <motion.div
