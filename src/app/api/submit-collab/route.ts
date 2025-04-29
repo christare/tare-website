@@ -22,6 +22,9 @@ export async function POST(request: Request) {
     // Get form data from request
     const formData: CollabFormData = await request.json();
     
+    // Log API call for debugging
+    console.log('Collaboration form submission initiated');
+    
     // Validate required fields
     if (!formData.firstName || !formData.lastName || !formData.email) {
       return NextResponse.json(
@@ -49,51 +52,77 @@ export async function POST(request: Request) {
       }
     };
 
-    // Get environment variables - specifically for the collab page
-    const apiKey = process.env.NEXT_PUBLIC_AIRTABLE_PAT;
+    // Check for both NEXT_PUBLIC and regular environment variables
+    // This provides more flexibility between local dev and production
+    const apiKey = process.env.AIRTABLE_API_KEY || process.env.NEXT_PUBLIC_AIRTABLE_PAT;
     const baseId = process.env.COLLAB_AIRTABLE_BASE_ID;
     const tableName = process.env.COLLAB_AIRTABLE_TABLE;
     
-    if (!apiKey || !baseId || !tableName) {
-      console.error('Missing Airtable configuration for collab form');
+    console.log('Environment check:');
+    console.log('- API Key exists:', !!apiKey);
+    console.log('- Base ID:', baseId);
+    console.log('- Table Name:', tableName);
+    
+    if (!apiKey) {
+      console.error('Missing Airtable API key');
       return NextResponse.json(
-        { error: 'Server configuration error' },
+        { error: 'Server configuration error: Missing API key' },
+        { status: 500 }
+      );
+    }
+    
+    if (!baseId) {
+      console.error('Missing Airtable Base ID');
+      return NextResponse.json(
+        { error: 'Server configuration error: Missing Base ID' },
+        { status: 500 }
+      );
+    }
+    
+    if (!tableName) {
+      console.error('Missing Airtable Table name');
+      return NextResponse.json(
+        { error: 'Server configuration error: Missing Table name' },
         { status: 500 }
       );
     }
 
-    console.log(`Submitting collab form to Airtable table: ${tableName} in base: ${baseId}`);
+    console.log(`Submitting to Airtable: ${tableName} in base: ${baseId}`);
     console.log('Field names:', Object.keys(record.fields).join(', '));
 
     // Send the data to Airtable
-    const response = await fetch(
-      `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ records: [record] })
-      }
-    );
+    const airtableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`;
+    console.log('Airtable API URL:', airtableUrl);
+    
+    const response = await fetch(airtableUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ records: [record] })
+    });
+
+    // Log response status
+    console.log('Airtable response status:', response.status);
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Airtable API error:', errorData);
+      console.error('Airtable API error:', JSON.stringify(errorData));
       return NextResponse.json(
-        { error: 'Failed to submit to Airtable' },
+        { error: `Failed to submit to Airtable: ${errorData?.error?.message || response.status}` },
         { status: 500 }
       );
     }
 
     const result = await response.json();
+    console.log('Success - record created with ID:', result.records[0].id);
     
     return NextResponse.json({ success: true, id: result.records[0].id });
   } catch (error) {
-    console.error('Error submitting form:', error);
+    console.error('Unhandled error in submit-collab API:', error);
     return NextResponse.json(
-      { error: 'Failed to process request' },
+      { error: 'Failed to process request: ' + (error instanceof Error ? error.message : String(error)) },
       { status: 500 }
     );
   }
