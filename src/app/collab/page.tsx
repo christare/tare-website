@@ -63,24 +63,85 @@ export default function CollabPage() {
   };
 
   const isOtherSelected = formData.experienceType === "other_private" || formData.experienceType === "other_collab";
+  
+  // Check if experience type is brand collaboration category
+  const isBrandCollaboration = ["brand_activation", "product_collab", "content_press", "other_collab"].includes(formData.experienceType);
+  
+  // Get dynamic placeholder text for details field based on experience type
+  const getDetailsPlaceholder = () => {
+    switch(formData.experienceType) {
+      case "private_corporate":
+        return "Tell us about your team's culture, any event themes, or vibe you're aiming for.";
+      case "private_launch":
+        return "What are you celebrating? Any vision for how you'd like it to feel?";
+      case "private_retreat":
+        return "Describe your gathering and the kind of atmosphere you're envisioning.";
+      case "other_private":
+        return "Share anything that will help us imagine the ideal private experience for you.";
+      case "brand_activation":
+        return "What brand or product are we collaborating around? Any concept direction?";
+      case "product_collab":
+        return "What product are you imagining? What feeling or story should it evoke?";
+      case "content_press":
+        return "What kind of audience or story are you hoping to capture?";
+      case "other_collab":
+        return "Share your initial concept for the collaboration you'd like to explore.";
+      default:
+        return "Please share any additional details that would help us understand your vision.";
+    }
+  };
+
+  // Validate form data
+  const validateForm = () => {
+    // Check required fields
+    if (!formData.experienceType) {
+      alert("Please select an experience type");
+      return false;
+    }
+    
+    if (isOtherSelected && !formData.otherDescription) {
+      alert("Please provide a brief description of your vision");
+      return false;
+    }
+    
+    if (!formData.preferredTime) {
+      alert("Please select a preferred time range");
+      return false;
+    }
+    
+    // Validate date range - must be in future and in correct order
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+    
+    const startDate = new Date(formData.dateStart);
+    if (startDate < today) {
+      alert("Start date must be in the future");
+      return false;
+    }
+    
+    if (formData.dateEnd) {
+      const endDate = new Date(formData.dateEnd);
+      if (endDate < startDate) {
+        alert("End date must be after start date");
+        return false;
+      }
+    }
+    
+    // For private experiences, validate guest count
+    if (!isBrandCollaboration && (!formData.guestCount || parseInt(formData.guestCount) < 1)) {
+      alert("Please enter a valid number of guests");
+      return false;
+    }
+    
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     
-    // Validate that the dropdown fields are selected
-    if (!formData.experienceType) {
-      alert("Please select an experience type");
-      return;
-    }
-    
-    if (isOtherSelected && !formData.otherDescription) {
-      alert("Please provide a brief description of your vision");
-      return;
-    }
-    
-    if (!formData.preferredTime) {
-      alert("Please select a preferred time range");
+    // Validate form data
+    if (!validateForm()) {
       return;
     }
     
@@ -183,6 +244,7 @@ export default function CollabPage() {
     }
   };
 
+  // Line duration should match redirect time
   const lineVariants = {
     hidden: { width: "0%" },
     visible: { 
@@ -283,13 +345,13 @@ export default function CollabPage() {
           viewport={{ once: true }}
         >
           <motion.p className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed" variants={fadeIn}>
-            At TARE, we design experiences that exist at the intersection of ritual, storytelling, and taste.
+            At TARE, every collaboration begins with coffee — and becomes a curated sensory journey.
           </motion.p>
           <motion.p className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed" variants={fadeIn}>
-            We work with select partners to craft private events, tailored omakase sessions, and cultural collaborations that transcend traditional coffee service.
+            We transform the ritual of coffee into moments of profound connection, crafting bespoke experiences that reveal unexpected dimensions of flavor and feeling.
           </motion.p>
           <motion.p className="text-lg md:text-xl text-gray-300 leading-relaxed" variants={fadeIn}>
-            Every collaboration is customized — designed to embody your vision while carrying the depth and intimacy that defines TARE.
+            Tell us what you're imagining. We'll reach out to explore how we can bring it to life.
           </motion.p>
         </motion.div>
       </section>
@@ -399,7 +461,7 @@ export default function CollabPage() {
           >
             <h2 className="text-2xl md:text-3xl font-light mb-4">Ready to Begin?</h2>
             <p className="text-gray-400">
-              Tell us what you're imagining. We'll follow up to schedule a discovery call.
+              Tell us what you're imagining. We'll follow up to explore how we can bring it to life.
             </p>
           </motion.div>
 
@@ -515,129 +577,144 @@ export default function CollabPage() {
               </select>
             </div>
 
-            {/* Conditional Other Description Field */}
-            {isOtherSelected && (
-              <div>
-                <input
-                  type="text"
-                  name="otherDescription"
-                  required
-                  value={formData.otherDescription}
-                  onChange={handleChange}
-                  placeholder="Briefly describe your vision (2-3 sentences)"
-                  className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500"
-                />
-              </div>
-            )}
+            {/* Only show remaining fields if experience type is selected */}
+            {formData.experienceType && (
+              <>
+                {/* Conditional Other Description Field */}
+                {isOtherSelected && (
+                  <div>
+                    <input
+                      type="text"
+                      name="otherDescription"
+                      required
+                      value={formData.otherDescription}
+                      onChange={handleChange}
+                      placeholder="Briefly describe your vision (2-3 sentences)"
+                      className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500"
+                    />
+                  </div>
+                )}
 
-            {/* Date Fields (2-column) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <div className="mb-2">
-                  <label className="text-xs text-gray-400">
-                    Preferred Date Range (Start)
-                    <span className="block mt-1">The earliest day you're available for this event</span>
-                  </label>
+                {/* Date Fields (2-column) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <div className="mb-2">
+                      <label className="text-xs text-gray-400">
+                        Preferred Date Range (Start)
+                        <span className="block mt-1">The earliest day you're available for this event</span>
+                      </label>
+                    </div>
+                    <input
+                      type="date"
+                      name="dateStart"
+                      required
+                      value={formData.dateStart}
+                      onChange={handleChange}
+                      min={new Date().toISOString().split('T')[0]} // Min is today
+                      placeholder="Preferred Date (Start)"
+                      className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 [color-scheme:dark]"
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-2">
+                      <label className="text-xs text-gray-400">
+                        Preferred Date Range (End)
+                        <span className="block mt-1">The latest day you're available for this event</span>
+                      </label>
+                    </div>
+                    <input
+                      type="date"
+                      name="dateEnd"
+                      required
+                      value={formData.dateEnd}
+                      onChange={handleChange}
+                      min={formData.dateStart || new Date().toISOString().split('T')[0]} // Min is start date or today
+                      placeholder="Preferred Date (End)"
+                      className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 [color-scheme:dark]"
+                    />
+                  </div>
                 </div>
-                <input
-                  type="date"
-                  name="dateStart"
-                  required
-                  value={formData.dateStart}
-                  onChange={handleChange}
-                  placeholder="Preferred Date (Start)"
-                  className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 [color-scheme:dark]"
-                />
-              </div>
-              <div>
-                <div className="mb-2">
-                  <label className="text-xs text-gray-400">
-                    Preferred Date Range (End)
-                    <span className="block mt-1">The latest day you're available for this event</span>
-                  </label>
-                </div>
-                <input
-                  type="date"
-                  name="dateEnd"
-                  required
-                  value={formData.dateEnd}
-                  onChange={handleChange}
-                  placeholder="Preferred Date (End)"
-                  className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 [color-scheme:dark]"
-                />
-              </div>
-            </div>
 
-            {/* Time Dropdown and Guest Count */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <div className="mb-2">
-                  <label className="text-xs text-gray-400">
-                    Preferred Start Time Range
-                    <span className="block mt-1">(Your tasting will last about 1 hour.)</span>
-                  </label>
+                {/* Time Dropdown and Guest Count (conditionally shown) */}
+                <div className={`grid grid-cols-1 ${!isBrandCollaboration ? 'md:grid-cols-2' : ''} gap-6`}>
+                  <div>
+                    <div className="mb-2">
+                      <label className="text-xs text-gray-400">
+                        Preferred Start Time Range
+                        <span className="block mt-1">(Your tasting will last about 1 hour.)</span>
+                      </label>
+                    </div>
+                    <select
+                      name="preferredTime"
+                      required
+                      value={formData.preferredTime}
+                      onChange={handleChange}
+                      className={`w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide ${!formData.preferredTime ? 'text-gray-500' : 'text-white'}`}
+                    >
+                      <option value="" disabled>Select Time Range</option>
+                      <option value="9am - 12pm">9am - 12pm</option>
+                      <option value="12pm - 3pm">12pm - 3pm</option>
+                      <option value="3pm - 6pm">3pm - 6pm</option>
+                      <option value="6pm - 9pm">6pm - 9pm</option>
+                    </select>
+                  </div>
+                  
+                  {/* Only show guest count for private experiences */}
+                  {!isBrandCollaboration && (
+                    <div>
+                      <input
+                        type="number"
+                        name="guestCount"
+                        required
+                        min="1"
+                        value={formData.guestCount}
+                        onChange={handleChange}
+                        placeholder="Guest Count"
+                        className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500"
+                      />
+                    </div>
+                  )}
                 </div>
-                <select
-                  name="preferredTime"
-                  required
-                  value={formData.preferredTime}
-                  onChange={handleChange}
-                  className={`w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide ${!formData.preferredTime ? 'text-gray-500' : 'text-white'}`}
+
+                {/* Location Field */}
+                <div>
+                  <input
+                    type="text"
+                    name="location"
+                    required
+                    value={formData.location}
+                    onChange={handleChange}
+                    placeholder="Location"
+                    className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500"
+                  />
+                </div>
+
+                {/* Details Field with dynamic placeholder */}
+                <div>
+                  <div className="mb-2">
+                    <label className="text-xs text-gray-400">
+                      Details
+                    </label>
+                  </div>
+                  <textarea
+                    name="details"
+                    value={formData.details}
+                    onChange={handleChange}
+                    placeholder={getDetailsPlaceholder()}
+                    rows={4}
+                    className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50"
                 >
-                  <option value="" disabled>Select Time Range</option>
-                  <option value="9am - 12pm">9am - 12pm</option>
-                  <option value="12pm - 3pm">12pm - 3pm</option>
-                  <option value="3pm - 6pm">3pm - 6pm</option>
-                  <option value="6pm - 9pm">6pm - 9pm</option>
-                </select>
-              </div>
-              <div>
-                <input
-                  type="number"
-                  name="guestCount"
-                  required
-                  min="1"
-                  value={formData.guestCount}
-                  onChange={handleChange}
-                  placeholder="Guest Count"
-                  className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500"
-                />
-              </div>
-            </div>
-
-            {/* Location Field */}
-            <div>
-              <input
-                type="text"
-                name="location"
-                required
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="Location"
-                className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500"
-              />
-            </div>
-
-            {/* Details Field */}
-            <div>
-              <textarea
-                name="details"
-                required
-                value={formData.details}
-                onChange={handleChange}
-                placeholder="Details"
-                rows={4}
-                className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 resize-none"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50"
-            >
-              {isSubmitting ? "SUBMITTING..." : "SUBMIT INQUIRY"}
-            </button>
+                  {isSubmitting ? "SUBMITTING..." : "SUBMIT INQUIRY"}
+                </button>
+              </>
+            )}
           </motion.form>
         </div>
       </section>
