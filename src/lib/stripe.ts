@@ -1,12 +1,21 @@
 import { Stripe } from 'stripe';
 
-// Create a getter function for the Stripe instance to avoid initialization during build
+// Lazy loaded Stripe instance
 let stripeInstance: Stripe | null = null;
 
 export const getStripe = (): Stripe => {
+  // Log environment variables availability (without showing full values)
+  console.log('Environment check for Stripe:', {
+    hasStripeSecretKey: typeof process.env.STRIPE_SECRET_KEY === 'string' && process.env.STRIPE_SECRET_KEY.length > 0,
+    hasPublishableKey: typeof process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY === 'string',
+    secretKeyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : 'not set',
+    nodeEnv: process.env.NODE_ENV,
+    vercelEnv: process.env.VERCEL_ENV
+  });
+  
   // Make sure we don't initialize during build
-  if (typeof process.env.STRIPE_SECRET_KEY !== 'string') {
-    console.error('STRIPE_SECRET_KEY environment variable is not properly set');
+  if (typeof process.env.STRIPE_SECRET_KEY !== 'string' || !process.env.STRIPE_SECRET_KEY) {
+    console.error('STRIPE_SECRET_KEY environment variable is not properly set or is empty');
     throw new Error('STRIPE_SECRET_KEY is not defined');
   }
   
@@ -17,6 +26,12 @@ export const getStripe = (): Stripe => {
   try {
     // Remove any trailing % character and trim whitespace
     const stripeKey = process.env.STRIPE_SECRET_KEY.replace('%', '').trim();
+    
+    if (!stripeKey.startsWith('sk_')) {
+      console.error('STRIPE_SECRET_KEY does not start with expected prefix "sk_"');
+      throw new Error('Invalid Stripe secret key format');
+    }
+    
     console.log('Initializing Stripe with key prefix:', stripeKey.substring(0, 7) + '...');
     
     stripeInstance = new Stripe(stripeKey, {
