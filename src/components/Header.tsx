@@ -31,13 +31,11 @@ export default function Header() {
   const homeUrl = isProduction ? "/home" : "/home";
   const rootUrl = isProduction ? "/" : "/";
   const collabUrl = isProduction ? "/collab" : "/collab";
-  const privateUrl = isProduction ? "/private" : "/private";
 
   // Navigation items
   const navItems = [
     { name: "HOME", path: homeUrl },
     { name: "COLLABORATE", path: collabUrl },
-    { name: "PRIVATE", path: privateUrl },
     { name: "JOIN THE LIST", path: rootUrl, highlight: true },
   ];
 
