@@ -1,12 +1,25 @@
 import { Stripe } from 'stripe';
 
-// Initialize Stripe with the secret key (clean up any trailing % characters)
-const stripeKey = process.env.STRIPE_SECRET_KEY?.replace('%', '') || '';
+// Lazy loaded Stripe instance
+let stripeInstance: Stripe | null = null;
 
-// Initialize Stripe client
-export const stripe = new Stripe(stripeKey, {
-  apiVersion: '2023-10-16' as any,
-});
+export const getStripe = (): Stripe => {
+  // Make sure we don't initialize during build
+  if (typeof process.env.STRIPE_SECRET_KEY !== 'string') {
+    throw new Error('STRIPE_SECRET_KEY is not defined');
+  }
+  
+  if (stripeInstance) {
+    return stripeInstance;
+  }
+  
+  const stripeKey = process.env.STRIPE_SECRET_KEY.replace('%', '');
+  stripeInstance = new Stripe(stripeKey, {
+    apiVersion: '2023-10-16' as any,
+  });
+  
+  return stripeInstance;
+};
 
 export const createCheckoutSession = async ({
   priceId,
@@ -18,6 +31,8 @@ export const createCheckoutSession = async ({
   cancelUrl: string;
 }) => {
   try {
+    // This will only run on the server during request time, not during build
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [

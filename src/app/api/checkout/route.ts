@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { createCheckoutSession } from '@/lib/stripe';
 
 export async function POST(request: Request) {
   try {
@@ -20,6 +19,9 @@ export async function POST(request: Request) {
     const successUrl = `${baseUrl}/checkout/success?type=${type}`;
     const cancelUrl = `${baseUrl}/checkout/canceled?type=${type}`;
     
+    // Dynamically import the module to avoid build-time initialization
+    const { createCheckoutSession } = await import('@/lib/stripe');
+    
     const result = await createCheckoutSession({
       priceId,
       successUrl,
@@ -27,6 +29,7 @@ export async function POST(request: Request) {
     });
     
     if (!result.success) {
+      console.error('Checkout error:', result.error);
       return NextResponse.json(
         { error: 'Failed to create checkout session' },
         { status: 500 }
