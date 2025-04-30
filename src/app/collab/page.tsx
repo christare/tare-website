@@ -285,7 +285,7 @@ export default function CollabPage() {
           <motion.div variants={itemVariants} className="mb-12">
             <div className="w-12 h-px bg-white mx-auto mb-8" />
             <p className="text-gray-400 text-center mb-6 max-w-md mx-auto tracking-wide">
-              Your inquiry has been received. We’ll be in touch soon.
+              Your inquiry has been received. We'll be in touch soon.
             </p>
             <p className="text-gray-600 text-sm text-center">
               Redirecting in {redirectCounter}...
@@ -351,7 +351,7 @@ export default function CollabPage() {
             We build sensory experiences designed to shift how things feel, taste, and linger.
           </motion.p>
           <motion.p className="text-lg md:text-xl text-gray-300 leading-relaxed" variants={fadeIn}>
-            Have something in mind? Let’s explore it.
+            Have something in mind? Let's explore it.
           </motion.p>
         </motion.div>
       </section>
@@ -378,7 +378,7 @@ export default function CollabPage() {
             >
               <h3 className="text-xl font-light mb-4">Private Tastings</h3>
               <p className="text-gray-400 mb-4">
-                Curated, personal omakase-style sensory experiences for your company, brand of occassion. Brought to your space, or hosted in intimate settings or bespoke venues across New York City.
+                Curated, personal omakase-style sensory experiences for your company, brand, or occasion. Brought to your space, or hosted in intimate settings or bespoke venues across New York City.
               </p>
             </motion.div>
 
