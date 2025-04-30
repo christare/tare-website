@@ -23,7 +23,9 @@ export default function StudioPage() {
 
   const handlePurchase = async () => {
     setIsLoading(true);
+    setError("");
     try {
+      console.log("Starting checkout for STUDIO with price ID: price_1RJbkjF5JUni5zIQf801xKE6");
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
@@ -36,14 +38,23 @@ export default function StudioPage() {
       });
 
       const data = await response.json();
+      
+      if (!response.ok) {
+        console.error("Checkout response error:", data);
+        setError(data.details?.message || data.error || "Failed to create checkout session");
+        setIsLoading(false);
+        return;
+      }
+      
       if (data.url) {
         window.location.href = data.url;
       } else {
-        setError("Failed to create checkout session");
+        setError("No checkout URL returned");
         setIsLoading(false);
       }
     } catch (err) {
-      setError("Something went wrong");
+      console.error("Checkout error:", err);
+      setError("Something went wrong with the checkout process");
       setIsLoading(false);
     }
   };

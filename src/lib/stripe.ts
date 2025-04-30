@@ -1,11 +1,12 @@
 import { Stripe } from 'stripe';
 
-// Lazy loaded Stripe instance
+// Create a getter function for the Stripe instance to avoid initialization during build
 let stripeInstance: Stripe | null = null;
 
 export const getStripe = (): Stripe => {
   // Make sure we don't initialize during build
   if (typeof process.env.STRIPE_SECRET_KEY !== 'string') {
+    console.error('STRIPE_SECRET_KEY environment variable is not properly set');
     throw new Error('STRIPE_SECRET_KEY is not defined');
   }
   
@@ -13,12 +14,20 @@ export const getStripe = (): Stripe => {
     return stripeInstance;
   }
   
-  const stripeKey = process.env.STRIPE_SECRET_KEY.replace('%', '');
-  stripeInstance = new Stripe(stripeKey, {
-    apiVersion: '2023-10-16' as any,
-  });
-  
-  return stripeInstance;
+  try {
+    // Remove any trailing % character and trim whitespace
+    const stripeKey = process.env.STRIPE_SECRET_KEY.replace('%', '').trim();
+    console.log('Initializing Stripe with key prefix:', stripeKey.substring(0, 7) + '...');
+    
+    stripeInstance = new Stripe(stripeKey, {
+      apiVersion: '2025-03-31.basil',
+    });
+    
+    return stripeInstance;
+  } catch (error) {
+    console.error('Error initializing Stripe:', error);
+    throw error;
+  }
 };
 
 export const createCheckoutSession = async ({
@@ -31,8 +40,11 @@ export const createCheckoutSession = async ({
   cancelUrl: string;
 }) => {
   try {
+    console.log('Creating checkout session with:', { priceId, successUrl, cancelUrl });
+    
     // This will only run on the server during request time, not during build
     const stripe = getStripe();
+    
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -47,9 +59,17 @@ export const createCheckoutSession = async ({
       allow_promotion_codes: true,
     });
     
+    console.log('Checkout session created successfully:', session.id);
     return { success: true, url: session.url };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating checkout session:', error);
-    return { success: false, error };
+    // Include more detailed error information
+    return { 
+      success: false, 
+      error,
+      errorMessage: error.message || 'Unknown error', 
+      errorType: error.type || 'Unknown type',
+      errorCode: error.statusCode || error.code || 'No code'
+    };
   }
 }; 
