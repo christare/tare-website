@@ -73,7 +73,7 @@ export default function CollabPage() {
       case "private_corporate":
         return "Tell us about your team's culture, any event themes, or vibe you're aiming for.";
       case "private_launch":
-        return "What are you celebrating? Any vision for how you'd like it to feel?";
+        return "What's the occasion? Any vision for how you'd like it to feel?";
       case "private_retreat":
         return "Describe your gathering and the kind of atmosphere you're envisioning.";
       case "other_private":
@@ -85,9 +85,9 @@ export default function CollabPage() {
       case "content_press":
         return "What kind of audience or story are you hoping to capture?";
       case "other_collab":
-        return "Share your initial concept for the collaboration you'd like to explore.";
+        return "Describe your idea.";
       default:
-        return "Please share any additional details that would help us understand your vision.";
+        return "Anything else we should know?";
     }
   };
 
@@ -285,7 +285,7 @@ export default function CollabPage() {
           <motion.div variants={itemVariants} className="mb-12">
             <div className="w-12 h-px bg-white mx-auto mb-8" />
             <p className="text-gray-400 text-center mb-6 max-w-md mx-auto tracking-wide">
-              Your inquiry has been received. We'll be in touch soon to explore the possibilities of crafting something extraordinary together.
+              Your inquiry has been received. We’ll be in touch soon.
             </p>
             <p className="text-gray-600 text-sm text-center">
               Redirecting in {redirectCounter}...
@@ -345,13 +345,13 @@ export default function CollabPage() {
           viewport={{ once: true }}
         >
           <motion.p className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed" variants={fadeIn}>
-            At TARE, every collaboration begins with coffee — and becomes a curated sensory journey.
+            At TARE, coffee is just the beginning.
           </motion.p>
           <motion.p className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed" variants={fadeIn}>
-            We transform the ritual of coffee into moments of profound connection, crafting bespoke experiences that reveal unexpected dimensions of flavor and feeling.
+            We build sensory experiences designed to shift how things feel, taste, and linger.
           </motion.p>
           <motion.p className="text-lg md:text-xl text-gray-300 leading-relaxed" variants={fadeIn}>
-            Tell us what you're imagining. We'll reach out to explore how we can bring it to life.
+            Have something in mind? Let’s explore it.
           </motion.p>
         </motion.div>
       </section>
@@ -378,10 +378,7 @@ export default function CollabPage() {
             >
               <h3 className="text-xl font-light mb-4">Private Tastings</h3>
               <p className="text-gray-400 mb-4">
-                Curated, personal omakase-style sensory experiences that transform coffee into a multi-course journey of flavor discoveries.
-              </p>
-              <p className="text-gray-400">
-                Hosted in intimate settings or bespoke venues across New York City, each tasting unfolds like a choreographed ritual.
+                Curated, personal omakase-style sensory experiences for your company, brand of occassion. Brought to your space, or hosted in intimate settings or bespoke venues across New York City.
               </p>
             </motion.div>
 
@@ -396,9 +393,6 @@ export default function CollabPage() {
               <p className="text-gray-400 mb-4">
                 Immersive sensory journeys designed for teams seeking an experiential reset — where coffee becomes a medium for awakening creativity.
               </p>
-              <p className="text-gray-400">
-                Each element meticulously composed like a Michelin-starred tasting menu for moments of shared presence.
-              </p>
             </motion.div>
 
             {/* Brand Collaborations */}
@@ -411,9 +405,6 @@ export default function CollabPage() {
               <h3 className="text-xl font-light mb-4">Brand Collaborations</h3>
               <p className="text-gray-400 mb-4">
                 Partnerships with select brands, artists, and creatives to craft avant-garde sensory activations and cultural installations.
-              </p>
-              <p className="text-gray-400">
-                Where coffee transcends its form, becoming part of unexpected, experimental compositions that challenge perception.
               </p>
             </motion.div>
           </div>

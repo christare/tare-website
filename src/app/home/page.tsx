@@ -26,7 +26,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            TARE is a coffee tasting — reimagined as an experimental ritual.
+            TARE is a coffee tasting — reimagined as ritual.
           </motion.h1>
           <motion.div
             className="w-12 h-px bg-white mx-auto mb-12"
@@ -55,7 +55,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            We host three core formats:
+            We host three kinds of public experiences:
           </motion.h2>
           <div className="grid md:grid-cols-3 gap-12">
             <motion.div
