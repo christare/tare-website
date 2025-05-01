@@ -54,13 +54,7 @@ export const getStripe = (): Stripe => {
     
     console.log('Initializing Stripe with key prefix:', stripeKey.substring(0, 7) + '...');
     
-    // Just for temporary testing - try hardcoding
-    // WARNING: This should be removed after troubleshooting
-    if (process.env.NODE_ENV === 'production') {
-      console.log('Using hardcoded key temporarily for diagnostics');
-      stripeKey = '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';
-    }
-    
+    // Initialize Stripe with the API key from environment variables
     stripeInstance = new Stripe(stripeKey, {
       apiVersion: '2025-03-31.basil',
     });
