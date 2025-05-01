@@ -137,7 +137,7 @@ export default function StudioPage() {
               variants={fadeIn}
               className="text-3xl md:text-4xl font-light mb-6 tracking-wide text-center"
             >
-              TARE STUDIO
+              TARE STUDIO 01
             </motion.h1>
             
             <motion.div 
@@ -148,6 +148,9 @@ export default function StudioPage() {
             <motion.div variants={fadeIn} className="mb-16">
               <p className="text-gray-300 text-center italic text-lg md:text-xl mb-1 leading-relaxed">
                 An immersive, multi-sensory experience.
+              </p>
+              <p className="text-gray-300 text-center text-sm mt-2">
+                June 7, 2024 • 11am - 12:30pm
               </p>
             </motion.div>
             
@@ -171,7 +174,7 @@ export default function StudioPage() {
                       Set inside our new minimalist studio in Midtown — part gallery, part ritual lab.
                     </p>
                     <p className="text-gray-500 text-xs mt-3">
-                      Address provided after booking.
+                      I will email you personally with the exact address after booking.
                     </p>
                   </div>
                 </div>
@@ -184,7 +187,15 @@ export default function StudioPage() {
             >
               <div className="flex justify-between items-center">
                 <span className="text-gray-400 text-sm">Experience</span>
-                <span className="text-white text-sm">TARE STUDIO</span>
+                <span className="text-white text-sm">TARE STUDIO 01</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-sm">Date</span>
+                <span className="text-white text-sm">June 7, 2024</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-sm">Time</span>
+                <span className="text-white text-sm">11am - 12:30pm</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400 text-sm">Duration</span>
