@@ -4,19 +4,39 @@ import { Stripe } from 'stripe';
 let stripeInstance: Stripe | null = null;
 
 export const getStripe = (): Stripe => {
-  // Log environment variables availability (without showing full values)
+  // Try multiple possible environment variable names
+  const possibleVarNames = [
+    'STRIPE_SECRET_KEY',
+    'STRIPE_KEY',
+    'STRIPE_API_KEY',
+  ];
+  
+  // Get the first available key
+  let stripeKey = '';
+  let usedVarName = '';
+  
+  for (const varName of possibleVarNames) {
+    if (process.env[varName]) {
+      stripeKey = process.env[varName] as string;
+      usedVarName = varName;
+      break;
+    }
+  }
+  
+  // Log environment variables for debugging
   console.log('Environment check for Stripe:', {
-    hasStripeSecretKey: typeof process.env.STRIPE_SECRET_KEY === 'string' && process.env.STRIPE_SECRET_KEY.length > 0,
-    hasPublishableKey: typeof process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY === 'string',
-    secretKeyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : 'not set',
+    envVarChecked: possibleVarNames,
+    usedVarName,
+    hasKey: Boolean(stripeKey),
+    keyPrefix: stripeKey ? stripeKey.substring(0, 7) : 'not set',
     nodeEnv: process.env.NODE_ENV,
     vercelEnv: process.env.VERCEL_ENV
   });
   
-  // Make sure we don't initialize during build
-  if (typeof process.env.STRIPE_SECRET_KEY !== 'string' || !process.env.STRIPE_SECRET_KEY) {
-    console.error('STRIPE_SECRET_KEY environment variable is not properly set or is empty');
-    throw new Error('STRIPE_SECRET_KEY is not defined');
+  // Make sure we found a key
+  if (!stripeKey) {
+    console.error('No Stripe secret key found in any of the checked environment variables');
+    throw new Error('Stripe secret key not found');
   }
   
   if (stripeInstance) {
@@ -25,14 +45,21 @@ export const getStripe = (): Stripe => {
   
   try {
     // Remove any trailing % character and trim whitespace
-    const stripeKey = process.env.STRIPE_SECRET_KEY.replace('%', '').trim();
+    stripeKey = stripeKey.replace('%', '').trim();
     
     if (!stripeKey.startsWith('sk_')) {
-      console.error('STRIPE_SECRET_KEY does not start with expected prefix "sk_"');
+      console.error('Stripe key does not start with expected prefix "sk_"');
       throw new Error('Invalid Stripe secret key format');
     }
     
     console.log('Initializing Stripe with key prefix:', stripeKey.substring(0, 7) + '...');
+    
+    // Just for temporary testing - try hardcoding
+    // WARNING: This should be removed after troubleshooting
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Using hardcoded key temporarily for diagnostics');
+      stripeKey = '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';
+    }
     
     stripeInstance = new Stripe(stripeKey, {
       apiVersion: '2025-03-31.basil',

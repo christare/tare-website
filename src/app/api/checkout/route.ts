@@ -2,32 +2,57 @@ import { NextResponse } from 'next/server';
 
 // Helper function to verify environment variables
 function checkEnvironmentVariables() {
-  const variables = {
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-    NODE_ENV: process.env.NODE_ENV,
-    VERCEL_ENV: process.env.VERCEL_ENV
-  };
+  // Try multiple possible variable names
+  const possibleVarNames = [
+    'STRIPE_SECRET_KEY',
+    'STRIPE_KEY',
+    'STRIPE_API_KEY',
+  ];
   
-  console.log('Environment variables check:', {
-    hasStripeSecretKey: Boolean(variables.STRIPE_SECRET_KEY),
-    hasPublishableKey: Boolean(variables.PUBLISHABLE_KEY),
-    stripeKeyLength: variables.STRIPE_SECRET_KEY ? variables.STRIPE_SECRET_KEY.length : 0,
-    stripeKeyPrefix: variables.STRIPE_SECRET_KEY ? variables.STRIPE_SECRET_KEY.substring(0, 7) : 'not set',
-    nodeEnv: variables.NODE_ENV,
-    vercelEnv: variables.VERCEL_ENV
-  });
+  // Check all environment variables for debugging
+  const envVars = Object.keys(process.env)
+    .filter(key => key.includes('STRIPE') || key.includes('VERCEL') || key.includes('NODE'))
+    .reduce((obj, key) => {
+      // Don't show full values for secret keys
+      const value = process.env[key];
+      if (key.includes('SECRET') || key.includes('KEY')) {
+        obj[key] = value ? `${value.substring(0, 7)}...` : 'not set';
+      } else {
+        obj[key] = value;
+      }
+      return obj;
+    }, {} as Record<string, string | undefined>);
   
-  if (!variables.STRIPE_SECRET_KEY) {
-    throw new Error('STRIPE_SECRET_KEY environment variable is missing');
+  console.log('All relevant environment variables:', envVars);
+  
+  // Check for secret key in any of the possible names
+  let hasSecretKey = false;
+  let secretKeyName = '';
+  
+  for (const name of possibleVarNames) {
+    if (process.env[name]) {
+      hasSecretKey = true;
+      secretKeyName = name;
+      break;
+    }
   }
+  
+  if (!hasSecretKey) {
+    throw new Error(`Stripe secret key not found in any of: ${possibleVarNames.join(', ')}`);
+  }
+  
+  return { secretKeyName };
 }
 
 export async function POST(request: Request) {
+  console.log('Starting checkout API route handler');
+  
   try {
     // First, check environment variables
+    let secretKeyInfo;
     try {
-      checkEnvironmentVariables();
+      secretKeyInfo = checkEnvironmentVariables();
+      console.log('Environment variables check passed:', secretKeyInfo);
     } catch (envError: any) {
       console.error('Environment variable error:', envError);
       return NextResponse.json(
@@ -37,6 +62,7 @@ export async function POST(request: Request) {
     }
     
     const { priceId, type } = await request.json();
+    console.log('Received checkout request with:', { priceId, type });
     
     if (!priceId) {
       return NextResponse.json(
@@ -54,7 +80,7 @@ export async function POST(request: Request) {
     const cancelUrl = `${baseUrl}/checkout/canceled?type=${type}`;
     
     // Log request details
-    console.log('Checkout request:', { 
+    console.log('Creating checkout session with:', { 
       type, 
       priceId,
       successUrl,
@@ -63,39 +89,54 @@ export async function POST(request: Request) {
     });
     
     // Dynamically import the module to avoid build-time initialization
-    const stripeModule = await import('@/lib/stripe');
-    
-    // Verify the module loaded properly
-    if (!stripeModule.createCheckoutSession) {
-      console.error('Failed to load Stripe module correctly');
-      return NextResponse.json(
-        { error: 'Internal server error: Stripe module not available' },
-        { status: 500 }
-      );
-    }
-    
-    const result = await stripeModule.createCheckoutSession({
-      priceId,
-      successUrl,
-      cancelUrl
-    });
-    
-    if (!result.success) {
-      console.error('Checkout error details:', result);
+    try {
+      console.log('Importing stripe module...');
+      const stripeModule = await import('@/lib/stripe');
+      console.log('Stripe module imported successfully');
+      
+      // Verify the module loaded properly
+      if (!stripeModule.createCheckoutSession) {
+        console.error('Failed to load Stripe module correctly');
+        return NextResponse.json(
+          { error: 'Internal server error: Stripe module not available' },
+          { status: 500 }
+        );
+      }
+      
+      console.log('Creating checkout session...');
+      const result = await stripeModule.createCheckoutSession({
+        priceId,
+        successUrl,
+        cancelUrl
+      });
+      
+      if (!result.success) {
+        console.error('Checkout error details:', result);
+        return NextResponse.json(
+          { 
+            error: 'Failed to create checkout session',
+            details: {
+              message: result.errorMessage,
+              type: result.errorType,
+              code: result.errorCode
+            }
+          },
+          { status: 500 }
+        );
+      }
+      
+      console.log('Checkout session created successfully!');
+      return NextResponse.json({ url: result.url });
+    } catch (importError: any) {
+      console.error('Error importing or using Stripe module:', importError);
       return NextResponse.json(
         { 
-          error: 'Failed to create checkout session',
-          details: {
-            message: result.errorMessage,
-            type: result.errorType,
-            code: result.errorCode
-          }
+          error: 'Stripe module error',
+          details: importError.message || 'Unknown import error'
         },
         { status: 500 }
       );
     }
-    
-    return NextResponse.json({ url: result.url });
   } catch (error: any) {
     console.error('Unexpected checkout error:', error);
     return NextResponse.json(
