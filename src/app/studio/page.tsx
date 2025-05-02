@@ -24,16 +24,13 @@ export default function StudioPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   
-  // Ensure page starts at top when loaded
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password.toLowerCase() === "studio") {
       setIsAuthorized(true);
       setError("");
+      window.scrollTo({ top: 0, behavior: "auto" }); // force scroll to top
     } else {
       setError("Incorrect password");
     }
