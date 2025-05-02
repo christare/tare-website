@@ -23,14 +23,18 @@ export default function StudioPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
+
+  useEffect(() => {
+    if (isAuthorized) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [isAuthorized]);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password.toLowerCase() === "studio") {
       setIsAuthorized(true);
       setError("");
-      window.scrollTo({ top: 0, behavior: "auto" }); // force scroll to top
     } else {
       setError("Incorrect password");
     }
@@ -285,7 +289,7 @@ export default function StudioPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4, delay: 0.8 }}
-                  style={monospaceStyle}
+                  style={{ ...monospaceStyle, fontSize: "16px" }}
                 />
               </motion.div>
               
