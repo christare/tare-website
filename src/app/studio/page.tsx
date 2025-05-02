@@ -529,7 +529,7 @@ export default function StudioPage() {
                   
                   {/* Introduction to iterations as internal lab record */}
                   <motion.div
-                    className="mb-8 flex justify-center"
+                    className="mt-16 mb-4 flex justify-center"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: false }}
