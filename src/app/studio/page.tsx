@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -23,6 +23,11 @@ export default function StudioPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Ensure page starts at top when loaded
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -619,7 +624,7 @@ export default function StudioPage() {
                                 alt="Silicone mold"
                                 width={400}
                                 height={400}
-                                className="filter invert contrast-200 brightness-150"
+                                // className="filter invert contrast-200 brightness-150"
                               />
                             </motion.div>
                           </div>
@@ -647,7 +652,7 @@ export default function StudioPage() {
                                 alt="Custom brewer"
                                 width={400}
                                 height={400}
-                                className="filter invert contrast-200 brightness-150"
+                                // className="filter invert contrast-200 brightness-150"
                               />
                             </motion.div>
                           </div>
