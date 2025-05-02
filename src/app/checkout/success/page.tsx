@@ -9,12 +9,12 @@ import { useSearchParams } from "next/navigation";
 function SuccessContent() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
-  const [redirectCounter, setRedirectCounter] = useState(5);
+  const [redirectCounter, setRedirectCounter] = useState(8);
 
   // Determine product name based on type
-  const productName = type === "studio" ? "TARE STUDIO" : "TARE ROOM";
+  const productName = type === "studio" ? "TARE STUDIO 01" : "TARE ROOM";
 
-  // Redirect after 5 seconds
+  // Redirect after 8 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setRedirectCounter((prev) => {
@@ -56,7 +56,7 @@ function SuccessContent() {
     visible: {
       width: "100%",
       transition: {
-        duration: 5,
+        duration: 8,
         ease: "linear",
       },
     },
@@ -73,26 +73,35 @@ function SuccessContent() {
         className="text-3xl md:text-5xl font-light mb-8 tracking-wide"
         variants={itemVariants}
       >
-        THANK YOU
+        CONFIRMED
       </motion.h1>
 
       <motion.div variants={itemVariants} className="mb-12">
-        <div className="w-12 h-px bg-white mx-auto mb-8" />
-        <p className="text-gray-300 mb-6">
-          Your {productName} purchase has been confirmed. 
-          You will receive an email with your receipt shortly.
+        <div className="w-12 h-px bg-white mx-auto mb-10" />
+        
+        <p className="text-gray-300 text-lg italic mb-8 leading-relaxed">
+          Your seat at {productName} is reserved.
         </p>
-        <p className="text-gray-500 text-sm">
-          Redirecting in {redirectCounter}...
+        
+        <p className="text-gray-300 mb-8 leading-relaxed">
+          I'll be reaching out personally with location details closer to the date.
+        </p>
+        
+        <p className="text-gray-400 text-sm mt-10">
+          — Chris, TARE
+        </p>
+        
+        <p className="text-gray-600 text-xs mt-12">
+          Returning to home in {redirectCounter}
         </p>
       </motion.div>
 
       <motion.div
-        className="w-full max-w-xs h-px bg-gray-800 relative overflow-hidden mx-auto mb-12"
+        className="w-full max-w-xs h-px bg-gray-900 relative overflow-hidden mx-auto mb-12"
         variants={itemVariants}
       >
         <motion.div
-          className="absolute top-0 left-0 h-full bg-white"
+          className="absolute top-0 left-0 h-full bg-gray-600"
           variants={lineVariants}
         />
       </motion.div>
@@ -100,9 +109,9 @@ function SuccessContent() {
       <motion.div variants={itemVariants}>
         <Link
           href="/home"
-          className="border border-white px-8 py-3 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 inline-block"
+          className="border border-gray-700 px-8 py-3 text-sm tracking-wide hover:border-white hover:text-white transition-all duration-300 inline-block text-gray-400"
         >
-          RETURN TO HOME
+          RETURN
         </Link>
       </motion.div>
     </motion.div>
