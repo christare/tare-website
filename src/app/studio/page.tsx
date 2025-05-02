@@ -41,14 +41,7 @@ export default function StudioPage() {
       
       if (!response.ok) {
         console.error("Checkout response error:", data);
-        
-        // Handle sold out specifically
-        if (data.error === "No seats available for this event") {
-          setError("This event is sold out.");
-        } else {
-          setError(data.details?.message || data.error || "Failed to create checkout session");
-        }
-        
+        setError(data.details?.message || data.error || "Failed to create checkout session");
         setIsLoading(false);
         return;
       }
@@ -154,7 +147,7 @@ export default function StudioPage() {
             
             <motion.div variants={fadeIn} className="mb-16">
               <p className="text-gray-300 text-center italic text-lg md:text-xl mb-1 leading-relaxed">
-                An immersive, multi-sensory experience.
+                An immersive, multi-sensory coffee experience.
               </p>
               <p className="text-gray-300 text-center text-sm mt-2">
                 June 7, 2024 • 11am - 12:30pm
