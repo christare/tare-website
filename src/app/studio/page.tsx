@@ -168,7 +168,7 @@ export default function StudioPage() {
                   <div>
                     <h2 className="text-xs uppercase tracking-widest text-gray-500 mb-4">The Experience</h2>
                     <p className="text-white text-sm leading-relaxed">
-                      A tasting menu that pushes rare coffees into new sensory formats. 
+                      A tasting menu that pushes rare, experimental coffees into new sensory formats. 
                     </p>
                     <p className="text-white text-sm leading-relaxed mt-4">
                      Each STUDIO guides you through a narrative told in fine-dining-inspired courses.
