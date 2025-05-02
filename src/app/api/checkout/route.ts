@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAvailableSeats, reserveSeat } from '@/lib/seats';
 
 // Helper function to verify environment variables
 function checkEnvironmentVariables() {
@@ -69,6 +70,36 @@ export async function POST(request: Request) {
         { error: 'Price ID is required' },
         { status: 400 }
       );
+    }
+    
+    // Check seat availability for studio bookings
+    if (type === 'studio') {
+      try {
+        const availableSeats = await getAvailableSeats();
+        console.log(`Available seats for STUDIO: ${availableSeats}`);
+        
+        if (availableSeats <= 0) {
+          return NextResponse.json(
+            { error: 'No seats available for this event' },
+            { status: 400 }
+          );
+        }
+        
+        // Reserve the seat temporarily
+        const reserved = await reserveSeat();
+        if (!reserved) {
+          return NextResponse.json(
+            { error: 'Could not reserve seat' },
+            { status: 500 }
+          );
+        }
+      } catch (seatError: any) {
+        console.error('Error checking seat availability:', seatError);
+        return NextResponse.json(
+          { error: 'Error checking seat availability', details: seatError.message },
+          { status: 500 }
+        );
+      }
     }
     
     // Base URL for redirects
