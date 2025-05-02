@@ -566,7 +566,7 @@ export default function StudioPage() {
                                 alt="Espresso tuile"
                                 width={400}
                                 height={400}
-                                className="filter invert contrast-200 brightness-150"
+                                // className="filter invert contrast-200 brightness-150"
                               />
                             </motion.div>
                           </div>
