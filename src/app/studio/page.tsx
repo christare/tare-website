@@ -871,7 +871,7 @@ export default function StudioPage() {
                           key={item.label}
                           variants={cascadeIn}
                           custom={item.delay}
-                          className="pb-3 border-b border-gray-800 border-opacity-20"
+                          className="border-b border-gray-800 border-opacity-20"
                         >
                           <span className="text-gray-500 block text-sm tracking-wider" style={monospaceStyle}>{item.label}</span>
                           <span className="text-white font-light text-base" style={engineeredStyle}>{item.value}</span>
@@ -879,11 +879,83 @@ export default function StudioPage() {
                       ))}
                     </motion.div>
                   </motion.div>
+
+                  
                 </motion.div>
+                {/* Reserve button as art — moved up for visibility */}
+<motion.div 
+  variants={fadeIn}
+  className="flex justify-center py-12 md:py-16 mb-16"
+  initial="hidden"
+  whileInView="visible" 
+  viewport={{ once: false, amount: 0.6 }}
+>
+  <motion.div 
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: false }}
+    transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
+    className="text-center max-w-sm px-8"
+  >
+    <motion.p
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: false }}
+      transition={{ duration: 0.8, delay: 0.3 }}
+      className="uppercase text-gray-500 text-xs tracking-[0.2em] mb-8"
+      style={monospaceStyle}
+    >
+      Limited Seating
+    </motion.p>
+
+    {isLoading ? (
+      <motion.button
+        disabled={true}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.7 }}
+        transition={{ duration: 0.5 }}
+        className="border border-gray-700 px-12 py-4 text-sm tracking-[0.25em] hover:border-white text-gray-500 transition-all duration-700 disabled:opacity-50 uppercase font-light"
+        style={engineeredStyle}
+      >
+        Processing
+      </motion.button>
+    ) : (
+      <motion.button
+        onClick={handlePurchase}
+        whileHover={{ scale: 1.05, borderColor: "#ffffff", color: "#ffffff" }}
+        className="border border-white px-12 py-4 text-sm tracking-[0.25em] hover:border-white hover:text-white transition-all duration-700 uppercase font-light"
+        style={engineeredStyle}
+      >
+        Reserve Your Seat
+      </motion.button>
+    )}
+
+    <motion.p 
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: false }}
+      transition={{ delay: 0.7, duration: 0.8 }}
+      className="text-gray-500 text-sm mt-8 font-light tracking-wide"
+      style={monospaceStyle}
+    >
+      You'll receive an email with location details after checkout.
+    </motion.p>
+
+    {error && (
+      <motion.p 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-red-400 text-sm mt-4"
+      >
+        {error}
+      </motion.p>
+    )}
+  </motion.div>
+</motion.div>
               </motion.div>
               
               {/* Visual transition to reservation */}
-              <motion.div 
+              {/* <motion.div 
                 className="flex justify-center mb-16 relative"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -914,78 +986,11 @@ export default function StudioPage() {
                     />
                   </motion.div>
                 </motion.div>
-              </motion.div>
+              </motion.div> */}
               
               {/* Reserve button as art */}
-              <motion.div 
-                variants={fadeIn}
-                className="flex justify-center py-12 md:py-16 mb-16"
-                initial="hidden"
-                whileInView="visible" 
-                viewport={{ once: false, amount: 0.6 }}
-              >
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false }}
-                  transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
-                  className="text-center max-w-sm px-8"
-                >
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: false }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className="uppercase text-gray-500 text-xs tracking-[0.2em] mb-8"
-                    style={monospaceStyle}
-                  >
-                    Limited Seating
-                  </motion.p>
-                  
-                  {isLoading ? (
-                    <motion.button
-                      disabled={true}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 0.7 }}
-                      transition={{ duration: 0.5 }}
-                      className="border border-gray-700 px-12 py-4 text-sm tracking-[0.25em] hover:border-white text-gray-500 transition-all duration-700 disabled:opacity-50 uppercase font-light"
-                      style={engineeredStyle}
-                    >
-                      Processing
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      onClick={handlePurchase}
-                      whileHover={{ scale: 1.05, borderColor: "#ffffff", color: "#ffffff" }}
-                      className="border border-gray-700 px-12 py-4 text-sm tracking-[0.25em] hover:border-white text-gray-500 hover:text-white transition-all duration-700 uppercase font-light"
-                      style={engineeredStyle}
-                    >
-                      Reserve Your Seat
-                    </motion.button>
-                  )}
-                  
-                  <motion.p 
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: false }}
-                    transition={{ delay: 0.7, duration: 0.8 }}
-                    className="text-gray-500 text-sm mt-8 font-light tracking-wide"
-                    style={monospaceStyle}
-                  >
-                    You'll receive an email with location details after checkout.
-                  </motion.p>
-                  
-                  {error && (
-                    <motion.p 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-red-400 text-sm mt-4"
-                    >
-                      {error}
-                    </motion.p>
-                  )}
-                </motion.div>
-              </motion.div>
+              
+          
             </motion.div>
           </div>
         )}
