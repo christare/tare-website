@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
@@ -10,31 +10,6 @@ export default function StudioPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isAvailable, setIsAvailable] = useState(true);
-  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
-
-  // Check availability when user is authorized
-  useEffect(() => {
-    if (isAuthorized) {
-      checkAvailability();
-    }
-  }, [isAuthorized]);
-
-  const checkAvailability = async () => {
-    setIsCheckingAvailability(true);
-    try {
-      const response = await fetch("/api/availability?type=studio");
-      const data = await response.json();
-      
-      setIsAvailable(data.available);
-    } catch (err) {
-      console.error("Error checking availability:", err);
-      // Default to available if there's an error checking
-      setIsAvailable(true);
-    } finally {
-      setIsCheckingAvailability(false);
-    }
-  };
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +44,6 @@ export default function StudioPage() {
         
         // Handle sold out specifically
         if (data.error === "No seats available for this event") {
-          setIsAvailable(false);
           setError("This event is sold out.");
         } else {
           setError(data.details?.message || data.error || "Failed to create checkout session");
@@ -193,11 +167,11 @@ export default function StudioPage() {
                 <div className="space-y-10">
                   <div>
                     <h2 className="text-xs uppercase tracking-widest text-gray-500 mb-4">The Experience</h2>
-                    {/* <p className="text-white text-sm leading-relaxed">
-                      Tasting courses built from rare, experimental coffees.
-                    </p> */}
+                    <p className="text-white text-sm leading-relaxed">
+                      A tasting menu that pushes rare coffees into new sensory formats. 
+                    </p>
                     <p className="text-white text-sm leading-relaxed mt-4">
-                      A tasting menu that pushes coffee into new sensory formats. Each STUDIO guides you through a narrative told through fine-dining-inspired courses.
+                     Each STUDIO guides you through a narrative told in fine-dining-inspired courses.
                     </p>
                   </div>
                   
@@ -245,21 +219,20 @@ export default function StudioPage() {
             </motion.div>
             
             <motion.div variants={fadeIn} className="text-center">
-              {isCheckingAvailability ? (
-                <p className="text-gray-400 text-sm mb-4">Checking availability...</p>
-              ) : isAvailable ? (
+              {isLoading ? (
                 <button
-                  onClick={handlePurchase}
-                  disabled={isLoading}
+                  disabled={true}
                   className="border border-white px-12 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 inline-block"
                 >
-                  {isLoading ? "PROCESSING..." : "RESERVE EXPERIENCE"}
+                  PROCESSING...
                 </button>
               ) : (
-                <div>
-                  <p className="text-red-400 text-lg mb-4">SOLD OUT</p>
-                  <p className="text-gray-400 text-sm">All seats for this experience have been reserved.</p>
-                </div>
+                <button
+                  onClick={handlePurchase}
+                  className="border border-white px-12 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 inline-block"
+                >
+                  RESERVE EXPERIENCE
+                </button>
               )}
               
               {error && (
