@@ -93,6 +93,9 @@ export const createCheckoutSession = async ({
       success_url: successUrl,
       cancel_url: cancelUrl,
       allow_promotion_codes: true,
+      phone_number_collection: {
+        enabled: true,
+      },
     });
     
     console.log('Checkout session created successfully:', session.id);
