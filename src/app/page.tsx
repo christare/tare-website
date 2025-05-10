@@ -14,11 +14,16 @@ export default function PriorityPage() {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    const instagramValue = formData.get('instagram') as string;
+    // Strip @ symbol from Instagram handle if present
+    const cleanInstagram = instagramValue ? instagramValue.replace(/^@/, '') : '';
+    
     const data = {
       firstName: formData.get('firstName'),
       lastName: formData.get('lastName'),
       phone: formData.get('phone'),
       email: formData.get('email'),
+      instagram: cleanInstagram,
       why: formData.get('why'),
     };
 
@@ -40,6 +45,23 @@ export default function PriorityPage() {
       setError('There was an error submitting your form. Please try again.');
       setIsSubmitting(false);
     }
+  };
+
+  // Function to handle Instagram input changes
+  const handleInstagramChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target;
+    let value = input.value;
+    
+    // Remove any @ symbols from the beginning
+    value = value.replace(/^@+/, '');
+    
+    // If there's a value, ensure it starts with @
+    if (value) {
+      value = '@' + value;
+    }
+    
+    // Update the input value
+    input.value = value;
   };
 
   useEffect(() => {
@@ -86,9 +108,53 @@ export default function PriorityPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-black px-4 py-16 text-white overflow-hidden">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-black px-4 py-16 pt-32 text-white overflow-hidden relative">
+      {/* Background dial animation */}
       <motion.div
-        className="absolute top-8 right-8"
+        className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10"
+        initial={{ scale: 0.7, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.1 }}
+        transition={{ duration: 1.5, ease: [0.25, 1, 0.5, 1] }}
+      >
+        <svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <motion.circle
+            cx="400"
+            cy="400"
+            r="350"
+            stroke="white"
+            strokeWidth="1"
+            fill="none"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 2, ease: "easeInOut" }}
+          />
+          <motion.circle
+            cx="400"
+            cy="400"
+            r="300"
+            stroke="white"
+            strokeWidth="1"
+            fill="none"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 2, delay: 0.3, ease: "easeInOut" }}
+          />
+          <motion.circle
+            cx="400"
+            cy="400"
+            r="250"
+            stroke="white"
+            strokeWidth="1"
+            fill="none"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 2, delay: 0.6, ease: "easeInOut" }}
+          />
+        </svg>
+      </motion.div>
+
+      <motion.div
+        className="absolute top-8 right-8 z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
@@ -109,14 +175,14 @@ export default function PriorityPage() {
         {!submitted ? (
           <motion.div
             key="form"
-            className="max-w-xl w-full"
+            className="max-w-xl w-full relative z-10"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
           >
-            <motion.div className="text-center mb-12" variants={itemVariants}>
+            <motion.div className="text-center mb-16" variants={itemVariants}>
               <motion.h1 
-                className="text-2xl md:text-4xl font-light tracking-wider mb-6"
+                className="text-2xl md:text-4xl font-light tracking-wider mb-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -124,7 +190,7 @@ export default function PriorityPage() {
                 TARE PRIORITY LIST
               </motion.h1>
               <motion.div 
-                className="w-16 h-px bg-white mx-auto mb-6"
+                className="w-16 h-px bg-white mx-auto mb-12"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
@@ -135,10 +201,51 @@ export default function PriorityPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
-                Private access to our curated coffee experiences. 
-                Limited seats for our tastings, flagship events, and collaborations.
-                Invitations are extended personally.
+                Access private invitations to TARE, a coffee experience that has never existed until now.
               </motion.p>
+              <motion.div 
+                className="w-8 h-px bg-gray-700 mx-auto my-8"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+              />
+              <motion.p 
+                className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+              >
+                Our work spans intimate tastings, flagship large-format events, and experimental collaborations — all centered around reimagining coffee as art, cuisine, and performance.
+              </motion.p>
+              <motion.div 
+                className="w-8 h-px bg-gray-700 mx-auto my-8"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              />
+              <motion.p 
+                className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              >
+                Sign up to be considered for upcoming sessions (delivered personally via text). Most of our events fill through this list before they're ever publicly announced.
+              </motion.p>
+              <motion.div 
+                className="w-8 h-px bg-gray-700 mx-auto my-8"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.9 }}
+              />
+              <motion.div
+                className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.9 }}
+              >
+                <span className="text-white">Next available session:</span><br />
+                <span className="text-white tracking-wider">TARE STUDIO 01 — June 7, 2024 (Midtown NYC)</span>
+              </motion.div>
             </motion.div>
 
             {error && (
@@ -206,6 +313,18 @@ export default function PriorityPage() {
                   whileFocus={{ borderColor: "white" }}
                   transition={{ duration: 0.2 }}
                   disabled={isSubmitting}
+                />
+              </motion.div>
+              <motion.div className="relative" variants={itemVariants}>
+                <motion.input
+                  type="text"
+                  name="instagram"
+                  placeholder="Instagram Handle (Optional)"
+                  className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500"
+                  whileFocus={{ borderColor: "white" }}
+                  transition={{ duration: 0.2 }}
+                  disabled={isSubmitting}
+                  onChange={handleInstagramChange}
                 />
               </motion.div>
               <motion.div className="relative" variants={itemVariants}>

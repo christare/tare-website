@@ -63,6 +63,7 @@ export async function POST(request: Request) {
           'Last Name': data.lastName,
           'Phone': formattedPhone,
           'Email': data.email,
+          'Instagram': data.instagram || '',
           'Why': data.why || '',
         }
       }
