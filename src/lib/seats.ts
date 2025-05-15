@@ -21,7 +21,7 @@ const initializeSeatsData = () => {
       studio_01: {
         booked_seats: 0,
         available_seats: TOTAL_AVAILABLE_SEATS,
-        event_date: '2024-06-07'
+        event_date: '2025-06-07'
       }
     };
     
@@ -43,7 +43,7 @@ const readSeatsData = () => {
       studio_01: {
         booked_seats: 0,
         available_seats: TOTAL_AVAILABLE_SEATS,
-        event_date: '2024-06-07'
+        event_date: '2025-06-07'
       }
     };
   }

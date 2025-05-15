@@ -244,7 +244,7 @@ export default function PriorityPage() {
                 transition={{ duration: 0.8, delay: 0.9 }}
               >
                 <span className="text-white">Next available session:</span><br />
-                <span className="text-white tracking-wider">TARE STUDIO 01 — June 7, 2024 (Midtown NYC)</span>
+                <span className="text-white tracking-wider">TARE STUDIO 01 — June 7, 2025 (Midtown NYC)</span>
               </motion.div>
             </motion.div>
 
