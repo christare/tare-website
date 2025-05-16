@@ -125,7 +125,7 @@ export default function PriorityPage() {
             strokeWidth="1"
             fill="none"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
+            animate={{ pathLength: 1, opacity: 0.5 }}
             transition={{ duration: 2, ease: "easeInOut" }}
           />
           <motion.circle
@@ -136,7 +136,7 @@ export default function PriorityPage() {
             strokeWidth="1"
             fill="none"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
+            animate={{ pathLength: 1, opacity: 0.5 }}
             transition={{ duration: 2, delay: 0.3, ease: "easeInOut" }}
           />
           <motion.circle
@@ -147,7 +147,7 @@ export default function PriorityPage() {
             strokeWidth="1"
             fill="none"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
+            animate={{ pathLength: 1, opacity: 0.5 }}
             transition={{ duration: 2, delay: 0.6, ease: "easeInOut" }}
           />
         </svg>
@@ -189,8 +189,16 @@ export default function PriorityPage() {
               >
                 TARE PRIORITY LIST
               </motion.h1>
+              <motion.p 
+                className="text-gray-300 text-lg md:text-xl font-light tracking-wide leading-relaxed max-w-2xl mx-auto mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                Sign up to access private invitations to TARE, an experimental coffee experience that has never existed until now.
+              </motion.p>
               <motion.div 
-                className="w-16 h-px bg-white mx-auto mb-12"
+                className="w-16 h-px bg-white mx-auto mb-8"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
@@ -199,9 +207,9 @@ export default function PriorityPage() {
                 className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
               >
-                Access private invitations to TARE, a coffee experience that has never existed until now.
+                We host three kinds of public events:
               </motion.p>
               <motion.div 
                 className="w-8 h-px bg-gray-700 mx-auto my-8"
@@ -209,42 +217,40 @@ export default function PriorityPage() {
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
               />
-              <motion.p 
-                className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.7 }}
-              >
-                Our work spans intimate tastings, flagship large-format events, and experimental collaborations — all centered around reimagining coffee as art, cuisine, and performance.
-              </motion.p>
-              <motion.div 
-                className="w-8 h-px bg-gray-700 mx-auto my-8"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              />
-              <motion.p 
-                className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto"
+              <motion.div
+                className="w-full max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-12"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
-                Sign up to be considered for upcoming sessions (delivered personally via text). Most of our events fill through this list before they're ever publicly announced.
-              </motion.p>
+                <div>
+                  <h3 className="text-white text-base md:text-lg font-medium tracking-wide mb-2">ROOM</h3>
+                  <p className="text-gray-400 text-sm md:text-base leading-relaxed">Intimate founder-led tasting sessions in Long Island City</p>
+                </div>
+                <div>
+                  <h3 className="text-white text-base md:text-lg font-medium tracking-wide mb-2">STUDIO</h3>
+                  <p className="text-gray-400 text-sm md:text-base leading-relaxed">Fine-dining-style coffee tastings in our all-white gallery space</p>
+                </div>
+                <div>
+                  <h3 className="text-white text-base md:text-lg font-medium tracking-wide mb-2">RUNWAY</h3>
+                  <p className="text-gray-400 text-sm md:text-base leading-relaxed">Legendary cultural collaborations and creative releases</p>
+                </div>
+              </motion.div>
               <motion.div 
                 className="w-8 h-px bg-gray-700 mx-auto my-8"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.9 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
               />
               <motion.div
                 className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.9 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
               >
                 <span className="text-white">Next available session:</span><br />
                 <span className="text-white tracking-wider">TARE STUDIO 01 — June 7, 2025 (Midtown NYC)</span>
+                <div className="text-gray-500 text-xs mt-2">Invites to reserve a seat are sent personally via text</div>
               </motion.div>
             </motion.div>
 
