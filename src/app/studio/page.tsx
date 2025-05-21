@@ -235,7 +235,7 @@ export default function StudioPage() {
       {/* Remove gradient effect */}
       
       <AnimatePresence mode="wait">
-        {!isAuthorized ? (
+        {!isAuthorized && false ? (
           <motion.div
             key="password"
             initial={{ opacity: 0 }}
@@ -349,7 +349,7 @@ export default function StudioPage() {
                 >
                   <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <motion.circle 
-                      cx="50" 
+                      cx="50"
                       cy="50" 
                       r="48" 
                       stroke="#FFFFFF" 

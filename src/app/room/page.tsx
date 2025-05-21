@@ -97,7 +97,9 @@ export default function RoomPage() {
             </form>
           </motion.div>
         ) : (
+          
           <motion.div
+          
             key="content"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -110,19 +112,22 @@ export default function RoomPage() {
             <div className="space-y-12">
               <div className="text-center">
                 <p className="text-gray-300 mb-8 leading-relaxed">
-                  A private sensory experience showcasing our signature 
-                  offerings in an intimate space.
+                Our casual, social coffee session in a cozy apartment in Long Island City. 
+        
+                </p>
+                <p>
+                Join our founder and team to preview world-class coffees, unreleased recipes, and experimental brewing methods.
                 </p>
               </div>
               
               <div className="border-t border-b border-gray-800 py-6 px-4 space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Experience</span>
-                  <span className="text-white">TARE ROOM</span>
+                  <span className="text-white">TARE ROOM - Sunday May 25th, 2025</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Duration</span>
-                  <span className="text-white">1 hour</span>
+                  <span className="text-white">1 hour (11am-1pm)</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Price</span>
