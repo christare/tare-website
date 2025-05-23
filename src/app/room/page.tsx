@@ -13,7 +13,7 @@ export default function RoomPage() {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.toLowerCase() === "room") {
+    if (password.toLowerCase() === "room25") {
       setIsAuthorized(true);
       setError("");
     } else {
@@ -123,7 +123,11 @@ export default function RoomPage() {
               <div className="border-t border-b border-gray-800 py-6 px-4 space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Experience</span>
-                  <span className="text-white">TARE ROOM - Sunday May 25th, 2025</span>
+                  <span className="text-white">TARE ROOM</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Date</span>
+                  <span className="text-white">Sunday, May 25th, 2025</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Duration</span>
@@ -141,7 +145,7 @@ export default function RoomPage() {
                   disabled={isLoading}
                   className="border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 inline-block"
                 >
-                  {isLoading ? "PROCESSING..." : "PURCHASE"}
+                  {isLoading ? "PROCESSING..." : "RESERVE"}
                 </button>
                 
                 {error && (
