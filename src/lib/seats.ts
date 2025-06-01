@@ -19,8 +19,8 @@ const initializeSeatsData = () => {
   if (!fs.existsSync(SEATS_FILE_PATH)) {
     const initialData = {
       studio_01: {
-        booked_seats: 0,
-        available_seats: TOTAL_AVAILABLE_SEATS,
+        booked_seats: 7,
+        available_seats: 1,
         event_date: '2025-06-07'
       }
     };

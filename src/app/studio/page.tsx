@@ -905,17 +905,7 @@ export default function StudioPage() {
       className="uppercase text-gray-500 text-xs tracking-[0.2em] mb-8"
       style={monospaceStyle}
     >
-      SOLD OUT
-    </motion.p>
-    <motion.p
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: false }}
-      transition={{ duration: 0.8, delay: 0.3 }}
-      className="uppercase text-gray-500 text-xs tracking-[0.2em] mb-8"
-      style={monospaceStyle}
-    >
-      Join our priority list to access to upcoming events.
+      LAST TICKET AVAILABLE
     </motion.p>
 
     {isLoading ? (
@@ -930,24 +920,16 @@ export default function StudioPage() {
         Processing
       </motion.button>
     ) : (
-      // <motion.button
-      //   onClick={handlePurchase}
-      //   whileHover={{ scale: 1.05, borderColor: "#ffffff", color: "#ffffff" }}
-      //   className="border border-white px-12 py-4 text-sm tracking-[0.25em] hover:border-white hover:text-white transition-all duration-700 uppercase font-light"
-      //   style={engineeredStyle}
-      // >
-      //   Reserve Your Seat
-      // </motion.button>
       <motion.button
-        onClick={() => router.push("/")} // or your exact priority list route
+        onClick={handlePurchase}
         whileHover={{ scale: 1.05, borderColor: "#ffffff", color: "#ffffff" }}
         className="border border-white px-12 py-4 text-sm tracking-[0.25em] hover:border-white hover:text-white transition-all duration-700 uppercase font-light"
         style={engineeredStyle}
       >
-        Join The List
+        Reserve Your Seat
       </motion.button>
     )}
-{/* 
+
     <motion.p 
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
@@ -957,7 +939,7 @@ export default function StudioPage() {
       style={monospaceStyle}
     >
       You'll receive an email with location details after checkout.
-    </motion.p> */}
+    </motion.p>
 
     {error && (
       <motion.p 
