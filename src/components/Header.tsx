@@ -36,7 +36,6 @@ export default function Header() {
 
   // Navigation items
   const navItems = [
-    { name: "HOME", path: homeUrl },
     { name: "ROOM", path: roomUrl },
     { name: "STUDIO", path: studioUrl },
     { name: "COLLABORATE", path: collabUrl },
@@ -47,7 +46,7 @@ export default function Header() {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-3 bg-black/90 backdrop-blur-sm" : "py-6 bg-black/50 backdrop-blur-sm"}`}>
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <Link href={homeUrl} className="text-white text-xl font-light">
+        <Link href="/" className="text-white text-xl font-light">
           TARE
         </Link>
 

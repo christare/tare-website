@@ -108,7 +108,7 @@ function SuccessContent() {
 
       <motion.div variants={itemVariants}>
         <Link
-          href="/home"
+          href="/"
           className="border border-gray-700 px-8 py-3 text-sm tracking-wide hover:border-white hover:text-white transition-all duration-300 inline-block text-gray-400"
         >
           RETURN

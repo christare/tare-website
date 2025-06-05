@@ -905,7 +905,7 @@ export default function StudioPage() {
       className="uppercase text-gray-500 text-xs tracking-[0.2em] mb-8"
       style={monospaceStyle}
     >
-      LAST TICKET AVAILABLE
+      SOLD OUT
     </motion.p>
 
     {isLoading ? (
@@ -921,12 +921,12 @@ export default function StudioPage() {
       </motion.button>
     ) : (
       <motion.button
-        onClick={handlePurchase}
+        onClick={() => router.push('/')}
         whileHover={{ scale: 1.05, borderColor: "#ffffff", color: "#ffffff" }}
         className="border border-white px-12 py-4 text-sm tracking-[0.25em] hover:border-white hover:text-white transition-all duration-700 uppercase font-light"
         style={engineeredStyle}
       >
-        Reserve Your Seat
+        Join the List
       </motion.button>
     )}
 
@@ -938,7 +938,7 @@ export default function StudioPage() {
       className="text-gray-500 text-sm mt-8 font-light tracking-wide"
       style={monospaceStyle}
     >
-      You'll receive an email with location details after checkout.
+      Sign up to be notified when new dates are released.
     </motion.p>
 
     {error && (
