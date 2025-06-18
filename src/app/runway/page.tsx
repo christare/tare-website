@@ -3,8 +3,9 @@
                         import { motion } from "framer-motion";
                         import { useState, useEffect } from "react";
                         import { useRouter } from "next/navigation";
+                        import Image from "next/image";
 
-                        export default function CollabPage() {
+                        export default function RunwayPage() {
                           const router = useRouter();
                           const [formSubmitted, setFormSubmitted] = useState(false);
                           const [isSubmitting, setIsSubmitting] = useState(false);
@@ -324,8 +325,17 @@
                                     animate={{ opacity: 1 }}
                                     transition={{ duration: 1.2 }}
                                   >
-                                    <h1 className="text-3xl md:text-5xl font-light mb-6">
-                                      TARE COLLABORATIONS
+                                    <h1 className="text-3xl md:text-4xl font-light mb-6 tracking-wide text-center">
+                                      <div className="flex flex-col items-center">
+                                        <Image
+                                          src="/images/TARE LOGOS/Logo01/rgb-web/white/tare-logo01-white-rgb.svg"
+                                          alt="TARE"
+                                          width={180}
+                                          height={68}
+                                          className="h-16 md:h-20 w-auto mb-1"
+                                        />
+                                        <span className="text-xl md:text-2xl font-light tracking-wide" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>RUNWAY</span>
+                                      </div>
                                     </h1>
                                     <div className="w-12 h-px bg-white mx-auto mb-6" />
                                     <p className="text-sm md:text-base text-gray-400 tracking-wide">

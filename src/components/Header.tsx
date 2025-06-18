@@ -31,15 +31,15 @@ export default function Header() {
   // Get proper URLs based on environment
   const homeUrl = isProduction ? "/home" : "/home";
   const rootUrl = isProduction ? "/" : "/";
-  const collabUrl = isProduction ? "/collab" : "/collab";
+  const runwayUrl = isProduction ? "/runway" : "/runway";
   const roomUrl = isProduction ? "/room" : "/room";
   const studioUrl = isProduction ? "/studio" : "/studio";
 
   // Navigation items
   const navItems = [
-    { name: "ROOM", path: roomUrl },
-    { name: "STUDIO", path: studioUrl },
-    { name: "COLLABORATE", path: collabUrl },
+    { name: "01 ROOM", path: roomUrl },
+    { name: "02 STUDIO", path: studioUrl },
+    { name: "03 RUNWAY", path: runwayUrl },
     { name: "JOIN THE LIST", path: rootUrl, highlight: true },
   ];
 
@@ -68,6 +68,7 @@ export default function Header() {
                   ? "text-white" 
                   : "text-gray-400 hover:text-white"
               } ${item.highlight ? "border border-white px-4 py-2 hover:bg-white hover:text-black" : ""}`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               {item.name}
             </Link>
@@ -128,6 +129,7 @@ export default function Header() {
                   ? "text-white" 
                   : "text-gray-400 hover:text-white"
               } ${item.highlight ? "border border-white px-4 py-2 w-full text-center" : "w-full text-center"}`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               {item.name}
             </Link>
