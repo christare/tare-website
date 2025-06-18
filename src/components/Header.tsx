@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
@@ -47,7 +48,13 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="text-white text-xl font-light">
-          TARE
+          <Image
+            src="/images/TARE LOGOS/Logo02/rgb-web/white/tare-logo02-white-rgb.svg"
+            alt="TARE"
+            width={80}
+            height={30}
+            className="h-8 w-auto"
+          />
         </Link>
 
         {/* Desktop Navigation */}

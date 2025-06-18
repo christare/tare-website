@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'NonBureauExtended';
+  src: url('/TYPOGRAPHY FONTS/02_Non Bureau Extended/NonBureauExtended-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FragmentMono';
+  src: url('/TYPOGRAPHY FONTS/Fragment_Mono/FragmentMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FragmentMono';
+  src: url('/TYPOGRAPHY FONTS/Fragment_Mono/FragmentMono-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

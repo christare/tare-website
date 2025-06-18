@@ -3,19 +3,22 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function RoomPage() {
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.toLowerCase() === "room25") {
-      setIsAuthorized(true);
+    if (password.toLowerCase() === "room") {
       setError("");
+      setShowPasswordPrompt(false);
+      setPassword("");
+      handlePurchase();
     } else {
       setError("Incorrect password");
     }
@@ -25,14 +28,14 @@ export default function RoomPage() {
     setIsLoading(true);
     setError("");
     try {
-      console.log("Starting checkout for ROOM with price ID: price_1RJbcVF5JUni5zIQhXrKHeWo");
+      console.log("Starting checkout for ROOM with price ID: price_1RbOWtF5JUni5zIQGjZ6lTjQ");
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          priceId: "price_1RJbcVF5JUni5zIQhXrKHeWo",
+          priceId: "price_1RbOWtF5JUni5zIQGjZ6lTjQ",
           type: "room"
         }),
       });
@@ -61,101 +64,117 @@ export default function RoomPage() {
 
   return (
     <main className="min-h-screen bg-black text-white pt-24">
-      <AnimatePresence mode="wait">
-        {!isAuthorized ? (
-          <motion.div
-            key="password"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="max-w-md mx-auto p-6 flex flex-col items-center justify-center min-h-[70vh]"
-          >
-            <h1 className="text-3xl font-light mb-10 tracking-wide">TARE ROOM</h1>
-            <div className="w-12 h-px bg-white mx-auto mb-10" />
-            
-            <form onSubmit={handlePasswordSubmit} className="w-full">
-              <div className="mb-6">
+      <motion.div
+        key="content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="max-w-2xl mx-auto px-6 py-20"
+      >
+        <h1 className="text-3xl md:text-4xl font-light mb-6 tracking-wide text-center">
+          <div className="flex flex-col items-center">
+            <Image
+              src="/images/TARE LOGOS/Logo02/rgb-web/white/tare-logo02-white-rgb.svg"
+              alt="TARE"
+              width={180}
+              height={68}
+              className="h-16 md:h-20 w-auto mb-1"
+            />
+            <span className="text-xl md:text-2xl font-light tracking-wide" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>ROOM</span>
+          </div>
+        </h1>
+        <div className="w-12 h-px bg-white mx-auto mb-10" />
+        <div className="space-y-12">
+          <div className="text-center">
+            <p className="text-gray-300 mb-2 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              An intimate coffee tasting led by our founder Chris, inside our all-white Midtown studio.
+            </p>
+            <p className="text-gray-300 mb-2 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              Rare coffees. Experimental techniques. Previews of new creations.
+            </p>
+            <p className="text-gray-400 mb-8 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace', fontSize: '0.95em' }}>
+              $60 per guest
+            </p>
+          </div>
+          <div className="border-t border-b border-gray-800 py-6 px-4 space-y-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Experience</span>
+              <span className="text-white">TARE ROOM</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Date</span>
+              <span className="text-white">Sunday, June 22, 2025</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Duration</span>
+              <span className="text-white">1.5 hours (11am - 12:30pm)</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Price</span>
+              <span className="text-white">$60</span>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-gray-500 text-xs mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              Invite-only from our priority list
+            </p>
+            <button
+              onClick={() => setShowPasswordPrompt(true)}
+              disabled={isLoading}
+              className="border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 inline-block"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              {isLoading ? "PROCESSING..." : "RESERVE"}
+            </button>
+            {error && !showPasswordPrompt && (
+              <p className="text-red-400 text-sm mt-4" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
+            )}
+          </div>
+        </div>
+        <AnimatePresence>
+          {showPasswordPrompt && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+            >
+              <form onSubmit={handlePasswordSubmit} className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-xs">
+                <h2 className="text-xl font-light mb-6 text-center" style={{ fontFamily: 'FragmentMono, monospace' }}>Enter Access Code</h2>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter access code"
-                  className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500"
+                  placeholder="Password"
+                  className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 mb-4"
+                  style={{ fontFamily: 'FragmentMono, monospace' }}
+                  autoFocus
                 />
-              </div>
-              
-              {error && (
-                <p className="text-red-400 text-sm mb-6">{error}</p>
-              )}
-              
-              <button
-                type="submit"
-                className="w-full border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300"
-              >
-                CONTINUE
-              </button>
-            </form>
-          </motion.div>
-        ) : (
-          
-          <motion.div
-          
-            key="content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="max-w-2xl mx-auto px-6 py-20"
-          >
-            <h1 className="text-3xl md:text-4xl font-light mb-6 tracking-wide text-center">TARE ROOM</h1>
-            <div className="w-12 h-px bg-white mx-auto mb-10" />
-            
-            <div className="space-y-12">
-              <div className="text-center">
-                <p className="text-gray-300 mb-8 leading-relaxed">
-                Our casual, social coffee session in a cozy apartment in Long Island City. 
-        
-                </p>
-                <p>
-                Join our founder and team to preview world-class coffees, unreleased recipes, and experimental brewing methods.
-                </p>
-              </div>
-              
-              <div className="border-t border-b border-gray-800 py-6 px-4 space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Experience</span>
-                  <span className="text-white">TARE ROOM</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Date</span>
-                  <span className="text-white">Sunday, May 25th, 2025</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Duration</span>
-                  <span className="text-white">1 hour (11am-1pm)</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Price</span>
-                  <span className="text-white">$35</span>
-                </div>
-              </div>
-              
-              <div className="text-center">
-                <button
-                  onClick={handlePurchase}
-                  disabled={isLoading}
-                  className="border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 inline-block"
-                >
-                  {isLoading ? "PROCESSING..." : "RESERVE"}
-                </button>
-                
                 {error && (
-                  <p className="text-red-400 text-sm mt-4">{error}</p>
+                  <p className="text-red-400 text-sm mb-4 text-center" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
                 )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { setShowPasswordPrompt(false); setError(""); setPassword(""); }}
+                    className="flex-1 border border-gray-700 px-4 py-2 text-sm text-gray-400 hover:bg-gray-800 rounded transition-all"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 border border-white px-4 py-2 text-sm text-white hover:bg-white hover:text-black rounded transition-all"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  >
+                    Continue
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </main>
   );
 } 

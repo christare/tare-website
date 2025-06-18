@@ -440,9 +440,16 @@ export default function StudioPage() {
                   className="text-4xl md:text-5xl font-extralight tracking-[0.35em] uppercase text-center mb-8 relative z-10"
                   style={engineeredStyle}
                 >
-                  TARE
-                  <br />
-                  <span className="text-3xl md:text-4xl">STUDIO 01</span>
+                  <div className="flex flex-col items-center">
+                    <Image
+                      src="/images/TARE LOGOS/Logo02/rgb-web/white/tare-logo02-white-rgb.svg"
+                      alt="TARE"
+                      width={150}
+                      height={56}
+                      className="h-16 w-auto mb-4"
+                    />
+                    <span className="text-3xl md:text-4xl font-extralight tracking-[0.35em] uppercase" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>STUDIO 01</span>
+                  </div>
                 </motion.h1>
                 
                 <motion.p 
