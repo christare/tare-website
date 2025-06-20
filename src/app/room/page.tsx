@@ -63,7 +63,7 @@ export default function RoomPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white pt-24">
+    <main className="min-h-screen text-white pt-24" style={{backgroundColor: '#2A2726'}}>
       <motion.div
         key="content"
         initial={{ opacity: 0 }}
@@ -137,7 +137,7 @@ export default function RoomPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+              className="fixed inset-0 flex items-center justify-center z-50" style={{backgroundColor: 'rgba(42, 39, 38, 0.8)'}}
             >
               <form onSubmit={handlePasswordSubmit} className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-xs">
                 <h2 className="text-xl font-light mb-6 text-center" style={{ fontFamily: 'FragmentMono, monospace' }}>Enter Access Code</h2>

@@ -231,7 +231,7 @@ export default function StudioPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white relative">
+    <main className="min-h-screen text-white relative" style={{backgroundColor: '#2A2726'}}>
       {/* Remove gradient effect */}
       
       <AnimatePresence mode="wait">
@@ -241,7 +241,8 @@ export default function StudioPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.8 } }}
-            className="fixed inset-0 flex flex-col items-center justify-center p-6 bg-black"
+            className="fixed inset-0 flex flex-col items-center justify-center p-6"
+            style={{backgroundColor: '#2A2726'}}
           >
             <motion.div 
               initial={{ scale: 0.7, opacity: 0 }}
@@ -448,7 +449,7 @@ export default function StudioPage() {
                       height={56}
                       className="h-16 w-auto mb-4"
                     />
-                    <span className="text-3xl md:text-4xl font-extralight tracking-[0.35em] uppercase" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>STUDIO 01</span>
+                    <span className="text-3xl md:text-4xl font-extralight tracking-[0.35em] uppercase" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>STUDIO 02</span>
                   </div>
                 </motion.h1>
                 
@@ -550,7 +551,7 @@ export default function StudioPage() {
                   >
                     <div className="border-t border-gray-800 pt-8 w-full max-w-3xl">
                       <p className="text-blue-300 text-xs md:text-sm tracking-wider text-center" style={monospaceStyle}>
-                        /// TARE INTERNAL LAB RECORD — STUDIO_01 DEPLOYMENT PHASE ///
+                        /// TARE INTERNAL LAB RECORD — STUDIO_02 DEPLOYMENT PHASE ///
                       </p>
                     </div>
                   </motion.div>
@@ -592,7 +593,7 @@ export default function StudioPage() {
                                 CRYSTALLIZATION EVENT: 18 SEC<br/>
                                 STABILITY: VERIFIED<br/>
                                 ITERATION: 3<br/>
-                                STATUS: FORM LOCKED — ADOPTED FOR STUDIO 01
+                                STATUS: FORM LOCKED — ADOPTED FOR STUDIO 02
                               </p>
                             </div>
                           </div>
@@ -616,7 +617,7 @@ export default function StudioPage() {
                                 THERMAL RANGE: ≤ 400°F<br/>
                                 FLEX INDEX: 87%<br/>
                                 EXPECTED LIFECYCLE: 4,500+ USES<br/>
-                                STATUS: PRODUCTION INTEGRATED — STUDIO 01
+                                STATUS: PRODUCTION INTEGRATED — STUDIO 02
                               </p>
                             </div>
                           </div>
@@ -673,7 +674,7 @@ export default function StudioPage() {
                                 PRESSURE MODULATION: 1.5–2.1 BAR<br/>
                                 FLOW: VARIABLE | ADAPTIVE<br/>
                                 RELEASE STATUS: INTERNAL FINALIZATION<br/>
-                                TARGET DEPLOYMENT: STUDIO 01 — Q4 LAUNCH
+                                TARGET DEPLOYMENT: STUDIO 02 — Q4 LAUNCH
                               </p>
                             </div>
                           </div>
@@ -867,8 +868,8 @@ export default function StudioPage() {
                       className="space-y-5 text-sm"
                     >
                       {[
-                        { label: "Experience", value: "TARE STUDIO 01", delay: 0.1 },
-                        { label: "Date", value: "June 7, 2025", delay: 0.2 },
+                        { label: "Experience", value: "TARE STUDIO 02", delay: 0.1 },
+                        { label: "Date", value: "July 12, 2025", delay: 0.2 },
                         { label: "Time", value: "11am - 12:30pm", delay: 0.3 },
                         { label: "Duration", value: "90 minutes", delay: 0.4 },
                         { label: "Location", value: "Midtown Manhattan", delay: 0.5 },

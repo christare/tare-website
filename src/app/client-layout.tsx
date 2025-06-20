@@ -32,7 +32,7 @@ export default function ClientLayout({
       {children}
       
       {/* Global Footer with Social Links */}
-      <footer className="pb-12 pt-8 px-6 bg-black">
+      <footer className="pb-12 pt-8 px-6" style={{backgroundColor: '#2A2726'}}>
         <div className="max-w-md mx-auto flex justify-center space-x-8">
           {/* Instagram Icon */}
           <a 

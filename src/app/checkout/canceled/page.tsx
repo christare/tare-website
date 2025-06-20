@@ -78,7 +78,7 @@ function CanceledLoading() {
 // Main page component with Suspense boundary
 export default function CanceledPage() {
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 text-white" style={{backgroundColor: '#2A2726'}}>
       <Suspense fallback={<CanceledLoading />}>
         <CanceledContent />
       </Suspense>

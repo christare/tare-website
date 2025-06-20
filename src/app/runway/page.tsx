@@ -270,7 +270,8 @@
                           if (formSubmitted) {
                             return (
                               <motion.div 
-                                className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 px-6"
+                                className="fixed inset-0 flex flex-col items-center justify-center z-50 px-6"
+                                style={{backgroundColor: '#2A2726'}}
                                 initial="hidden"
                                 animate="visible"
                                 variants={thankYouVariants}
@@ -316,7 +317,7 @@
                           }
 
                           return (
-                            <main className="min-h-screen bg-black text-white pt-24">
+                            <main className="flex min-h-screen flex-col items-center text-white pt-24" style={{backgroundColor: '#2A2726'}}>
                               {/* Header Section */}
                               <section className="pt-20 pb-20 px-6">
                                 <div className="max-w-4xl mx-auto text-center">

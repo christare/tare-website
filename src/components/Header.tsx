@@ -37,17 +37,16 @@ export default function Header() {
 
   // Navigation items
   const navItems = [
-    { name: "01 ROOM", path: roomUrl },
-    { name: "02 STUDIO", path: studioUrl },
+    { name: "01 STUDIO", path: studioUrl },
+    { name: "02 ROOM", path: roomUrl },
     { name: "03 RUNWAY", path: runwayUrl },
-    { name: "JOIN THE LIST", path: rootUrl, highlight: true },
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-3 bg-black/90 backdrop-blur-sm" : "py-6 bg-black/50 backdrop-blur-sm"}`}>
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="text-white text-xl font-light">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-3 backdrop-blur-sm" : "py-6 backdrop-blur-sm"}`} style={{backgroundColor: scrolled ? 'rgba(42, 39, 38, 0.9)' : 'rgba(42, 39, 38, 0.5)'}}>
+      <div className="max-w-6xl mx-auto px-6 flex items-center justify-center relative">
+        {/* Logo - positioned absolutely on the left */}
+        <Link href="/" className="text-white text-xl font-light absolute left-6">
           <Image
             src="/images/TARE LOGOS/Logo02/rgb-web/white/tare-logo02-white-rgb.svg"
             alt="TARE"
@@ -57,7 +56,7 @@ export default function Header() {
           />
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - centered */}
         <nav className="hidden md:flex items-center space-x-8">
           {navItems.map((item) => (
             <Link
@@ -67,7 +66,7 @@ export default function Header() {
                 pathname === item.path 
                   ? "text-white" 
                   : "text-gray-400 hover:text-white"
-              } ${item.highlight ? "border border-white px-4 py-2 hover:bg-white hover:text-black" : ""}`}
+              }`}
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               {item.name}
@@ -75,9 +74,9 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button - positioned absolutely on the right */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-white absolute right-6"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
@@ -118,17 +117,17 @@ export default function Header() {
         }}
         transition={{ duration: 0.3 }}
       >
-        <div className="px-6 py-4 bg-black/90 backdrop-blur-sm space-y-4 flex flex-col items-center">
+        <div className="px-6 py-4 backdrop-blur-sm space-y-4 flex flex-col items-center" style={{backgroundColor: 'rgba(42, 39, 38, 0.9)'}}>
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.path}
               onClick={() => setMenuOpen(false)}
-              className={`text-sm tracking-wide transition-colors duration-300 py-2 ${
+              className={`text-sm tracking-wide transition-colors duration-300 py-2 w-full text-center ${
                 pathname === item.path 
                   ? "text-white" 
                   : "text-gray-400 hover:text-white"
-              } ${item.highlight ? "border border-white px-4 py-2 w-full text-center" : "w-full text-center"}`}
+              }`}
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               {item.name}

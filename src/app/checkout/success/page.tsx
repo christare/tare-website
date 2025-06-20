@@ -12,7 +12,7 @@ function SuccessContent() {
   const [redirectCounter, setRedirectCounter] = useState(8);
 
   // Determine product name based on type
-  const productName = type === "studio" ? "TARE STUDIO 01" : "TARE ROOM";
+  const productName = type === "studio" ? "TARE STUDIO 02" : "TARE ROOM";
 
   // Redirect after 8 seconds
   useEffect(() => {
@@ -133,7 +133,7 @@ function SuccessLoading() {
 // Main page component with Suspense boundary
 export default function SuccessPage() {
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 text-white" style={{backgroundColor: '#2A2726'}}>
       <Suspense fallback={<SuccessLoading />}>
         <SuccessContent />
       </Suspense>
