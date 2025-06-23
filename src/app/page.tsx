@@ -169,8 +169,8 @@ export default function PriorityPage() {
               <div className="mb-8">
                 <p className="text-gray-200 text-base mb-4" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>INVITE ONLY</p>
                 <p className="text-gray-300 text-sm leading-relaxed max-w-md mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                  Reservations released exclusively to list members.<br/>
-                  No public ticket sales.
+                  We release seats by text to people on the list.<br/>
+                  No public tickets.
                 </p>
               </div>
             </div>
@@ -198,7 +198,7 @@ export default function PriorityPage() {
                 className="text-2xl md:text-3xl font-light tracking-wider"
                 style={{ fontFamily: 'NonBureauExtended, sans-serif' }}
               >
-                JOIN THE INVITE LIST
+                JOIN THE WAITLIST
               </h2>
             </div>
             
@@ -286,7 +286,7 @@ export default function PriorityPage() {
            >
              <h1 className="text-2xl md:text-3xl font-light tracking-wider mb-6">THANK YOU</h1>
              <p className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto">
-               You have been added to our priority list. We will be in touch when new experiences become available.
+               You have been added to our waitlist. We will be in touch when new experiences become available.
              </p>
            </motion.div>
          )}
