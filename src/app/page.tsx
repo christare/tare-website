@@ -157,18 +157,49 @@ export default function PriorityPage() {
             variants={containerVariants}
           >
             <div className="text-center mb-16">
-             <p 
-                 className="text-gray-400 text-lg font-light tracking-wide leading-relaxed max-w-2xl mx-auto"
-                 style={{ fontFamily: 'NonBureauExtended, sans-serif' }}
-               >
-                INVITE ONLY </p>
-               <h2 
-                 className="text-2xl md:text-3xl font-light tracking-wider mb-4"
-                 style={{ fontFamily: 'NonBureauExtended, sans-serif' }}
-               >
-                 GET ON THE LIST
-               </h2>
+              <div className="mb-8">
+                <p className="text-gray-400 text-sm mb-2" style={{ fontFamily: 'FragmentMono, monospace' }}>Next available session</p>
+                <p className="text-white text-lg mb-1" style={{ fontFamily: 'FragmentMono, monospace' }}>TARE STUDIO 02 · July 12, 2025 · 18 seats
+                </p>
+                <p className="text-gray-300 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>Midtown NYC</p>
+              </div>
+              
+              <div className="w-16 h-px bg-gray-400 mx-auto mb-8 opacity-80"></div>
+              
+              <div className="mb-8">
+                <p className="text-gray-200 text-base mb-4" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>INVITE ONLY</p>
+                <p className="text-gray-300 text-sm leading-relaxed max-w-md mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                  Reservations released exclusively to list members.<br/>
+                  No public ticket sales.
+                </p>
+              </div>
+            </div>
             
+            {/* Top ruler line */}
+            <div className="flex justify-center mb-8">
+              <div className="w-screen h-px bg-gray-500 relative opacity-80">
+                <div className="absolute top-0 left-0 w-full h-full">
+                  {[...Array(20)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute top-0 w-px bg-gray-500"
+                      style={{
+                        left: `${(i * 5)}%`,
+                        height: i % 4 === 0 ? '8px' : '4px'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-center mb-8">
+              <h2 
+                className="text-2xl md:text-3xl font-light tracking-wider"
+                style={{ fontFamily: 'NonBureauExtended, sans-serif' }}
+              >
+                JOIN THE INVITE LIST
+              </h2>
             </div>
             
              {error && (
@@ -189,20 +220,32 @@ export default function PriorityPage() {
                animate="visible"
              >
                <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-6" variants={itemVariants}>
-                 <input type="text" name="firstName" required placeholder="First" className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
-                 <input type="text" name="lastName" required placeholder="Last" className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
+                 <input type="text" name="firstName" required placeholder="First" className="w-full bg-transparent border-b border-gray-500 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
+                 <input type="text" name="lastName" required placeholder="Last" className="w-full bg-transparent border-b border-gray-500 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
                </motion.div>
                <motion.div variants={itemVariants}>
-                 <input type="tel" name="phone" required placeholder="Phone" className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
+                 <input type="tel" name="phone" required placeholder="Phone" className="w-full bg-transparent border-b border-gray-500 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
                </motion.div>
                <motion.div variants={itemVariants}>
-                 <input type="email" name="email" required placeholder="Email" className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
+                 <input type="email" name="email" required placeholder="Email" className="w-full bg-transparent border-b border-gray-500 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
                </motion.div>
                <motion.div variants={itemVariants}>
-                 <input type="text" name="instagram" placeholder="Instagram Handle (Optional)" className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting} onChange={handleInstagramChange}/>
+                 <input type="text" name="instagram" placeholder="Instagram Handle (Optional)" className="w-full bg-transparent border-b border-gray-500 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting} onChange={handleInstagramChange}/>
+                 <p className="text-gray-500 text-xs mt-1" style={{ fontFamily: 'FragmentMono, monospace' }}>e.g. @tarestudionyc</p>
                </motion.div>
                <motion.div variants={itemVariants}>
-                 <textarea name="why" placeholder="What brings you to TARE? (Optional)" className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 resize-none" rows={2} style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
+                 <textarea name="why" placeholder="What brings you to TARE? (Optional)" className="w-full bg-transparent border-b border-gray-500 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-400 resize-none" rows={2} style={{ fontFamily: 'FragmentMono, monospace' }} disabled={isSubmitting}/>
+                 <p className="text-gray-500 text-xs mt-1 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                   hunting for an insane cup - gotta try your ombligon<br/>
+                   Saw you on ig, looks wild<br/>
+                   Need a ridiculous surprise for my Bf's birthday<br/>
+                   i'm a coffee grader, curious what else is out there<br/>
+                   saw the cube brewer on chris's story<br/>
+                   in town for a couple days and have to check it out
+                 </p>
+               </motion.div>
+               <motion.div variants={itemVariants} className="text-center">
+                 <p className="text-gray-400 text-xs mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>Invites only. No marketing or spam.</p>
                </motion.div>
                <motion.button
                  type="submit"
@@ -213,6 +256,25 @@ export default function PriorityPage() {
                >
                  {isSubmitting ? 'SUBMITTING...' : 'SUBMIT'}
                </motion.button>
+               <p className="text-gray-300 text-sm tracking-wide leading-relaxed max-w-md mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>We review every request and text private invites when seats open.</p>
+               
+               {/* Bottom ruler line */}
+               <div className="flex justify-center mt-8">
+                 <div className="w-screen h-px bg-gray-500 relative opacity-80">
+                   <div className="absolute top-0 left-0 w-full h-full">
+                     {[...Array(20)].map((_, i) => (
+                       <div
+                         key={i}
+                         className="absolute top-0 w-px bg-gray-500"
+                         style={{
+                           left: `${(i * 5)}%`,
+                           height: i % 4 === 0 ? '8px' : '4px'
+                         }}
+                       />
+                     ))}
+                   </div>
+                 </div>
+               </div>
              </motion.form>
            </motion.div>
          ) : (
@@ -232,8 +294,6 @@ export default function PriorityPage() {
 
       {/* Section 4: Next Session */}
       <section className="text-center py-24 px-6">
-        <p className="text-gray-500 mb-2 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>Next available session:</p>
-        <p className="text-white text-base md:text-lg mb-3" style={{ fontFamily: 'FragmentMono, monospace' }}>TARE STUDIO 02 — July 12, 2025 (Midtown NYC)</p>
         <p className="text-gray-600 text-xs" style={{ fontFamily: 'FragmentMono, monospace' }}>Invites to reserve a seat are sent personally via text</p>
       </section>
     </main>
