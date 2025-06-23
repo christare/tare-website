@@ -97,9 +97,8 @@ export default function PriorityPage() {
             style={{ width: 'min(80vw, 340px)', margin: '0 auto', display: 'block' }}
           />
           <div style={{ color: '#fff', fontSize: 18, lineHeight: 1.4, letterSpacing: '0.04em', fontFamily: 'NonBureauExtended, sans-serif', marginTop: 18 }}>
-            THIS IS NOT A DRINK.<br />
-            IT'S A PERFORMANCE-<br />
-            BUILT FROM COFFEE.
+            <div style={{ marginBottom: '12px' }}>A FIVE-ACT LIVE PERFORMANCE.</div>
+            WORLD-CLASS COFFEE, PRESENTED IN EXPERIMENTAL FORMS.
           </div>
         </div>
       </div>
