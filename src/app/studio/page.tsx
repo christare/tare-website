@@ -44,14 +44,14 @@ export default function StudioPage() {
     setIsLoading(true);
     setError("");
     try {
-      console.log("Starting checkout for STUDIO with price ID: price_1RJbkjF5JUni5zIQf801xKE6");
+      console.log("Starting checkout for STUDIO with price ID: price_1ReJlIF5JUni5zIQaV1pTfhu");
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          priceId: "price_1RJbkjF5JUni5zIQf801xKE6",
+          priceId: "price_1ReJlIF5JUni5zIQaV1pTfhu",
           type: "studio"
         }),
       });

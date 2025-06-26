@@ -28,14 +28,14 @@ export default function RoomPage() {
     setIsLoading(true);
     setError("");
     try {
-      console.log("Starting checkout for ROOM with price ID: price_1RbOWtF5JUni5zIQGjZ6lTjQ");
+      console.log("Starting checkout for ROOM with price ID: price_1ReJlIF5JUni5zIQaV1pTfhu");
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          priceId: "price_1RbOWtF5JUni5zIQGjZ6lTjQ",
+          priceId: "price_1ReJlIF5JUni5zIQaV1pTfhu",
           type: "room"
         }),
       });
@@ -93,7 +93,7 @@ export default function RoomPage() {
               Rare coffees. Experimental techniques. Previews of new creations.
             </p>
             <p className="text-gray-400 mb-8 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace', fontSize: '0.95em' }}>
-              $60 per guest
+              $70 per guest
             </p>
           </div>
           <div className="border-t border-b border-gray-800 py-6 px-4 space-y-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
@@ -103,7 +103,7 @@ export default function RoomPage() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Date</span>
-              <span className="text-white">Sunday, June 22, 2025</span>
+              <span className="text-white">Sunday, June 29, 2025</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Duration</span>
@@ -111,7 +111,7 @@ export default function RoomPage() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Price</span>
-              <span className="text-white">$60</span>
+              <span className="text-white">$70</span>
             </div>
           </div>
           <div className="text-center">
