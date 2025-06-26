@@ -110,6 +110,10 @@ export default function RoomPage() {
               <span className="text-white">1.5 hours (11am - 12:30pm)</span>
             </div>
             <div className="flex justify-between items-center">
+              <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Location</span>
+              <span className="text-white">231 W 29th St, New York, NY 10001</span>
+            </div>
+            <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Price</span>
               <span className="text-white">$70</span>
             </div>
