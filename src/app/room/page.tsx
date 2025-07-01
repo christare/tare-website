@@ -28,14 +28,14 @@ export default function RoomPage() {
     setIsLoading(true);
     setError("");
     try {
-      console.log("Starting checkout for ROOM with price ID: price_1ReJlIF5JUni5zIQaV1pTfhu");
+      console.log("Starting checkout for ROOM with price ID: price_1RfuvWF5JUni5zIQaC5g3ZEF");
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          priceId: "price_1ReJlIF5JUni5zIQaV1pTfhu",
+          priceId: "price_1RfuvWF5JUni5zIQaC5g3ZEF",
           type: "room"
         }),
       });
@@ -87,13 +87,13 @@ export default function RoomPage() {
         <div className="space-y-12">
           <div className="text-center">
             <p className="text-gray-300 mb-2 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
-              An intimate coffee tasting led by our founder Chris, inside our all-white Midtown studio.
+              An intimate coffee omakase experience, custom-designed for each group by our founder Chris. Hosted inside our all-white Midtown studio.
             </p>
             <p className="text-gray-300 mb-2 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
               Rare coffees. Experimental techniques. Previews of new creations.
             </p>
             <p className="text-gray-400 mb-8 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace', fontSize: '0.95em' }}>
-              $70 per guest
+              $90 per guest
             </p>
           </div>
           <div className="border-t border-b border-gray-800 py-6 px-4 space-y-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
@@ -103,11 +103,11 @@ export default function RoomPage() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Date</span>
-              <span className="text-white">Sunday, June 29, 2025</span>
+              <span className="text-white">Sunday, July 6, 2025</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Duration</span>
-              <span className="text-white">1.5 hours (11am - 12:30pm)</span>
+              <span className="text-white">2 hours (11am - 1pm)</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Location</span>
@@ -115,7 +115,7 @@ export default function RoomPage() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Price</span>
-              <span className="text-white">$70</span>
+              <span className="text-white">$90</span>
             </div>
           </div>
           <div className="text-center">
