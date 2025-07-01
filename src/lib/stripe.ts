@@ -70,10 +70,12 @@ export const createCheckoutSession = async ({
   priceId,
   successUrl,
   cancelUrl,
+  metadata,
 }: {
   priceId: string;
   successUrl: string;
   cancelUrl: string;
+  metadata?: Record<string, string>;
 }) => {
   try {
     console.log('Creating checkout session with:', { priceId, successUrl, cancelUrl });
@@ -96,6 +98,7 @@ export const createCheckoutSession = async ({
       phone_number_collection: {
         enabled: true,
       },
+      ...(metadata && { metadata }),
     });
     
     console.log('Checkout session created successfully:', session.id);
