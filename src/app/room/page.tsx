@@ -28,14 +28,14 @@ export default function RoomPage() {
     setIsLoading(true);
     setError("");
     try {
-      console.log("Starting checkout for ROOM with price ID: price_1RfuvWF5JUni5zIQaC5g3ZEF");
+      console.log("Starting checkout for ROOM with price ID: price_1RjTRwF5JUni5zIQawMJztie");
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          priceId: "price_1RfuvWF5JUni5zIQaC5g3ZEF",
+          priceId: "price_1RjTRwF5JUni5zIQawMJztie",
           type: "room"
         }),
       });
@@ -86,14 +86,16 @@ export default function RoomPage() {
         <div className="w-12 h-px bg-white mx-auto mb-10" />
         <div className="space-y-12">
           <div className="text-center">
-            <p className="text-gray-300 mb-2 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
-              An intimate coffee omakase experience, custom-designed for each group by our founder Chris. Hosted inside our all-white Midtown studio.
+            <p className="text-gray-300 mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              An behind-the-scenes coffee omakase, designed in real time. Hosted in our new all-white Midtown studio.</p>
+            <p className="text-gray-300 mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+            Tailored to your group’s pace, palate, and curiosity.
             </p>
-            <p className="text-gray-300 mb-2 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
-              Rare coffees. Experimental techniques. Previews of new creations.
+            <p className="text-gray-300 mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+            We serve rare, competition-level coffees using techniques you won’t find in any café.
             </p>
             <p className="text-gray-400 mb-8 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace', fontSize: '0.95em' }}>
-              $90 per guest
+              $45 per guest
             </p>
           </div>
           <div className="border-t border-b border-gray-800 py-6 px-4 space-y-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
@@ -103,24 +105,27 @@ export default function RoomPage() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Date</span>
-              <span className="text-white">Sunday, July 6, 2025</span>
+              <span className="text-white">Sunday, 13, 2025</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Duration</span>
-              <span className="text-white">2 hours (11am - 1pm)</span>
+              <span className="text-white">1.5 hours (1pm - 2:30pm)</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Location</span>
-              <span className="text-white">231 W 29th St, New York, NY 10001</span>
-            </div>
+              <span className="text-white">580 8th Ave Floor 21, New York, NY 10018</span>
+            </div>  
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Price</span>
-              <span className="text-white">$90</span>
+              <span className="text-white">$45</span>
             </div>
           </div>
           <div className="text-center">
-            <p className="text-gray-500 text-xs mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
+            <p className="text-gray-300 text-xs mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
               Invite-only from our priority list
+            </p>
+            <p className="text-gray-300 text-xs mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              Our founder Chris will reach out with more details via text after you reserve.
             </p>
             <button
               onClick={() => setShowPasswordPrompt(true)}
