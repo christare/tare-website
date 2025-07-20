@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function RoomPage() {
+export default function RoomDevPage() {
   const router = useRouter();
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState("");
@@ -14,7 +14,7 @@ export default function RoomPage() {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.toLowerCase() === "tareroom") {
+    if (password.toLowerCase() === "room") {
       setError("");
       setShowPasswordPrompt(false);
       setPassword("");
@@ -80,7 +80,7 @@ export default function RoomPage() {
               height={68}
               className="h-16 md:h-20 w-auto mb-1"
             />
-            <span className="text-xl md:text-2xl font-light tracking-wide" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>ROOM</span>
+            <span className="text-xl md:text-2xl font-light tracking-wide" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>ROOM DEV</span>
           </div>
         </h1>
         <div className="w-12 h-px bg-white mx-auto mb-10" />
@@ -179,7 +179,7 @@ export default function RoomPage() {
           )}
         </AnimatePresence>
       </motion.div>
-
+ 
     </main>
   );
 } 
