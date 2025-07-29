@@ -18,12 +18,12 @@ export const metadata: Metadata = {
   description: "Official website for TARE",
   icons: {
     icon: {
-      url: '/favicon.svg',
-      type: 'image/svg+xml',
+      url: '/favicon.png',
+      type: 'image/png',
     },
     apple: {
-      url: '/favicon.svg',
-      type: 'image/svg+xml',
+      url: '/favicon.png',
+      type: 'image/png',
     }
   }
 };
