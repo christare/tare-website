@@ -1,41 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function RoomPage() {
   const router = useRouter();
-  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password.toLowerCase() === "tareroom") {
-      setError("");
-      setShowPasswordPrompt(false);
-      setPassword("");
-      handlePurchase();
-    } else {
-      setError("Incorrect password");
-    }
-  };
-
-  const handlePurchase = async () => {
-    setIsLoading(true);
+  const handlePurchase = async (priceId: string) => {
+    setLoadingPriceId(priceId);
     setError("");
     try {
-      console.log("Starting checkout for ROOM with price ID: price_1RfuvWF5JUni5zIQaC5g3ZEF");
+      console.log(`Starting checkout for ROOM with price ID: ${priceId}`);
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          priceId: "price_1RfuvWF5JUni5zIQaC5g3ZEF",
+          priceId: priceId,
           type: "room"
         }),
       });
@@ -45,7 +31,7 @@ export default function RoomPage() {
       if (!response.ok) {
         console.error("Checkout response error:", data);
         setError(data.details?.message || data.error || "Failed to create checkout session");
-        setIsLoading(false);
+        setLoadingPriceId(null);
         return;
       }
       
@@ -53,12 +39,12 @@ export default function RoomPage() {
         window.location.href = data.url;
       } else {
         setError("No checkout URL returned");
-        setIsLoading(false);
+        setLoadingPriceId(null);
       }
     } catch (err) {
       console.error("Checkout error:", err);
       setError("Something went wrong with the checkout process");
-      setIsLoading(false);
+      setLoadingPriceId(null);
     }
   };
 
@@ -92,18 +78,11 @@ export default function RoomPage() {
             <p className="text-gray-300 mb-2 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
               Rare coffees, curated in real time. Experimental techniques. Previews of new creations.
             </p>
-            <p className="text-gray-400 mb-8 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace', fontSize: '0.95em' }}>
-              $90 per guest
-            </p>
           </div>
           <div className="border-t border-b border-gray-800 py-6 px-4 space-y-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Experience</span>
               <span className="text-white">TARE ROOM</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Date</span>
-              <span className="text-white">Sunday, July 20, 2025</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Duration</span>
@@ -115,69 +94,41 @@ export default function RoomPage() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Price</span>
-              <span className="text-white">$90</span>
+              <span className="text-white">$90 per guest</span>
             </div>
           </div>
           <div className="text-center">
-            <p className="text-gray-500 text-xs mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
-              Invite-only from our priority list
-            </p>
-            <button
-              onClick={() => setShowPasswordPrompt(true)}
-              disabled={isLoading}
-              className="border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 inline-block"
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              {isLoading ? "PROCESSING..." : "RESERVE"}
-            </button>
-            {error && !showPasswordPrompt && (
+            <div className="space-y-3">
+              <button
+                onClick={() => handlePurchase("price_1RfuvWF5JUni5zIQaC5g3ZEF")}
+                disabled={loadingPriceId !== null}
+                className="w-full border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                {loadingPriceId === "price_1RfuvWF5JUni5zIQaC5g3ZEF" ? "PROCESSING..." : "RESERVE - SUNDAY, AUGUST 10"}
+              </button>
+              <button
+                onClick={() => handlePurchase("price_1RqEtdF5JUni5zIQ8wJSZsJb")}
+                disabled={loadingPriceId !== null}
+                className="w-full border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                {loadingPriceId === "price_1RqEtdF5JUni5zIQ8wJSZsJb" ? "PROCESSING..." : "RESERVE - SUNDAY, AUGUST 17"}
+              </button>
+              <button
+                onClick={() => handlePurchase("price_1RqEufF5JUni5zIQ7IM5TDrf")}
+                disabled={loadingPriceId !== null}
+                className="w-full border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                {loadingPriceId === "price_1RqEufF5JUni5zIQ7IM5TDrf" ? "PROCESSING..." : "RESERVE - SUNDAY, AUGUST 24"}
+              </button>
+            </div>
+            {error && (
               <p className="text-red-400 text-sm mt-4" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
             )}
           </div>
         </div>
-        <AnimatePresence>
-          {showPasswordPrompt && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="fixed inset-0 flex items-center justify-center z-50" style={{backgroundColor: 'rgba(42, 39, 38, 0.8)'}}
-            >
-              <form onSubmit={handlePasswordSubmit} className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-xs">
-                <h2 className="text-xl font-light mb-6 text-center" style={{ fontFamily: 'FragmentMono, monospace' }}>Enter Access Code</h2>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 mb-4"
-                  style={{ fontFamily: 'FragmentMono, monospace' }}
-                  autoFocus
-                />
-                {error && (
-                  <p className="text-red-400 text-sm mb-4 text-center" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
-                )}
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => { setShowPasswordPrompt(false); setError(""); setPassword(""); }}
-                    className="flex-1 border border-gray-700 px-4 py-2 text-sm text-gray-400 hover:bg-gray-800 rounded transition-all"
-                    style={{ fontFamily: 'FragmentMono, monospace' }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 border border-white px-4 py-2 text-sm text-white hover:bg-white hover:text-black rounded transition-all"
-                    style={{ fontFamily: 'FragmentMono, monospace' }}
-                  >
-                    Continue
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.div>
 
     </main>
