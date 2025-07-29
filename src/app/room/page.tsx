@@ -53,7 +53,7 @@ export default function RoomPage() {
       {/* Full-width logo section */}
       <div className="w-full flex justify-center mb-6">
         <Image
-          src="/images/TARE Logo ROOM.png"
+          src="/images/TARE logo ROOM.png"
           alt="TARE ROOM"
           width={1200}
           height={200}
