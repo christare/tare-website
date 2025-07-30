@@ -72,7 +72,7 @@ export default function RoomPage() {
     <main className="min-h-screen text-white pt-8 md:pt-16 relative" style={{backgroundColor: '#2A2726'}}>
       {/* TARE Room Artifact - above logo */}
       <motion.div 
-        className="w-full flex justify-center mb-6 mt-4"
+        className="w-full flex justify-center mb-4 md:mb-12 mt-8 md:mt-2"
         initial={{ opacity: 0, scale: 0.3, rotate: -90 }}
         animate={{ opacity: 1, scale: 1, rotate: 0 }}
         transition={{ 
@@ -85,14 +85,14 @@ export default function RoomPage() {
         <Image
           src="/FinalDelivery/symbols/Artifacts/pngs/TARE-room-artifact-white.png"
           alt="TARE Room Artifact"
-          width={72}
-          height={72}
-          className="w-[72px] h-auto"
+          width={101}
+          height={101}
+          className="w-[72px] md:w-[101px] h-auto"
         />
       </motion.div>
 
       {/* Full-width logo section */}
-      <div className="w-full flex justify-center mb-12 mt-4">
+      <div className="w-full flex justify-center mb-12">
         <Image
           src="/images/TARE logo ROOM.png"
           alt="TARE ROOM"
