@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, useInView } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import Image from "next/image";
 
-export default function RoomPage() {
+function RoomPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
@@ -395,4 +395,25 @@ export default function RoomPage() {
 
     </main>
   );
-} 
+}
+
+function RoomPageLoading() {
+  return (
+    <main className="min-h-screen text-white pt-8 md:pt-16 relative" style={{backgroundColor: '#2A2726'}}>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-400" style={{ fontFamily: 'FragmentMono, monospace' }}>Loading...</p>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export default function RoomPage() {
+  return (
+    <Suspense fallback={<RoomPageLoading />}>
+      <RoomPageContent />
+    </Suspense>
+  );
+}
