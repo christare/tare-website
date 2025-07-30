@@ -34,13 +34,16 @@ export default function Header() {
   const roomUrl = isProduction ? "/room" : "/room";
   const studioUrl = isProduction ? "/studio" : "/studio";
 
-
-
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-3 backdrop-blur-sm" : "py-6 backdrop-blur-sm"}`} style={{backgroundColor: scrolled ? 'rgba(42, 39, 38, 0.9)' : 'rgba(42, 39, 38, 0.5)'}}>
+    <header 
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled ? "py-3" : "py-6"}`} 
+    >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-center relative">
         {/* Mobile Navigation - horizontal across top */}
-        <nav className="fixed top-4 left-4 right-4 z-50 flex md:hidden justify-center">
+        <nav className="fixed top-0 left-0 right-0 z-50 flex md:hidden justify-center pt-4 pb-2" style={{
+          backgroundColor: scrolled ? 'rgba(42, 39, 38, 0.95)' : 'rgba(42, 39, 38, 0.8)',
+          backdropFilter: 'blur(12px)'
+        }}>
           <div className="flex space-x-6">
             <Link
               href={rootUrl}
@@ -136,27 +139,6 @@ export default function Header() {
             RUNWAY
           </Link>
         </nav>
-
-        {/* TARE Room Artifact - centered, hidden on mobile */}
-        <motion.div 
-          className="hidden md:flex justify-center"
-          initial={{ opacity: 0, scale: 0.2, rotate: 180 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ 
-            duration: 1.4, 
-            delay: 0.4,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            scale: { type: "spring", stiffness: 180, damping: 25 }
-          }}
-        >
-          <Image
-            src="/FinalDelivery/symbols/Artifacts/pngs/TARE-room-artifact-white.png"
-            alt="TARE Room Artifact"
-            width={72}
-            height={72}
-            className="w-[72px] h-auto"
-          />
-        </motion.div>
 
       </div>
     </header>
