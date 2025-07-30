@@ -192,7 +192,7 @@ function RoomPageContent() {
             />
           </div>
 
-          <div style={{ height: '1px' }}></div>
+          {/* <div style={{ height: '1px' }}></div> */}
 
           <div className="py-4 sm:py-6 px-4 sm:px-6 space-y-4 sm:max-w-md sm:mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>
             <div className="text-center">
@@ -209,7 +209,7 @@ function RoomPageContent() {
             </div>
           </div>
           
-          <div style={{ height: '1px' }}></div>
+          {/* <div style={{ height: '1px' }}></div> */}
           
           {/* Line 44 below experience details */}
           <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="my-12 sm:my-16">
