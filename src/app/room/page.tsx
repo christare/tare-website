@@ -11,7 +11,6 @@ function RoomPageContent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
   // Handle return from checkout (canceled or back button)
   useEffect(() => {
@@ -26,13 +25,6 @@ function RoomPageContent() {
       window.history.replaceState({}, '', newUrl.toString());
     }
   }, [searchParams]);
-  
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // Reset processing state when page regains focus (user returns from Stripe)
   useEffect(() => {
@@ -75,14 +67,8 @@ function RoomPageContent() {
   
   const buttonsRef = useRef(null);
   const imagesRef = useRef(null);
-  const image1Ref = useRef(null);
-  const image2Ref = useRef(null);
-  const image3Ref = useRef(null);
   const buttonsInView = useInView(buttonsRef, { once: true, margin: "-50px" });
-  const imagesInView = useInView(imagesRef, { once: true, margin: "-200px" });
-  const image1InView = useInView(image1Ref, { once: true, margin: "-100px" });
-  const image2InView = useInView(image2Ref, { once: true, margin: "-100px" });
-  const image3InView = useInView(image3Ref, { once: true, margin: "-100px" });
+  const imagesInView = useInView(imagesRef, { once: true, margin: "-50px" });
 
   const handlePurchase = async (priceId: string) => {
     setLoadingPriceId(priceId);
@@ -322,15 +308,9 @@ function RoomPageContent() {
       >
         <div className="grid grid-cols-1 md:grid-cols-3">
           <motion.div 
-            ref={image1Ref}
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
-            animate={
-              (imagesInView && !isMobile) || 
-              (image1InView && isMobile) 
-                ? { opacity: 1 } 
-                : { opacity: 0 }
-            }
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Image
@@ -345,15 +325,9 @@ function RoomPageContent() {
             />
           </motion.div>
           <motion.div 
-            ref={image2Ref}
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
-            animate={
-              (imagesInView && !isMobile) || 
-              (image2InView && isMobile) 
-                ? { opacity: 1 } 
-                : { opacity: 0 }
-            }
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Image
@@ -368,15 +342,9 @@ function RoomPageContent() {
             />
           </motion.div>
           <motion.div 
-            ref={image3Ref}
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
-            animate={
-              (imagesInView && !isMobile) || 
-              (image3InView && isMobile) 
-                ? { opacity: 1 } 
-                : { opacity: 0 }
-            }
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Image
