@@ -306,7 +306,8 @@ function RoomPageContent() {
         animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 1.0, ease: "easeOut" }}
       >
-        <div className="grid grid-cols-1 md:grid-cols-3">
+        {/* First Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 mb-0 md:mb-4">
           <motion.div 
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
@@ -328,7 +329,7 @@ function RoomPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
           >
             <Image
               src="/images/Room3.jpg"
@@ -345,7 +346,64 @@ function RoomPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          >
+            <Image
+              src="/images/still5.png"
+              alt="TARE Room Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)',
+                objectPosition: 'center 35%'
+              }}
+            />
+          </motion.div>
+        </div>
+
+        {/* Second Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3">
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+          >
+            <Image
+              src="/images/still4.png"
+              alt="TARE Room Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
+              }}
+            />
+          </motion.div>
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+          >
+            <Image
+              src="/images/Still6.jpg"
+              alt="TARE Room Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)',
+                objectPosition: 'center 30%'
+              }}
+            />
+          </motion.div>
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
           >
             <Image
               src="/images/Room2.jpg"
