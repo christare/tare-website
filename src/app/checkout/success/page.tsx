@@ -1,34 +1,18 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { Suspense } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 // Client component that uses useSearchParams
 function SuccessContent() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
-  const [redirectCounter, setRedirectCounter] = useState(8);
 
   // Determine product name based on type
   const productName = type === "studio" ? "TARE STUDIO 02" : "TARE ROOM";
-
-  // Redirect after 8 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setRedirectCounter((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          window.location.href = "/home";
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   // Animation variants
   const containerVariants = {
@@ -51,16 +35,7 @@ function SuccessContent() {
     },
   };
 
-  const lineVariants = {
-    hidden: { width: "0%" },
-    visible: {
-      width: "100%",
-      transition: {
-        duration: 8,
-        ease: "linear",
-      },
-    },
-  };
+
 
   return (
     <motion.div
@@ -79,32 +54,77 @@ function SuccessContent() {
       <motion.div variants={itemVariants} className="mb-12">
         <div className="w-12 h-px bg-white mx-auto mb-10" />
         
-        <p className="text-gray-300 text-lg italic mb-8 leading-relaxed">
-          Your seat at {productName} is reserved.
-        </p>
-        
-        <p className="text-gray-300 mb-8 leading-relaxed">
-          I'll be reaching out personally with location details closer to the date.
-        </p>
-        
-        <p className="text-gray-400 text-sm mt-10">
-          — Chris, TARE
-        </p>
-        
-        <p className="text-gray-600 text-xs mt-12">
-          Returning to home in {redirectCounter}
-        </p>
+        {type === "room" ? (
+          <>
+            <p className="text-gray-300 text-lg mb-8 leading-relaxed">
+              Thank you! We're excited to welcome you to TARE ROOM.
+            </p>
+            
+            {/* Event Details Table */}
+            <div className="py-8">
+              {/* Line 43 above event details */}
+              <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="mb-8">
+                <Image
+                  src="/images/Line 43.png"
+                  alt="Line 43"
+                  width={1920}
+                  height={100}
+                  style={{ width: '100vw', height: 'auto', display: 'block', opacity: '0.2' }}
+                />
+              </div>
+              
+              <div className="py-4 px-4 space-y-4 max-w-md mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                <div className="text-center">
+                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>10:45am doors open</span>
+                </div>
+                <div className="text-center">
+                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>11am - Ends around 12:30 PM</span>
+                </div>
+                <div className="text-center">
+                  <div className="text-white text-xs" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                    <div>45 W 29th St, Suite 301</div>
+                    <div>New York, NY 10001</div>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>$90</span>
+                </div>
+              </div>
+              
+              {/* Line 44 below event details */}
+              <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="mt-8">
+                <Image
+                  src="/images/Line 44.png"
+                  alt="Line 44"
+                  width={1920}
+                  height={100}
+                  style={{ width: '100vw', height: 'auto', display: 'block', opacity: '0.2' }}
+                />
+              </div>
+            </div>
+            
+            <p className="text-gray-400 text-sm mt-10">
+              — Chris, TARE
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-gray-300 text-lg italic mb-8 leading-relaxed">
+              Your seat at {productName} is reserved.
+            </p>
+            
+            <p className="text-gray-300 mb-8 leading-relaxed">
+              I'll be reaching out personally with location details closer to the date.
+            </p>
+            
+            <p className="text-gray-400 text-sm mt-10">
+              — Chris, TARE
+            </p>
+          </>
+        )}
       </motion.div>
 
-      <motion.div
-        className="w-full max-w-xs h-px bg-gray-900 relative overflow-hidden mx-auto mb-12"
-        variants={itemVariants}
-      >
-        <motion.div
-          className="absolute top-0 left-0 h-full bg-gray-600"
-          variants={lineVariants}
-        />
-      </motion.div>
+
 
       <motion.div variants={itemVariants}>
         <Link
