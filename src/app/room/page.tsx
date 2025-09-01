@@ -211,85 +211,32 @@ function RoomPageContent() {
           {/* <div style={{ height: '1px' }}></div> */}
 
           <div className="text-center">
-            <p className="text-gray-300 text-xs sm:text-sm mb-6 leading-relaxed px-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
-              After booking, Chris will reach out personally with a brief questionnaire to design the perfect lineup for you and your group.
-            </p>
             <motion.div 
               ref={buttonsRef}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"
+              className="text-center"
               initial={{ opacity: 0 }}
               animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <motion.button
-                onClick={() => handlePurchase("price_1RfuvWF5JUni5zIQaC5g3ZEF")}
-                disabled={loadingPriceId === "price_1RfuvWF5JUni5zIQaC5g3ZEF"}
-                className={`border px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
-                  loadingPriceId === "price_1RfuvWF5JUni5zIQaC5g3ZEF" 
-                    ? "border-yellow-400 bg-yellow-400/10 text-yellow-200 cursor-not-allowed" 
-                    : "border-white hover:bg-white hover:text-black disabled:opacity-50"
-                }`}
+              <p className="text-gray-400 text-lg mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                SOLD OUT
+              </p>
+              <p className="text-gray-300 text-xs sm:text-sm mb-2 leading-relaxed px-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Join the waitlist for early access to new dates.
+              </p>
+              <p className="text-gray-400 text-xs mb-6 leading-relaxed px-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Seats released by text before public availability.
+              </p>
+              <motion.a
+                href="/#waitlist-form"
+                className="inline-block border border-white px-8 py-3 text-xs sm:text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300"
                 style={{ fontFamily: 'FragmentMono, monospace' }}
                 initial={{ opacity: 0 }}
                 animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
               >
-                {loadingPriceId === "price_1RfuvWF5JUni5zIQaC5g3ZEF" ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    PROCESSING...
-                  </span>
-                ) : <>RESERVE<span className="sm:hidden"> </span><br className="hidden sm:block" />AUGUST 10</>}
-              </motion.button>
-              <motion.button
-                onClick={() => handlePurchase("price_1RqEtdF5JUni5zIQ8wJSZsJb")}
-                disabled={loadingPriceId === "price_1RqEtdF5JUni5zIQ8wJSZsJb"}
-                className={`border px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
-                  loadingPriceId === "price_1RqEtdF5JUni5zIQ8wJSZsJb" 
-                    ? "border-yellow-400 bg-yellow-400/10 text-yellow-200 cursor-not-allowed" 
-                    : "border-white hover:bg-white hover:text-black disabled:opacity-50"
-                }`}
-                style={{ fontFamily: 'FragmentMono, monospace' }}
-                initial={{ opacity: 0 }}
-                animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              >
-                {loadingPriceId === "price_1RqEtdF5JUni5zIQ8wJSZsJb" ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    PROCESSING...
-                  </span>
-                ) : <>RESERVE<span className="sm:hidden"> </span><br className="hidden sm:block" />AUGUST 17</>}
-              </motion.button>
-              <motion.button
-                onClick={() => handlePurchase("price_1RqEufF5JUni5zIQ7IM5TDrf")}
-                disabled={loadingPriceId === "price_1RqEufF5JUni5zIQ7IM5TDrf"}
-                className={`border px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm tracking-wide transition-all duration-300 sm:col-span-2 md:col-span-1 ${
-                  loadingPriceId === "price_1RqEufF5JUni5zIQ7IM5TDrf" 
-                    ? "border-yellow-400 bg-yellow-400/10 text-yellow-200 cursor-not-allowed" 
-                    : "border-white hover:bg-white hover:text-black disabled:opacity-50"
-                }`}
-                style={{ fontFamily: 'FragmentMono, monospace' }}
-                initial={{ opacity: 0 }}
-                animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              >
-                {loadingPriceId === "price_1RqEufF5JUni5zIQ7IM5TDrf" ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    PROCESSING...
-                  </span>
-                ) : <>RESERVE<span className="sm:hidden"> </span><br className="hidden sm:block" />AUGUST 24</>}
-              </motion.button>
+                JOIN THE WAITLIST
+              </motion.a>
             </motion.div>
             {error && (
               <p className="text-red-400 text-xs mt-4" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
