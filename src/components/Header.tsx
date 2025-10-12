@@ -32,7 +32,7 @@ export default function Header() {
   const rootUrl = isProduction ? "/" : "/";
   const runwayUrl = isProduction ? "/runway" : "/runway";
   const roomUrl = isProduction ? "/room" : "/room";
-  const studioUrl = isProduction ? "/studio" : "/studio";
+  const studioUrl = isProduction ? "/" : "/";
 
   return (
     <header 
@@ -46,7 +46,7 @@ export default function Header() {
         }}>
           <div className="flex space-x-4">
             <Link
-              href={rootUrl}
+              href={studioUrl}
               className={`text-sm tracking-wide transition-colors duration-300 ${
                 pathname === "/" 
                   ? "text-white" 
@@ -54,7 +54,7 @@ export default function Header() {
               }`}
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
-              HOME
+              STUDIO
             </Link>
             <Link
               href={roomUrl}
@@ -65,18 +65,7 @@ export default function Header() {
               }`}
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
-              ROOM
-            </Link>
-            <Link
-              href={studioUrl}
-              className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/studio" 
-                  ? "text-white" 
-                  : "text-gray-200 hover:text-white"
-              }`}
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              STUDIO
+              WAITLIST
             </Link>
             <Link
               href={runwayUrl}
@@ -105,7 +94,7 @@ export default function Header() {
         {/* Desktop Navigation - vertical on left */}
         <nav className="hidden md:flex fixed left-6 top-8 z-50 flex-col space-y-3">
           <Link
-            href={rootUrl}
+            href={studioUrl}
             className={`text-base tracking-wide transition-colors duration-300 ${
               pathname === "/" 
                 ? "text-white" 
@@ -113,7 +102,7 @@ export default function Header() {
             }`}
             style={{ fontFamily: 'FragmentMono, monospace' }}
           >
-            HOME
+            STUDIO
           </Link>
           <Link
             href={roomUrl}
@@ -124,18 +113,7 @@ export default function Header() {
             }`}
             style={{ fontFamily: 'FragmentMono, monospace' }}
           >
-            ROOM
-          </Link>
-          <Link
-            href={studioUrl}
-            className={`text-base tracking-wide transition-colors duration-300 ${
-              pathname === "/studio" 
-                ? "text-white" 
-                : "text-gray-300 hover:text-white"
-            }`}
-            style={{ fontFamily: 'FragmentMono, monospace' }}
-          >
-            STUDIO
+            WAITLIST
           </Link>
           <Link
             href={runwayUrl}

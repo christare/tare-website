@@ -1,334 +1,448 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, Suspense } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 import Image from "next/image";
 
-export default function PriorityPage() {
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+function StudioPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [error, setError] = useState("");
+  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
-  const scrollToWaitlist = () => {
-    const element = document.getElementById('waitlist-form');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Handle return from checkout (canceled or back button)
+  useEffect(() => {
+    const fromCheckout = searchParams.get('from');
+    if (fromCheckout === 'canceled') {
+      console.log('User returned from canceled checkout, resetting state');
+      setLoadingPriceId(null);
+      setError("");
+      // Clean up URL by removing the parameter
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('from');
+      window.history.replaceState({}, '', newUrl.toString());
     }
-  };
+  }, [searchParams]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    const formData = new FormData(e.currentTarget);
-    const instagramValue = formData.get('instagram') as string;
-    const cleanInstagram = instagramValue ? instagramValue.replace(/^@/, '') : '';
-    
-    const data = {
-      firstName: formData.get('firstName'),
-      lastName: formData.get('lastName'),
-      phone: formData.get('phone'),
-      email: formData.get('email'),
-      instagram: cleanInstagram,
-      why: formData.get('why'),
+  // Reset processing state when page regains focus (user returns from Stripe)
+  useEffect(() => {
+    const handlePageFocus = () => {
+      // Reset processing state when user returns to page
+      if (loadingPriceId) {
+        console.log('Page regained focus, resetting processing state');
+        setLoadingPriceId(null);
+        setError("");
+      }
     };
 
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        handlePageFocus();
+      }
+    };
+
+    window.addEventListener('focus', handlePageFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      window.removeEventListener('focus', handlePageFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [loadingPriceId]);
+
+  // Auto-reset processing state after timeout (30 seconds)
+  useEffect(() => {
+    if (loadingPriceId) {
+      const timeout = setTimeout(() => {
+        console.log('Processing timeout reached, resetting state');
+        setLoadingPriceId(null);
+        setError("Request timed out. Please try again.");
+      }, 30000); // 30 seconds
+
+      return () => clearTimeout(timeout);
+    }
+  }, [loadingPriceId]);
+  
+  const buttonsRef = useRef(null);
+  const imagesRef = useRef(null);
+  const buttonsInView = useInView(buttonsRef, { once: true, margin: "-50px" });
+  const imagesInView = useInView(imagesRef, { once: true, margin: "-50px" });
+
+  const handlePurchase = async (priceId: string) => {
+    setLoadingPriceId(priceId);
+    setError("");
     try {
-      const response = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      console.log(`Starting checkout for STUDIO with price ID: ${priceId}`);
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          priceId: priceId,
+          type: "studio"
+        }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to submit form');
+        console.error("Checkout response error:", data);
+        setError(data.details?.message || data.error || "Failed to create checkout session");
+        setLoadingPriceId(null);
+        return;
       }
-
-      setSubmitted(true);
+      
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setError("No checkout URL returned");
+        setLoadingPriceId(null);
+      }
     } catch (err) {
-      setError('There was an error submitting your form. Please try again.');
-      setIsSubmitting(false);
+      console.error("Checkout error:", err);
+      setError("Something went wrong with the checkout process");
+      setLoadingPriceId(null);
     }
-  };
-
-  const handleInstagramChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target;
-    let value = input.value;
-    value = value.replace(/^@+/, '');
-    if (value) {
-      value = '@' + value;
-    }
-    input.value = value;
-  };
-
-  useEffect(() => {
-    if (submitted) {
-      const timer = setTimeout(() => {
-        window.location.href = "https://tarestudionyc.com/home";
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [submitted]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.6, -0.05, 0.01, 0.99] } }
-  };
-
-  const formVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.5 } }
   };
 
   return (
-    <main style={{ backgroundColor: '#2A2726' }} className="text-white pt-20">
-      {/* Hero dial, logo, and subheader */}
-      <div className="w-full min-h-screen flex flex-col items-center justify-center relative" style={{ backgroundColor: '#2A2726' }}>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1, opacity: 1 }}>
-          <img
+    <main className="min-h-screen text-white relative" style={{backgroundColor: '#2A2726'}}>
+      {/* Hero section with dial background */}
+      <div className="w-full min-h-screen flex flex-col items-center justify-center relative py-16 md:py-24">
+        {/* Dial background */}
+        <motion.div 
+          className="absolute inset-0 flex items-center justify-center pointer-events-none" 
+          style={{ zIndex: 1 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 0.6, scale: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+        >
+          <Image
             src="/images/Group 15.png"
             alt="Dial"
+            width={1920}
+            height={1080}
             className="w-full h-full object-cover"
+            priority
           />
-        </div>
-        <div style={{ position: 'relative', textAlign: 'center', zIndex: 2, width: 'min(90vw, 500px)' }}>
-          <img
-            src="/images/TARE LOGOS/Logo01/rgb-web/white/tare-logo01-white-rgb.svg"
-            alt="TARE"
-            style={{ width: 'min(80vw, 340px)', margin: '0 auto', display: 'block' }}
-          />
-          <div style={{ color: '#fff', fontSize: 18, lineHeight: 1.4, letterSpacing: '0.04em', fontFamily: 'NonBureauExtended, sans-serif', marginTop: 18 }}>
-            <div style={{ marginBottom: '12px' }}>A FIVE-ACT LIVE PERFORMANCE.</div>
-            WORLD-CLASS COFFEE, PRESENTED IN EXPERIMENTAL FORMS.
-          </div>
-          
-          {/* CTA Button */}
-          <motion.button
-            onClick={scrollToWaitlist}
-            className="mt-12 border border-white px-8 py-3 text-sm tracking-wider hover:bg-white hover:text-black transition-all duration-300"
-            style={{ fontFamily: 'NonBureauExtended, sans-serif' }}
+        </motion.div>
+
+        {/* Content on top of dial */}
+        <div className="relative z-10 w-full max-w-3xl mx-auto px-6">
+          {/* TARE Studio Artifact - above logo */}
+          <motion.div 
+            className="w-full flex justify-center mb-6 md:mb-10"
+            initial={{ opacity: 0, scale: 0.3, rotate: -90 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ 
+              duration: 1.2, 
+              delay: 0.3,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              scale: { type: "spring", stiffness: 200, damping: 20 }
+            }}
+          >
+            <Image
+              src="/FinalDelivery/symbols/Artifacts/pngs/TARE-room-artifact-white.png"
+              alt="TARE Studio Artifact"
+              width={101}
+              height={101}
+              className="w-[60px] md:w-[80px] h-auto"
+            />
+          </motion.div>
+
+          {/* Full-width logo section - DOMINANT ELEMENT */}
+          <motion.div 
+            className="w-full flex justify-center mb-10 md:mb-14"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
           >
-            JOIN THE WAITLIST
-          </motion.button>
+            <Image
+              src="/images/TARE logo STUDIO page.png"
+              alt="TARE STUDIO"
+              width={1200}
+              height={200}
+              className="w-[85%] md:w-[80%] lg:w-[75%] h-auto"
+            />
+          </motion.div>
+
+          {/* Main description - Secondary hierarchy */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="text-center max-w-xl mx-auto px-4"
+          >
+            <h2 className="text-lg sm:text-xl md:text-2xl text-white mb-5 sm:mb-6 leading-tight tracking-wide" style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}>
+              A Coffee Wellness Transformation
+            </h2>
+            <p className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base mb-3" style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}>
+              Meditation uses breath. Yoga uses movement. We use coffee.
+            </p>
+            <p className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base" style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}>
+              A 90-minute guided experience using coffee as liquid, aroma, and texture to train your attention and enhance how you experience life.
+            </p>
+          </motion.div>
         </div>
       </div>
 
-      {/* Section 1: Intro text */}
-      <section className="text-center py-24 px-6">
-        <p style={{ fontFamily: 'FragmentMono, monospace' }} className="text-gray-400">We host three kinds of public events:</p>
-        <div className="w-12 h-px bg-white mx-auto mt-6 opacity-30" />
-      </section>
-
-      {/* Section 2: Main content (light) */}
-      <section style={{ backgroundColor: '#FCF7F1', color: '#2A2726' }} className="py-24 sm:py-32 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-20 text-center">
+      <motion.div
+        key="content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="max-w-xl mx-auto px-6 sm:px-6 pb-20"
+      >
+        <div className="space-y-8 sm:space-y-12">
           
-          {/* Column 1: STUDIO */}
-          <div className="flex flex-col items-center">
-            <h2 style={{ fontFamily: 'FragmentMono, monospace' }} className="text-lg mb-4 tracking-wider">01</h2>
-            <h3 style={{ fontFamily: 'NonBureauExtended, sans-serif' }} className="text-2xl mb-6 tracking-wide">TARE STUDIO</h3>
-            <p className="max-w-xs mx-auto mb-8 leading-relaxed text-gray-600 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>Our staged performance. World-class coffee reconstructed into experimental formats. Immersive audio, and a live monologue. Set inside an all-white gallery.</p>
-            <div className="mt-auto pt-6">
-              <Image src="/images/rock2.png" alt="Rock 2" width={120} height={120} className="mx-auto" style={{ height: '8rem', width: 'auto' }} />
-            </div>
+          {/* Line 43 and Group 24 divider */}
+          <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="my-12 sm:my-16">
+            <Image
+              src="/images/Line 43.png"
+              alt="Line 43"
+              width={1920}
+              height={100}
+              style={{ width: '100vw', height: 'auto', display: 'block' }}
+            />
+            <Image
+              src="/images/Group 24.png"
+              alt="Group 24"
+              width={1920}
+              height={100}
+              style={{ width: '100vw', height: 'auto', display: 'block' }}
+            />
           </div>
 
-          {/* Column 2: ROOM */}
-          <div className="flex flex-col items-center">
-            <h2 style={{ fontFamily: 'FragmentMono, monospace' }} className="text-lg mb-4 tracking-wider">02</h2>
-            <h3 style={{ fontFamily: 'NonBureauExtended, sans-serif' }} className="text-2xl mb-6 tracking-wide">TARE ROOM</h3>
-            <p className="max-w-xs mx-auto mb-8 leading-relaxed text-gray-600 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>Our signature coffee omakase in our all-white studio.</p>
-            <p className="max-w-xs mx-auto mb-8 leading-relaxed text-gray-600 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>Rare coffees, experimental brewing techniques, and early previews of what we're working on.</p>
-            <div className="mt-auto pt-6">
-              <Image src="/images/rock4.png" alt="Rock 4" width={120} height={120} className="mx-auto" style={{ height: '8rem', width: 'auto' }} />
-            </div>
+          {/* <div style={{ height: '1px' }}></div> */}
+
+          <div className="py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8 max-w-lg mx-auto">
+            {/* Next Event Label */}
+            <div className="text-center">
+              <p className="text-gray-400 text-xs tracking-widest mb-6" style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.2em' }}>
+                NEXT EVENT
+              </p>
           </div>
 
-          {/* Column 3: RUNWAY */}
-          <div className="flex flex-col items-center">
-            <h2 style={{ fontFamily: 'FragmentMono, monospace' }} className="text-lg mb-4 tracking-wider">03</h2>
-            <h3 style={{ fontFamily: 'NonBureauExtended, sans-serif' }} className="text-2xl mb-6 tracking-wide">TARE RUNWAY</h3>
-            <p className="max-w-xs mx-auto mb-8 leading-relaxed text-gray-600 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>Massive coffee events for brands, collaborators, and cultural moments. Built to be seen.</p>
-            <div className="mt-auto pt-6">
-              <Image src="/images/rock3.png" alt="Rock 3" width={120} height={120} className="mx-auto" style={{ height: '8rem', width: 'auto' }} />
-            </div>
+            {/* Date and Time */}
+            <div className="text-center space-y-2">
+              <p className="text-white text-base sm:text-lg font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Sunday, October 26, 2025
+              </p>
+              <p className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                11:00 AM - 1:00 PM
+              </p>
           </div>
 
-        </div>
-      </section>
-
-      {/* Section 3: Priority List Form */}
-      <AnimatePresence mode="wait">
-        {!submitted ? (
-          <motion.div
-            id="waitlist-form"
-            key="form"
-            className="w-full max-w-xl mx-auto px-6 py-24"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-          >
-            <div className="text-center mb-16">
-              <div className="mb-8">
-                <p className="text-gray-400 text-sm mb-2" style={{ fontFamily: 'FragmentMono, monospace' }}>Next available session</p>
-                <p className="text-white text-lg mb-1" style={{ fontFamily: 'FragmentMono, monospace' }}>TARE STUDIO 02 · September, 2025 · 18 seats
-                </p>
-                <p className="text-gray-300 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>Midtown NYC · Exact date TBA</p>
+            {/* Location */}
+            <div className="text-center space-y-2 pt-2">
+              <div className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                <div>231 West 29th St</div>
+                <div>New York, NY 10001</div>
               </div>
-              
-              <div className="w-16 h-px bg-gray-400 mx-auto mb-8 opacity-80"></div>
-              
             </div>
             
-            {/* Line 43 running across full screen (edge-to-edge) */}
-            <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="mb-0">
-              <img
-                src="/images/Line 43.png"
-                alt="Line 43"
-                style={{ width: '100vw', height: 'auto', display: 'block' }}
-              />
-              <img
-                src="/images/Group 24.png"
-                alt="Group 24"
-                style={{ width: '100vw', height: 'auto', display: 'block' }}
-              />
+            {/* Price */}
+            <div className="text-center pt-2">
+              <p className="text-white text-lg sm:text-xl font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                $90
+              </p>
             </div>
             
-            <div className="text-center mb-8" style={{ paddingTop: '2rem' }}>
-              <div className="mb-8">
-                <p className="text-gray-200 text-base mb-4" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>INVITE ONLY</p>
-                <p className="text-gray-300 text-sm leading-relaxed max-w-md mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                  We release seats by text to people on the list.<br/>
-                  No public tickets.
-                </p>
-              </div>
-              <h2 
-                className="text-2xl md:text-3xl font-light tracking-wider"
-                style={{ fontFamily: 'NonBureauExtended, sans-serif' }}
+            {/* Reserve Button */}
+            <motion.div 
+              ref={buttonsRef}
+              className="text-center pt-4"
+              initial={{ opacity: 0 }}
+              animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <p className="text-gray-300 text-xs sm:text-sm mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Limited seats available
+              </p>
+              <motion.button
+                onClick={() => handlePurchase('price_1SHQJQF5JUni5zIQzHCq9zox')}
+                disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox'}
+                className="inline-block border border-white px-8 py-3 text-xs sm:text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+                initial={{ opacity: 0 }}
+                animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
               >
-                JOIN THE WAITLIST
-              </h2>
+                {loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' ? 'PROCESSING...' : 'RESERVE YOUR SEAT'}
+              </motion.button>
+              {error && (
+                <p className="text-red-400 text-xs mt-4" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
+              )}
+            </motion.div>
             </div>
             
-             {error && (
-               <motion.div
-                 initial={{ opacity: 0, y: -10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 className="text-red-400 text-sm text-center mb-6"
-               >
-                 {error}
-               </motion.div>
-             )}
- 
-             <div className="relative flex flex-row justify-center items-stretch">
-                {/* Removed vertical lines 41 and 42 as requested */}
-                <div className="flex-1 min-w-0">
-                  <motion.form 
-                    onSubmit={handleSubmit} 
-                    className="space-y-8"
-                    variants={formVariants}
-                    initial="hidden"
-                    animate="visible"
-                  >
-                    <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-6" variants={itemVariants}>
-                      <input type="text" name="firstName" required placeholder="First" className="w-full bg-transparent border-b py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace', borderColor: '#FFFBF5' }} disabled={isSubmitting}/>
-                      <input type="text" name="lastName" required placeholder="Last" className="w-full bg-transparent border-b py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace', borderColor: '#FFFBF5' }} disabled={isSubmitting}/>
-                    </motion.div>
-                    <motion.div variants={itemVariants}>
-                      <input type="tel" name="phone" required placeholder="Phone" className="w-full bg-transparent border-b py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace', borderColor: '#FFFBF5' }} disabled={isSubmitting}/>
-                    </motion.div>
-                    <motion.div variants={itemVariants}>
-                      <input type="email" name="email" required placeholder="Email" className="w-full bg-transparent border-b py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace', borderColor: '#FFFBF5' }} disabled={isSubmitting}/>
-                    </motion.div>
-                    <motion.div variants={itemVariants}>
-                      <input type="text" name="instagram" placeholder="Instagram Handle (Optional)" className="w-full bg-transparent border-b py-3 text-sm tracking-wide placeholder-gray-400" style={{ fontFamily: 'FragmentMono, monospace', borderColor: '#FFFBF5' }} disabled={isSubmitting} onChange={handleInstagramChange}/>
-                      <p className="text-gray-500 text-xs mt-1" style={{ fontFamily: 'FragmentMono, monospace' }}>e.g. @tarestudionyc</p>
-                    </motion.div>
-                    <motion.div variants={itemVariants}>
-                      <textarea name="why" placeholder="What brings you to TARE? (Optional)" className="w-full bg-transparent border-b py-3 text-sm tracking-wide placeholder-gray-400 resize-none" rows={2} style={{ fontFamily: 'FragmentMono, monospace', borderColor: '#FFFBF5' }} disabled={isSubmitting}/>
-                      <p className="text-gray-500 text-xs mt-1 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        hunting for an insane cup - gotta try your ombligon<br/>
-                        Saw you on ig, looks wild<br/>
-                        Need a ridiculous surprise for my Bf's birthday<br/>
-                        i'm a coffee grader, curious what else is out there<br/>
-                        saw the cube brewer on chris's story<br/>
-                        in town for a couple days and have to check it out
-                      </p>
-                    </motion.div>
-                    <motion.div variants={itemVariants} className="text-center">
-                      <p className="text-gray-400 text-xs mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>Invites only. No marketing or spam.</p>
-                    </motion.div>
-                    <motion.button
-                      type="submit"
-                      className="w-full bg-transparent border border-white py-4 text-sm tracking-wider hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50"
-                      variants={itemVariants}
-                      style={{ fontFamily: 'NonBureauExtended, sans-serif' }}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'SUBMITTING...' : 'SUBMIT'}
-                    </motion.button>
-                    <p className="text-gray-300 text-sm tracking-wide leading-relaxed max-w-md mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>We review every request and text private invites when seats open.</p>
-                    {/* Edge-to-edge section: Group 25 above Line 44 */}
-                    <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10, marginTop: '2rem' }}>
-                      <img
+          {/* <div style={{ height: '1px' }}></div> */}
+          
+          {/* Group 25 and Line 44 divider */}
+          <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="my-12 sm:my-16">
+            <Image
                         src="/images/Group 25.png"
                         alt="Group 25"
+              width={1920}
+              height={100}
                         style={{ width: '100vw', height: 'auto', display: 'block' }}
                       />
-                      <img
+            <Image
                         src="/images/Line 44.png"
                         alt="Line 44"
+              width={1920}
+              height={100}
                         style={{ width: '100vw', height: 'auto', display: 'block' }}
                       />
-                    </div>
-                  </motion.form>
                 </div>
               </div>
            </motion.div>
-         ) : (
+
+      {/* Experience Preview Gallery */}
+      <motion.div 
+        ref={imagesRef}
+        className="w-full pb-20"
+        initial={{ opacity: 0 }}
+        animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 1.0, ease: "easeOut" }}
+      >
+        {/* First Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 mb-0 md:mb-4">
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <Image
+              src="/images/Room1.jpg"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
+              }}
+            />
+          </motion.div>
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+          >
+            <Image
+              src="/images/Room3.jpg"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
+              }}
+            />
+          </motion.div>
            <motion.div
-             key="success"
-             className="text-center py-24"
-             initial={{ opacity: 0, y: 20 }}
-             animate={{ opacity: 1, y: 0 }}
-           >
-             <h1 className="text-2xl md:text-3xl font-light tracking-wider mb-6">THANK YOU</h1>
-             <p className="text-gray-400 text-sm tracking-wide leading-relaxed max-w-md mx-auto">
-               You have been added to our waitlist. We will be in touch when new experiences become available.
-             </p>
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          >
+            <Image
+              src="/images/still5.png"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)',
+                objectPosition: 'center 35%'
+              }}
+            />
            </motion.div>
-         )}
-       </AnimatePresence>
-       
-       {/* Instagram Footer Section */}
-       <section className="text-center py-16 px-6 border-t border-gray-800">
-         <div className="max-w-xl mx-auto">
-           <p className="text-gray-400 text-sm mb-6" style={{ fontFamily: 'FragmentMono, monospace' }}>
-             Follow along for updates, behind-the-scenes, and announcements
-           </p>
-           <a
-             href="https://instagram.com/tarestudionyc"
-             target="_blank"
-             rel="noopener noreferrer"
-             className="inline-flex items-center gap-3 border border-white px-6 py-3 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300"
-             style={{ fontFamily: 'FragmentMono, monospace' }}
-           >
-             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/>
-             </svg>
-             @TARESTUDIONYC
-           </a>
-         </div>
-       </section>
+        </div>
+
+        {/* Second Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3">
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+          >
+            <Image
+              src="/images/still4.png"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
+              }}
+            />
+          </motion.div>
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+          >
+            <Image
+              src="/images/Still6.jpg"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)',
+                objectPosition: 'center 30%'
+              }}
+            />
+          </motion.div>
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+          >
+            <Image
+              src="/images/Room2.jpg"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
+              }}
+            />
+          </motion.div>
+        </div>
+      </motion.div>
+
     </main>
+  );
+}
+
+function StudioPageLoading() {
+  return (
+    <main className="min-h-screen text-white pt-8 md:pt-16 relative" style={{backgroundColor: '#2A2726'}}>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-400" style={{ fontFamily: 'FragmentMono, monospace' }}>Loading...</p>
+        </div>
+         </div>
+    </main>
+  );
+}
+
+export default function StudioPage() {
+  return (
+    <Suspense fallback={<StudioPageLoading />}>
+      <StudioPageContent />
+    </Suspense>
   );
 }
