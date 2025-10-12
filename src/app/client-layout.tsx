@@ -13,7 +13,7 @@ export default function ClientLayout({
   
   const copyEmailToClipboard = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const email = "chris@tarecoffeeroom.com";
+    const email = "chris@tarestudionyc.com";
     navigator.clipboard.writeText(email)
       .then(() => {
         setShowToast(true);
@@ -94,7 +94,7 @@ export default function ClientLayout({
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.3 }}
           >
-            chris@tarecoffeeroom.com copied
+            chris@tarestudionyc.com.com copied
           </motion.div>
         )}
       </AnimatePresence>

@@ -229,7 +229,7 @@ function StudioPageContent() {
             {/* Date and Time */}
             <div className="text-center space-y-2">
               <p className="text-white text-base sm:text-lg font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                Sunday, October 26, 2025
+                Sunday  ·  October 26  ·  2025
               </p>
               <p className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
                 11:00 AM - 1:00 PM
@@ -247,7 +247,7 @@ function StudioPageContent() {
             {/* Price */}
             <div className="text-center pt-2">
               <p className="text-white text-lg sm:text-xl font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                $90
+                $ 90
               </p>
             </div>
             

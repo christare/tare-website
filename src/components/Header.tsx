@@ -31,7 +31,7 @@ export default function Header() {
   const homeUrl = isProduction ? "/home" : "/home";
   const rootUrl = isProduction ? "/" : "/";
   const runwayUrl = isProduction ? "/runway" : "/runway";
-  const roomUrl = isProduction ? "/room" : "/room";
+  const waitlistUrl = isProduction ? "/waitlist" : "/waitlist";
   const studioUrl = isProduction ? "/" : "/";
 
   return (
@@ -57,26 +57,15 @@ export default function Header() {
               STUDIO
             </Link>
             <Link
-              href={roomUrl}
+              href={waitlistUrl}
               className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/room" 
+                pathname === "/waitlist" 
                   ? "text-white" 
                   : "text-gray-200 hover:text-white"
               }`}
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               WAITLIST
-            </Link>
-            <Link
-              href={runwayUrl}
-              className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/runway" 
-                  ? "text-white" 
-                  : "text-gray-200 hover:text-white"
-              }`}
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              RUNWAY
             </Link>
           </div>
           <a
@@ -105,26 +94,15 @@ export default function Header() {
             STUDIO
           </Link>
           <Link
-            href={roomUrl}
+            href={waitlistUrl}
             className={`text-base tracking-wide transition-colors duration-300 ${
-              pathname === "/room" 
+              pathname === "/waitlist" 
                 ? "text-white" 
                 : "text-gray-300 hover:text-white"
             }`}
             style={{ fontFamily: 'FragmentMono, monospace' }}
           >
             WAITLIST
-          </Link>
-          <Link
-            href={runwayUrl}
-            className={`text-base tracking-wide transition-colors duration-300 ${
-              pathname === "/runway" 
-                ? "text-white" 
-                : "text-gray-300 hover:text-white"
-            }`}
-            style={{ fontFamily: 'FragmentMono, monospace' }}
-          >
-            RUNWAY
           </Link>
         </nav>
         
