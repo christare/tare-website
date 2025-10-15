@@ -180,10 +180,12 @@ function StudioPageContent() {
               A Coffee Wellness Transformation
             </h2>
             <p className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base mb-3" style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}>
-              Meditation uses breath. Yoga uses movement. We use coffee.
+              Meditation uses breath.<br />
+              Yoga uses movement.<br />
+              We use coffee.
             </p>
             <p className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base" style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}>
-              A 90-minute guided experience using coffee as liquid, aroma, and texture to train your attention and enhance how you experience life.
+              A two-hour guided experience using coffee as liquid, aroma, and texture — sensory anchors to train your attention and enhance the way you experience everyday life.
             </p>
           </motion.div>
         </div>
