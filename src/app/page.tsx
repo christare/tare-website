@@ -185,7 +185,7 @@ function StudioPageContent() {
               We use coffee.
             </p>
             <p className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base" style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}>
-              A two-hour guided experience using coffee as liquid, aroma, and texture — sensory anchors to train your attention and enhance the way you experience everyday life.
+              A two-hour guided experience using coffee as liquid, aroma, and texture — training you to actually pay attention.
             </p>
           </motion.div>
         </div>
