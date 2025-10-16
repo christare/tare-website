@@ -311,7 +311,7 @@ function StudioPageContent() {
         animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 1.0, ease: "easeOut" }}
       >
-        {/* First Row */}
+        {/* First Row - Wellness Photos */}
         <div className="grid grid-cols-1 md:grid-cols-3 mb-0 md:mb-4">
           <motion.div 
             className="aspect-[4/5] overflow-hidden relative"
@@ -320,7 +320,7 @@ function StudioPageContent() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Image
-              src="/images/Room1.jpg"
+              src="/images/Photo Wellness 1.jpg"
               alt="TARE Studio Experience"
               width={400}
               height={500}
@@ -337,6 +337,61 @@ function StudioPageContent() {
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
           >
             <Image
+              src="/images/Photo Wellness 2.png"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
+              }}
+            />
+          </motion.div>
+          <motion.div
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          >
+            <Image
+              src="/images/Photo Wellness 3.jpg"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
+              }}
+            />
+          </motion.div>
+        </div>
+
+        {/* Second Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 mb-0 md:mb-4">
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+          >
+            <Image
+              src="/images/Room1.jpg"
+              alt="TARE Studio Experience"
+              width={400}
+              height={500}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              style={{ 
+                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
+              }}
+            />
+          </motion.div>
+          <motion.div 
+            className="aspect-[4/5] overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+          >
+            <Image
               src="/images/Room3.jpg"
               alt="TARE Studio Experience"
               width={400}
@@ -347,11 +402,11 @@ function StudioPageContent() {
               }}
             />
           </motion.div>
-           <motion.div
+          <motion.div
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
           >
             <Image
               src="/images/still5.png"
@@ -364,16 +419,16 @@ function StudioPageContent() {
                 objectPosition: 'center 35%'
               }}
             />
-           </motion.div>
+          </motion.div>
         </div>
 
-        {/* Second Row */}
+        {/* Third Row */}
         <div className="grid grid-cols-1 md:grid-cols-3">
           <motion.div 
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
           >
             <Image
               src="/images/still4.png"
@@ -390,7 +445,7 @@ function StudioPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.7 }}
           >
             <Image
               src="/images/Still6.jpg"
@@ -408,7 +463,7 @@ function StudioPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
           >
             <Image
               src="/images/Room2.jpg"
