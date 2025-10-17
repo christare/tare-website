@@ -14,9 +14,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-const airtableBaseId = process.env.AIRTABLE_BASE_ID!;
-const airtableTableName = process.env.AIRTABLE_TABLE_NAME!;
-const airtablePAT = process.env.AIRTABLE_PAT!;
+const airtableBaseId = process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!;
+const airtableTableName = process.env.NEXT_PUBLIC_AIRTABLE_TABLE!;
+const airtablePAT = process.env.NEXT_PUBLIC_AIRTABLE_PAT!;
 
 export async function POST(req: Request) {
   let event: Stripe.Event;
@@ -36,6 +36,11 @@ export async function POST(req: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
     const metadata = session.metadata || {};
+    
+    // Extract event date from metadata
+    const eventId = metadata.eventId;
+    const eventDate = eventId; // In our case, eventId is the date like '2025-10-26'
+    
     try {
       // Connect to Airtable
       const base = new Airtable({ apiKey: airtablePAT }).base(airtableBaseId);
@@ -53,6 +58,7 @@ export async function POST(req: Request) {
             'Stripe ID': session.id,
             'Amount Paid': session.amount_total ? session.amount_total / 100 : '',
             'Currency': session.currency || '',
+            'Event Date': eventDate, // Add the event date
           }
         }
       ]);

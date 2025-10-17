@@ -61,8 +61,26 @@ export async function POST(request: Request) {
       );
     }
     
-    const { priceId, type } = await request.json();
-    console.log('Received checkout request with:', { priceId, type });
+    const { priceId, type, eventId } = await request.json();
+    console.log('Received checkout request with:', { priceId, type, eventId });
+    
+    if (!eventId) {
+      return NextResponse.json(
+        { error: 'Event ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check seat availability using MongoDB
+    const seatsModule = await import('@/lib/seats');
+    const availableSeats = await seatsModule.getAvailableSeats(eventId);
+
+    if (availableSeats <= 0) {
+      return NextResponse.json(
+        { error: 'Sorry, this event is sold out' },
+        { status: 400 }
+      );
+    }
     
     if (!priceId) {
       return NextResponse.json(
@@ -74,10 +92,10 @@ export async function POST(request: Request) {
     // Base URL for redirects
     const baseUrl = process.env.VERCEL_ENV === 'production'
       ? 'https://tarecoffeeroom.com' 
-      : 'http://localhost:3000';
+      : 'http://localhost:3001'; // Use 3001 since dev server is on 3001
     
     const successUrl = `${baseUrl}/checkout/success?type=${type}`;
-    const cancelUrl = `${baseUrl}/checkout/canceled?type=${type}`;
+    const cancelUrl = `${baseUrl}/?from=canceled`;
     
     // Log request details
     console.log('Creating checkout session with:', { 
@@ -107,7 +125,8 @@ export async function POST(request: Request) {
       const result = await stripeModule.createCheckoutSession({
         priceId,
         successUrl,
-        cancelUrl
+        cancelUrl,
+        metadata: { eventId }
       });
       
       if (!result.success) {

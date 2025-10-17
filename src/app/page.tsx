@@ -11,6 +11,11 @@ function StudioPageContent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+  const [availableSeats, setAvailableSeats] = useState<number | null>(null);
+  const [isSoldOut, setIsSoldOut] = useState(false);
+
+  // Current event configuration - change this for each new event
+  const CURRENT_EVENT_ID = '2025-10-26';
 
   // Handle return from checkout (canceled or back button)
   useEffect(() => {
@@ -64,6 +69,30 @@ function StudioPageContent() {
       return () => clearTimeout(timeout);
     }
   }, [loadingPriceId]);
+
+  // Fetch availability on component mount and periodically
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      try {
+        const response = await fetch(`/api/availability?eventId=${CURRENT_EVENT_ID}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          setAvailableSeats(data.available);
+          setIsSoldOut(data.soldOut);
+        } else {
+          console.error('Error fetching availability:', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching availability:', error);
+      }
+    };
+    
+    fetchAvailability();
+    // Poll every 30 seconds for real-time updates
+    const interval = setInterval(fetchAvailability, 30000);
+    return () => clearInterval(interval);
+  }, [CURRENT_EVENT_ID]);
   
   const buttonsRef = useRef(null);
   const imagesRef = useRef(null);
@@ -71,6 +100,11 @@ function StudioPageContent() {
   const imagesInView = useInView(imagesRef, { once: true, margin: "-50px" });
 
   const handlePurchase = async (priceId: string) => {
+    if (isSoldOut) {
+      setError("Sorry, this event is sold out");
+      return;
+    }
+
     setLoadingPriceId(priceId);
     setError("");
     try {
@@ -82,7 +116,8 @@ function StudioPageContent() {
         },
         body: JSON.stringify({
           priceId: priceId,
-          type: "studio"
+          type: "studio",
+          eventId: CURRENT_EVENT_ID
         }),
       });
 
@@ -262,18 +297,24 @@ function StudioPageContent() {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <p className="text-gray-300 text-xs sm:text-sm mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                Limited seats available
+                {availableSeats !== null 
+                  ? `${availableSeats} seat${availableSeats !== 1 ? 's' : ''} remaining`
+                  : 'Limited seats available'}
               </p>
               <motion.button
                 onClick={() => handlePurchase('price_1SHQJQF5JUni5zIQzHCq9zox')}
-                disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox'}
+                disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' || isSoldOut}
                 className="inline-block border border-white px-8 py-3 text-xs sm:text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ fontFamily: 'FragmentMono, monospace' }}
                 initial={{ opacity: 0 }}
                 animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
               >
-                {loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' ? 'PROCESSING...' : 'RESERVE YOUR SEAT'}
+                {loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' 
+                  ? 'PROCESSING...' 
+                  : isSoldOut 
+                    ? 'SOLD OUT' 
+                    : 'RESERVE YOUR SEAT'}
               </motion.button>
               {error && (
                 <p className="text-red-400 text-xs mt-4" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
