@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       // Get promo code info if available
       let promoInfo = '';
       if (session.total_details?.amount_discount && session.total_details.amount_discount > 0) {
-        promoInfo = `coupon: None promotion_code: ${session.discount?.promotion_code || 'unknown'}`;
+        promoInfo = 'Promo code applied';
       }
       
       const fieldsToSave = {
@@ -76,8 +76,8 @@ export async function POST(req: Request) {
         'Phone': session.customer_details?.phone || '',
         'Email': session.customer_details?.email || '',
         'Amount Paid': `$${session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00'}`,
-        'Promo Code': promoInfo,
-        'Booking Type': bookingType,
+        'Coupon Used': promoInfo,
+        'Event': bookingType,
         'Event Date': eventDate,
       };
       
