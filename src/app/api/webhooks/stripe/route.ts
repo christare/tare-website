@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import Airtable from 'airtable';
+import { CURRENT_EVENT_ID } from '@/config/events';
 
 // Disable Next.js body parsing for this route
 export const config = {
@@ -14,8 +15,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-const airtableBaseId = process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!;
-const airtableTableName = process.env.NEXT_PUBLIC_AIRTABLE_TABLE!;
+// Use STUDIO-specific variables with fallback to general ones
+const airtableBaseId = process.env.NEXT_PUBLIC_AIRTABLE_STUDIO_BASE_ID || process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!;
+const airtableTableName = process.env.NEXT_PUBLIC_AIRTABLE_STUDIO_TABLE || process.env.NEXT_PUBLIC_AIRTABLE_TABLE!;
 const airtablePAT = process.env.NEXT_PUBLIC_AIRTABLE_PAT!;
 
 export async function POST(req: Request) {
@@ -37,56 +39,63 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const metadata = session.metadata || {};
     
-    // Extract event date from metadata
-    const eventId = metadata.eventId;
-    const eventDate = eventId; // In our case, eventId is the date like '2025-10-26'
+    // Always use the current event from central config - don't rely on Stripe metadata
+    const eventDate = CURRENT_EVENT_ID;
     
-    // Reserve seat in MongoDB (atomic operation)
-    if (eventId) {
-      try {
-        const { reserveSeat, recordBooking } = await import('@/lib/seats');
-        const reserved = await reserveSeat(eventId);
-        if (reserved) {
-          console.log('Seat reserved for event:', eventId);
-          
-          // Record the individual booking in MongoDB
-          await recordBooking({
-            eventId,
-            stripeSessionId: session.id,
-            customerEmail: session.customer_details?.email || '',
-            amountPaid: session.amount_total || 0,
-            bookingType: 'studio'
-          });
-          console.log('Booking record created for session:', session.id);
-        } else {
-          console.error('Failed to reserve seat for:', eventId);
-        }
-      } catch (error) {
-        console.error('Error reserving seat:', error);
-      }
+    // Safety check - make sure we have a valid event date
+    if (!eventDate) {
+      console.error('❌ CRITICAL: CURRENT_EVENT_ID is undefined! Event Date will not be saved.');
     }
+    
+    // Log successful payment/booking (including free ones)
+    console.log('🎫 Checkout completed:', {
+      sessionId: session.id,
+      email: session.customer_details?.email,
+      amount: session.amount_total,
+      isFree: session.amount_total === 0,
+      eventDate: eventDate,
+      eventDateType: typeof eventDate,
+      eventDateValue: JSON.stringify(eventDate)
+    });
     
     try {
       // Connect to Airtable
       const base = new Airtable({ apiKey: airtablePAT }).base(airtableBaseId);
-      await base(airtableTableName).create([
+      
+      // Extract booking type from metadata or default to 'TARE STUDIO'
+      const bookingType = metadata.bookingType || 'TARE STUDIO';
+      
+      // Get promo code info if available
+      let promoInfo = '';
+      if (session.total_details?.amount_discount && session.total_details.amount_discount > 0) {
+        promoInfo = `coupon: None promotion_code: ${session.discount?.promotion_code || 'unknown'}`;
+      }
+      
+      const fieldsToSave = {
+        'Name': session.customer_details?.name || metadata.guestName || '',
+        'Phone': session.customer_details?.phone || '',
+        'Email': session.customer_details?.email || '',
+        'Amount Paid': `$${session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00'}`,
+        'Promo Code': promoInfo,
+        'Booking Type': bookingType,
+        'Event Date': eventDate,
+      };
+      
+      console.log('📝 Attempting to save to Airtable with fields:', fieldsToSave);
+      
+      const airtableRecord = await base(airtableTableName).create([
         {
-          fields: {
-            'Name': metadata.guestName || '',
-            'Coffee Relationship': metadata.coffeeRelationship || '',
-            'Allergies': metadata.allergies || '',
-            'What Brought You': metadata.referralSource || '',
-            'Meaningful Details': metadata.meaningfulDetails || '',
-            'Instagram': metadata.instagram || '',
-            'Created': new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }),
-            'Stripe Email': session.customer_details?.email || '',
-            'Stripe ID': session.id,
-            'Amount Paid': session.amount_total ? session.amount_total / 100 : '',
-            'Currency': session.currency || '',
-            'Event Date': eventDate, // Add the event date
-          }
+          fields: fieldsToSave
         }
       ]);
+      
+      console.log('✅ Successfully saved to Airtable:', {
+        recordId: airtableRecord[0].id,
+        eventDate: eventDate,
+        email: session.customer_details?.email,
+        actualFieldsSaved: airtableRecord[0].fields
+      });
+      
       return NextResponse.json({ received: true });
     } catch (err) {
       console.error('Airtable error:', err);

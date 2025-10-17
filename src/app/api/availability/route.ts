@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAvailableSeats } from '@/lib/seats';
+import { getAvailableSeats } from '@/lib/airtable-seats';
 
 export async function GET(request: Request) {
   try {

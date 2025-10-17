@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import Image from "next/image";
+import { CURRENT_EVENT_ID } from "@/config/events";
 
 function StudioPageContent() {
   const router = useRouter();
@@ -14,8 +15,7 @@ function StudioPageContent() {
   const [availableSeats, setAvailableSeats] = useState<number | null>(null);
   const [isSoldOut, setIsSoldOut] = useState(false);
 
-  // Current event configuration - change this for each new event
-  const CURRENT_EVENT_ID = '2025-10-26';
+  // Event ID is imported from central config at top of file
 
   // Handle return from checkout (canceled or back button)
   useEffect(() => {

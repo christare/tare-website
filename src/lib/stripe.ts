@@ -94,6 +94,12 @@ export const createCheckoutSession = async ({
       mode: 'payment',
       success_url: successUrl,
       cancel_url: cancelUrl,
+      client_reference_id: metadata?.eventId || 'unknown', // Event date for Zapier to access
+      payment_intent_data: {
+        metadata: {
+          eventId: metadata?.eventId || 'unknown', // Also attach to payment intent
+        },
+      },
       allow_promotion_codes: true,
       phone_number_collection: {
         enabled: true,

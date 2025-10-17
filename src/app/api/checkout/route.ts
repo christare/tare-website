@@ -71,8 +71,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check seat availability using MongoDB
-    const seatsModule = await import('@/lib/seats');
+    // Check seat availability using Airtable
+    const seatsModule = await import('@/lib/airtable-seats');
     const availableSeats = await seatsModule.getAvailableSeats(eventId);
 
     if (availableSeats <= 0) {
