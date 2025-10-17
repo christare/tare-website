@@ -41,6 +41,31 @@ export async function POST(req: Request) {
     const eventId = metadata.eventId;
     const eventDate = eventId; // In our case, eventId is the date like '2025-10-26'
     
+    // Reserve seat in MongoDB (atomic operation)
+    if (eventId) {
+      try {
+        const { reserveSeat, recordBooking } = await import('@/lib/seats');
+        const reserved = await reserveSeat(eventId);
+        if (reserved) {
+          console.log('Seat reserved for event:', eventId);
+          
+          // Record the individual booking in MongoDB
+          await recordBooking({
+            eventId,
+            stripeSessionId: session.id,
+            customerEmail: session.customer_details?.email || '',
+            amountPaid: session.amount_total || 0,
+            bookingType: 'studio'
+          });
+          console.log('Booking record created for session:', session.id);
+        } else {
+          console.error('Failed to reserve seat for:', eventId);
+        }
+      } catch (error) {
+        console.error('Error reserving seat:', error);
+      }
+    }
+    
     try {
       // Connect to Airtable
       const base = new Airtable({ apiKey: airtablePAT }).base(airtableBaseId);
