@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import Airtable from 'airtable';
 
-// Initialize Airtable with Personal Access Token
+// Initialize Airtable with Personal Access Token for WAITLIST submissions
+// This uses the WAITLIST base: app8dactae5SQZLqH / tbl9pXSdHRIG47ad2
 const base = new Airtable({
   apiKey: process.env.NEXT_PUBLIC_AIRTABLE_PAT
-}).base(process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!);
+}).base(process.env.NEXT_PUBLIC_AIRTABLE_WAITLIST_BASE_ID || process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!);
 
 // Validation functions
 const isValidEmail = (email: string) => {
@@ -46,17 +47,19 @@ export async function POST(request: Request) {
 
     const formattedPhone = formatPhone(data.phone);
     
-    console.log('Submitting to Airtable with:', {
-      baseId: process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID,
-      table: process.env.NEXT_PUBLIC_AIRTABLE_TABLE,
+    const tableName = process.env.NEXT_PUBLIC_AIRTABLE_WAITLIST_TABLE || process.env.NEXT_PUBLIC_AIRTABLE_TABLE!;
+    
+    console.log('Submitting to Airtable WAITLIST with:', {
+      baseId: process.env.NEXT_PUBLIC_AIRTABLE_WAITLIST_BASE_ID || process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID,
+      table: tableName,
       data: {
         ...data,
         phone: formattedPhone
       }
     });
     
-    // Create record in Airtable
-    const record = await base(process.env.NEXT_PUBLIC_AIRTABLE_TABLE!).create([
+    // Create record in Airtable WAITLIST table
+    const record = await base(tableName).create([
       {
         fields: {
           'First Name': data.firstName,
