@@ -1,0 +1,976 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+
+// Clean up - no longer needed font declarations
+
+interface FormData {
+  phoneNumber: string;
+  preferredName: string;
+  attendingWith: string;
+  attendingWithWho: string;
+  pronouns: string;
+  coffeeRelationship: string;
+  meditationExperience: string;
+  intentions: string;
+  dietaryRestrictions: string;
+  scentSensitivity: string;
+  howHeard: string;
+}
+
+export default function GuestFormPage() {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    phoneNumber: "",
+    preferredName: "",
+    attendingWith: "",
+    attendingWithWho: "",
+    pronouns: "",
+    coffeeRelationship: "",
+    meditationExperience: "",
+    intentions: "",
+    dietaryRestrictions: "",
+    scentSensitivity: "",
+    howHeard: ""
+  });
+
+  // Calculate total steps (some are conditional)
+  const getTotalSteps = () => {
+    let total = 10; // Base steps
+    if (formData.attendingWith.toLowerCase().includes('yes')) {
+      total += 1; // Add "attending with who" step
+    }
+    return total;
+  };
+
+  // Redirect to home after successful submission
+  useEffect(() => {
+    if (submitted) {
+      const timer = setTimeout(() => {
+        router.push("/");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [submitted, router]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleNext = () => {
+    // Skip "attending with who" if they said no
+    if (currentStep === 2 && !formData.attendingWith.toLowerCase().includes('yes')) {
+      setCurrentStep(currentStep + 2);
+    } else {
+      setCurrentStep(currentStep + 1);
+    }
+    setError("");
+  };
+
+  const handleBack = () => {
+    // Skip "attending with who" when going back if they said no
+    if (currentStep === 4 && !formData.attendingWith.toLowerCase().includes('yes')) {
+      setCurrentStep(currentStep - 2);
+    } else {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent, isRequired: boolean = false) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+      if (isRequired && !target.value.trim()) {
+        setError("This field is required");
+        return;
+      }
+      if (currentStep < getTotalSteps()) {
+        handleNext();
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/guest-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error("Form submission error:", data);
+        setError(data.details?.message || data.error || "Failed to submit preferences");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Handle successful submission
+      console.log("Guest preferences submitted successfully:", data);
+      setIsLoading(false);
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Form submission error:", err);
+      setError("Something went wrong with the form submission");
+      setIsLoading(false);
+    }
+  };
+
+  // Animation variants
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
+
+  const [[page, direction], setPage] = useState([0, 0]);
+
+  const paginate = (newDirection: number) => {
+    setPage([page + newDirection, newDirection]);
+  };
+
+  // Step rendering function
+  const renderStep = () => {
+    const name = formData.preferredName || "there";
+    
+    switch (currentStep) {
+      case 0:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Welcome to TARE
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Let's start with your contact information
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Phone Number <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                onKeyPress={(e) => handleKeyPress(e, true)}
+                required
+                autoFocus
+                placeholder="The number from your reservation"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+      
+      case 1:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Nice to meet you 👋
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                What should we call you?
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Preferred Name <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="text"
+                name="preferredName"
+                value={formData.preferredName}
+                onChange={handleChange}
+                onKeyPress={(e) => handleKeyPress(e)}
+                autoFocus
+                placeholder="e.g., Chris, Christina, C"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                {name ? `${name}, are` : "Are"} you joining us with anyone?
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                This helps us with seating arrangements
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Attending With Someone? <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="text"
+                name="attendingWith"
+                value={formData.attendingWith}
+                onChange={handleChange}
+                onKeyPress={(e) => handleKeyPress(e)}
+                autoFocus
+                placeholder="Yes / No"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      case 3:
+        if (!formData.attendingWith.toLowerCase().includes('yes')) {
+          handleNext();
+          return null;
+        }
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Who will you be joining with?
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Their name(s) help us seat you together
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Guest Name(s) <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="text"
+                name="attendingWithWho"
+                value={formData.attendingWithWho}
+                onChange={handleChange}
+                onKeyPress={(e) => handleKeyPress(e)}
+                autoFocus
+                placeholder="e.g., Sarah Chen, Jordan Lee"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                What are your pronouns?
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Helps us address you respectfully
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Pronouns <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="text"
+                name="pronouns"
+                value={formData.pronouns}
+                onChange={handleChange}
+                onKeyPress={(e) => handleKeyPress(e)}
+                autoFocus
+                placeholder="e.g., she/her, he/him, they/them"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Tell us about your coffee journey ☕
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Daily ritual? Occasional treat? Coffee professional?
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Your Coffee Relationship <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <textarea
+                name="coffeeRelationship"
+                value={formData.coffeeRelationship}
+                onChange={handleChange}
+                autoFocus
+                rows={4}
+                placeholder="e.g., Daily ritual with a home espresso setup, always experimenting with new beans and brew methods..."
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white resize-none transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      case 6:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                {name ? `${name}, how's` : "How's"} your meditation practice? 🧘
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Daily meditator? Curious beginner? Never tried?
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Wellness Experience <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <textarea
+                name="meditationExperience"
+                value={formData.meditationExperience}
+                onChange={handleChange}
+                autoFocus
+                rows={3}
+                placeholder="e.g., Daily meditator for 2 years / Complete beginner, curious to try / Yoga practitioner, new to breathwork"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white resize-none transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      case 7:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                What brought you to TARE? ✨
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                What are you hoping to experience or discover?
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Your Intentions <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <textarea
+                name="intentions"
+                value={formData.intentions}
+                onChange={handleChange}
+                autoFocus
+                rows={4}
+                placeholder="e.g., Learn to taste coffee more deeply / Celebrate a special occasion / Connect with like-minded people / Explore mindfulness through a new lens"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white resize-none transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      case 8:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Let's talk food & senses 🌾
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                We're pairing coffee with cereal
+              </p>
+            </motion.div>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                  Dietary Restrictions <span className="text-xs text-gray-500">(optional)</span>
+                </label>
+                <textarea
+                  name="dietaryRestrictions"
+                  value={formData.dietaryRestrictions}
+                  onChange={handleChange}
+                  autoFocus
+                  rows={2}
+                  placeholder="e.g., Gluten-free, dairy allergy, vegetarian, none"
+                  className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white resize-none transition-colors"
+                  style={{ fontFamily: 'FragmentMono, monospace' }}
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      case 9:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Sensitive to strong scents?
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                We use potent aromas as part of the experience
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Scent Sensitivity <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="text"
+                name="scentSensitivity"
+                value={formData.scentSensitivity}
+                onChange={handleChange}
+                onKeyPress={(e) => handleKeyPress(e)}
+                autoFocus
+                placeholder="e.g., Yes, sensitive to strong perfumes / No sensitivities"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      case 10:
+        return (
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-2xl md:text-3xl font-light mb-4 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Last question! How did you hear about us?
+              </p>
+              <p className="text-gray-400 text-sm mb-8" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Helps us know what's working
+              </p>
+            </motion.div>
+            <div>
+              <label className="block text-sm font-light mb-3 tracking-wide text-gray-300" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                How You Found Us <span className="text-xs text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="text"
+                name="howHeard"
+                value={formData.howHeard}
+                onChange={handleChange}
+                onKeyPress={(e) => handleKeyPress(e)}
+                autoFocus
+                placeholder="e.g., Instagram, friend referral, coffee shop, press"
+                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-lg tracking-wide placeholder-gray-600 text-white transition-colors"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              />
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <main className="min-h-screen text-white" style={{backgroundColor: '#2A2726'}}>
+      <AnimatePresence mode="wait">
+        {submitted ? (
+          <motion.div
+            key="success"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            transition={{ duration: 0.6, ease: [0.04, 0.62, 0.23, 0.98] }}
+            className="min-h-screen flex flex-col items-center justify-center px-6"
+          >
+            <motion.div className="text-center">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.2, 1] }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="mb-8"
+              >
+                <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
+                  <span className="text-5xl">✓</span>
+                </div>
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-4xl md:text-5xl font-light mb-6 tracking-wide" 
+                style={{ fontFamily: 'NonBureauExtended, sans-serif' }}
+              >
+                {formData.preferredName ? `Thank you, ${formData.preferredName}` : "Thank You"}
+              </motion.h1>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <div className="w-16 h-px bg-gray-400 mx-auto mb-8 opacity-80" />
+                <p className="text-gray-300 text-lg mb-4" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                  We can't wait to share this experience with you
+                </p>
+                <p className="text-gray-400 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                  See you soon at TARE...
+                </p>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        ) : (
+          <div key="form" className="min-h-screen flex flex-col">
+            {/* Progress Bar */}
+            <div className="fixed top-0 left-0 right-0 h-1 bg-gray-800 z-50">
+              <motion.div
+                className="h-full bg-gradient-to-r from-[#D4A574] to-[#C4956A]"
+                initial={{ width: "0%" }}
+                animate={{ width: `${((currentStep + 1) / (getTotalSteps() + 1)) * 100}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+
+            {/* Header with Logo */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center pt-16 pb-8"
+            >
+              <h1 className="text-2xl md:text-3xl font-light tracking-wide text-gray-300" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                TARE Pre-Event Form
+              </h1>
+              <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Step {currentStep + 1} of {getTotalSteps() + 1}
+              </p>
+            </motion.div>
+
+            {/* Step Container */}
+            <div className="flex-1 flex items-center justify-center px-6 pb-32">
+              <div className="w-full max-w-2xl">
+                <AnimatePresence mode="wait" custom={direction}>
+                  <motion.div
+                    key={currentStep}
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{
+                      x: { type: "spring", stiffness: 300, damping: 30 },
+                      opacity: { duration: 0.2 }
+                    }}
+                  >
+                    {renderStep()}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <div className="fixed bottom-0 left-0 right-0 bg-[#2A2726]/95 backdrop-blur-sm border-t border-gray-800 p-6">
+              <div className="max-w-2xl mx-auto flex justify-between items-center gap-4">
+                {/* Back Button */}
+                {currentStep > 0 && (
+                  <motion.button
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    onClick={handleBack}
+                    className="px-6 py-3 text-sm tracking-wide text-gray-400 hover:text-white transition-colors"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  >
+                    ← Back
+                  </motion.button>
+                )}
+                
+                <div className="flex-1" />
+
+                {/* Skip/Continue Buttons */}
+                <div className="flex gap-3">
+                  {currentStep > 0 && currentStep < getTotalSteps() && (
+                    <motion.button
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      onClick={handleNext}
+                      className="px-6 py-3 text-sm tracking-wide text-gray-500 hover:text-gray-300 transition-colors"
+                      style={{ fontFamily: 'FragmentMono, monospace' }}
+                    >
+                      Skip
+                    </motion.button>
+                  )}
+                  
+                  {currentStep < getTotalSteps() ? (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      onClick={() => {
+                        if (currentStep === 0 && !formData.phoneNumber) {
+                          setError("Phone number is required");
+                          return;
+                        }
+                        handleNext();
+                      }}
+                      className="px-8 py-3 bg-white text-black text-sm tracking-wide hover:bg-gray-200 transition-all duration-300"
+                      style={{ fontFamily: 'FragmentMono, monospace' }}
+                    >
+                      Continue →
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      onClick={handleSubmit}
+                      disabled={isLoading || !formData.phoneNumber}
+                      className="px-8 py-3 bg-white text-black text-sm tracking-wide hover:bg-gray-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ fontFamily: 'FragmentMono, monospace' }}
+                    >
+                      {isLoading ? "Submitting..." : "Submit ✓"}
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+
+              {/* Error Message */}
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="max-w-2xl mx-auto mt-4"
+                  >
+                    <p className="text-red-400 text-sm text-center" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                      {error}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
+            <label className="block text-sm font-light mb-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              Are you attending with anyone else?
+            </label>
+            <input
+              type="text"
+              name="attendingWith"
+              value={formData.attendingWith}
+              onChange={handleChange}
+              placeholder="Yes / No"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Attending With Who */}
+          <motion.div variants={itemVariants}>
+            <label className="block text-sm font-light mb-2 tracking-wide text-gray-400" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              If yes, who? <span className="text-xs">(Helps us with seating)</span>
+            </label>
+            <input
+              type="text"
+              name="attendingWithWho"
+              value={formData.attendingWithWho}
+              onChange={handleChange}
+              placeholder="e.g., Sarah Chen, Jordan Lee"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Pronouns */}
+          <motion.div variants={itemVariants}>
+            <label className="block text-sm font-light mb-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              What are your pronouns?
+            </label>
+            <input
+              type="text"
+              name="pronouns"
+              value={formData.pronouns}
+              onChange={handleChange}
+              placeholder="e.g., she/her, he/him, they/them"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Visual Divider */}
+          <motion.div variants={itemVariants} className="py-8">
+            <div className="w-full h-px bg-gray-700 opacity-30" />
+          </motion.div>
+
+          {/* Section: Coffee Background */}
+          <motion.div variants={itemVariants}>
+            <h2 className="text-xl font-light mb-3 tracking-wider" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+              Coffee Background
+            </h2>
+            <p className="text-xs text-gray-400 mb-8 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              Tell us how coffee fits into your life
+            </p>
+          </motion.div>
+
+          {/* Coffee Relationship */}
+          <motion.div variants={itemVariants}>
+            <label className="block text-sm font-light mb-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              What's your relationship with coffee?
+            </label>
+            <textarea
+              name="coffeeRelationship"
+              value={formData.coffeeRelationship}
+              onChange={handleChange}
+              rows={3}
+              placeholder="e.g., Daily ritual with a home espresso setup / Casual drinker exploring specialty coffee / Coffee professional working in the industry"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white resize-none"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Visual Divider */}
+          <motion.div variants={itemVariants} className="py-8">
+            <div className="w-full h-px bg-gray-700 opacity-30" />
+          </motion.div>
+
+          {/* Section: Meditation & Wellness */}
+          <motion.div variants={itemVariants}>
+            <h2 className="text-xl font-light mb-3 tracking-wider" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+              Meditation & Wellness Practice
+            </h2>
+            <p className="text-xs text-gray-400 mb-8 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              Have you explored meditation, breathwork, yoga, or similar practices?
+            </p>
+          </motion.div>
+
+          {/* Wellness Experience */}
+          <motion.div variants={itemVariants}>
+            <label className="block text-sm font-light mb-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              What's your experience with wellness or meditation practices?
+            </label>
+            <textarea
+              name="meditationExperience"
+              value={formData.meditationExperience}
+              onChange={handleChange}
+              rows={3}
+              placeholder="e.g., Daily meditator for 2 years / Complete beginner, curious to try / Yoga practitioner, new to breathwork"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white resize-none"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Visual Divider */}
+          <motion.div variants={itemVariants} className="py-8">
+            <div className="w-full h-px bg-gray-700 opacity-30" />
+          </motion.div>
+
+          {/* Section: Intentions */}
+          <motion.div variants={itemVariants}>
+            <h2 className="text-xl font-light mb-3 tracking-wider" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+              Intentions
+            </h2>
+            <p className="text-xs text-gray-400 mb-8 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              What drew you here and what would make this valuable?
+            </p>
+          </motion.div>
+
+          {/* Intentions */}
+          <motion.div variants={itemVariants}>
+            <label className="block text-sm font-light mb-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              What are you hoping to get from this experience?
+            </label>
+            <textarea
+              name="intentions"
+              value={formData.intentions}
+              onChange={handleChange}
+              rows={4}
+              placeholder="e.g., Learn to taste coffee more deeply / Celebrate a special occasion / Connect with like-minded people / Explore mindfulness through a new lens"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white resize-none"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Visual Divider */}
+          <motion.div variants={itemVariants} className="py-8">
+            <div className="w-full h-px bg-gray-700 opacity-30" />
+          </motion.div>
+
+          {/* Section: Dietary & Sensory */}
+          <motion.div variants={itemVariants}>
+            <h2 className="text-xl font-light mb-8 tracking-wider" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+              Dietary & Sensory Notes
+            </h2>
+          </motion.div>
+
+          {/* Dietary Restrictions */}
+          <motion.div variants={itemVariants}>
+            <label className="block text-sm font-light mb-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              Any dietary restrictions or allergies?
+            </label>
+            <p className="text-xs text-gray-400 mb-3" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              We're serving coffee with cereal as a pairing
+            </p>
+            <textarea
+              name="dietaryRestrictions"
+              value={formData.dietaryRestrictions}
+              onChange={handleChange}
+              rows={2}
+              placeholder="e.g., Gluten-free, dairy allergy, vegetarian, none"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white resize-none"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Scent Sensitivity */}
+          <motion.div variants={itemVariants}>
+            <label className="block text-sm font-light mb-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              Do you have sensitivities to strong scents or fragrances?
+            </label>
+            <p className="text-xs text-gray-400 mb-3" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              We use potent aromas as part of the sensory protocol
+            </p>
+            <input
+              type="text"
+              name="scentSensitivity"
+              value={formData.scentSensitivity}
+              onChange={handleChange}
+              placeholder="e.g., Yes, sensitive to strong perfumes / No sensitivities"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Visual Divider */}
+          <motion.div variants={itemVariants} className="py-8">
+            <div className="w-full h-px bg-gray-700 opacity-30" />
+          </motion.div>
+
+          {/* How You Found Us */}
+          <motion.div variants={itemVariants}>
+            <label className="block text-sm font-light mb-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              How did you hear about TARE?
+            </label>
+            <input
+              type="text"
+              name="howHeard"
+              value={formData.howHeard}
+              onChange={handleChange}
+              placeholder="e.g., Instagram, friend referral, coffee shop, press"
+              className="w-full bg-transparent border-b border-gray-700 focus:outline-none focus:border-white py-3 text-sm tracking-wide placeholder-gray-500 text-white"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            />
+          </motion.div>
+
+          {/* Submit Button */}
+          <motion.div variants={itemVariants} className="pt-12">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full border border-white px-8 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              {isLoading ? "SUBMITTING..." : "SUBMIT PREFERENCES"}
+            </button>
+            
+            {error && (
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-red-400 text-sm mt-4 text-center"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                {error}
+              </motion.p>
+            )}
+          </motion.div>
+        </motion.form>
+
+        {/* Bottom visual divider */}
+        <motion.div variants={itemVariants} className="pt-16">
+          <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }}>
+            <Image
+              src="/images/Line 44.png"
+              alt="Line 44"
+              width={1920}
+              height={100}
+              style={{ width: '100vw', height: 'auto', display: 'block', opacity: '0.3' }}
+            />
+          </div>
+        </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}

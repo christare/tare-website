@@ -2,13 +2,26 @@ import { NextResponse } from 'next/server';
 import Airtable from 'airtable';
 
 interface GuestFormData {
+  phoneNumber: string;
   preferredName: string;
-  allergies: string;
+  attendingWith: string;
+  attendingWithWho: string;
+  pronouns: string;
   coffeeRelationship: string;
-  excitement: string;
-  meaningfulDetails: string;
-  joiningTogether: string;
-  photoConsent: string;
+  wellnessExperience: string;
+  intentions: string;
+  dietaryRestrictions: string;
+  scentSensitivity: string;
+  howHeard: string;
+}
+
+// Phone normalization utility
+function normalizePhone(phone: string): string {
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 11 && cleaned.startsWith('1')) {
+    return cleaned.substring(1);
+  }
+  return cleaned;
 }
 
 export async function POST(request: Request) {
@@ -21,17 +34,23 @@ export async function POST(request: Request) {
     // Submit to Airtable
     try {
       const base = new Airtable({ apiKey: process.env.AIRTABLE_PAT }).base(process.env.AIRTABLE_GUESTFORM_BASE_ID!);
+      const normalizedPhone = normalizePhone(formData.phoneNumber || '');
       
       await base(process.env.AIRTABLE_GUESTFORM_TABLE_ID!).create([
         {
           fields: {
+            'Phone Number': formData.phoneNumber || '',
+            'Phone Normalized': normalizedPhone,
             'Preferred Name': formData.preferredName || '',
-            'Allergies and Dietary': formData.allergies || '',
+            'Attending With': formData.attendingWith || '',
+            'Attending With Who': formData.attendingWithWho || '',
+            'Pronouns': formData.pronouns || '',
             'Coffee Relationship': formData.coffeeRelationship || '',
-            'Excited or Curious': formData.excitement || '',
-            'How to Make It Meaningful': formData.meaningfulDetails || '',
-            'Attending With': formData.joiningTogether || '',
-            'Comfortable with Photos': formData.photoConsent || '',
+            'Wellness Experience': formData.wellnessExperience || '',
+            'Intentions': formData.intentions || '',
+            'Dietary Restrictions': formData.dietaryRestrictions || '',
+            'Scent Sensitivity': formData.scentSensitivity || '',
+            'How Heard': formData.howHeard || '',
           }
         }
       ]);
