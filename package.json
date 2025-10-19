@@ -16,7 +16,8 @@
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "stripe": "^18.0.0"
+    "stripe": "^18.0.0",
+    "twilio": "^5.10.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

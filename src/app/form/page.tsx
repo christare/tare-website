@@ -656,11 +656,14 @@ export default function GuestFormPage() {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center pt-16 pb-8"
+              className="text-center pt-16 pb-8 px-6"
             >
               <h1 className="text-2xl md:text-3xl font-light tracking-wide text-gray-300" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
                 TARE Pre-Event Form
               </h1>
+              <p className="text-sm text-gray-400 mt-4 mb-3 max-w-xl mx-auto leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                We use these responses to personalize your experience and create the best session possible
+              </p>
               <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
                 Step {currentStep + 1} of {getTotalSteps() + 1}
               </p>

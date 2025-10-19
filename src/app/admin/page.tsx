@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { CURRENT_EVENT_ID } from '@/config/events';
+import { CURRENT_EVENT_ID, CURRENT_EVENT_CONFIG } from '@/config/events';
 
 interface Booking {
   id: string;
@@ -15,6 +15,9 @@ interface Booking {
     'Coupon Used'?: string;
     'Event'?: string;
     'Event Date'?: string;
+    'Confirmation Text Sent'?: boolean;
+    'Confirmation Message'?: string;
+    'Confirmation Sent At'?: string;
   };
   guestFormSubmitted?: boolean;
   guestForm?: any;
@@ -60,6 +63,10 @@ export default function AdminPage() {
   const [guestForms, setGuestForms] = useState<GuestForm[]>([]);
   const [unmatchedForms, setUnmatchedForms] = useState<GuestForm[]>([]);
   const [selectedGuestForm, setSelectedGuestForm] = useState<GuestForm | null>(null);
+  const [sendingConfirmation, setSendingConfirmation] = useState<string | null>(null);
+  const [selectedConfirmationMessage, setSelectedConfirmationMessage] = useState<{booking: Booking, message: string} | null>(null);
+  const [confirmationPreview, setConfirmationPreview] = useState<{booking: Booking, message: string} | null>(null);
+  const [editedMessage, setEditedMessage] = useState('');
 
   const ADMIN_PASSWORD = 'tareadmin';
 
@@ -140,6 +147,75 @@ export default function AdminPage() {
       setError('Connection failed');
     }
     setLoading(false);
+  };
+
+  // Generate preview message
+  const generatePreviewMessage = (booking: Booking): string => {
+    const name = booking.fields['Name'] || null;
+    const eventDate = booking.fields['Event'] || CURRENT_EVENT_CONFIG.eventId;
+    
+    // Format date
+    const date = new Date(eventDate + 'T12:00:00');
+    const formattedDate = date.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    
+    const greeting = name ? `Hey ${name}` : 'Hey there';
+    
+    return `${greeting}, your spot at TARE on ${formattedDate} is confirmed.
+
+Complete your pre-event form, which will help us tailor the experience to our group:
+tarestudionyc.com/form
+
+📍 ${CURRENT_EVENT_CONFIG.address}
+
+🕐 ${CURRENT_EVENT_CONFIG.eventTime}
+   Doors open: ${CURRENT_EVENT_CONFIG.doorsOpen}
+
+When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${CURRENT_EVENT_CONFIG.contactName} at ${CURRENT_EVENT_CONFIG.contactPhone}.`;
+  };
+
+  // Open preview modal
+  const handleOpenConfirmationPreview = (booking: Booking) => {
+    const message = generatePreviewMessage(booking);
+    setEditedMessage(message);
+    setConfirmationPreview({ booking, message });
+  };
+
+  // Send the confirmation with edited message
+  const handleSendConfirmation = async (bookingId: string, customMessage?: string) => {
+    setSendingConfirmation(bookingId);
+    try {
+      const response = await fetch('/api/admin/send-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          bookingId,
+          customMessage: customMessage || undefined
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        alert(`Failed to send confirmation: ${data.error || 'Unknown error'}`);
+        return;
+      }
+
+      // Success - close modal and refresh data
+      setConfirmationPreview(null);
+      await fetchData();
+      alert('Confirmation SMS sent successfully!');
+    } catch (error) {
+      console.error('Error sending confirmation:', error);
+      alert('Failed to send confirmation SMS');
+    } finally {
+      setSendingConfirmation(null);
+    }
   };
 
   useEffect(() => {
@@ -393,6 +469,7 @@ export default function AdminPage() {
                     <th className={`text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap ${showExtraColumns ? '' : 'hidden md:table-cell'}`} style={{ fontFamily: 'FragmentMono, monospace' }}>EVENT</th>
                     <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>EVENT DATE</th>
                     <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>FORM STATUS</th>
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>CONFIRMATION</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -435,6 +512,32 @@ export default function AdminPage() {
                           </button>
                         ) : (
                           <span className="text-[#8B7F6F]">⬜ Not Submitted</span>
+                        )}
+                      </td>
+                      <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {booking.fields['Confirmation Text Sent'] ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#7FB069]">✅ Sent</span>
+                            {booking.fields['Confirmation Message'] && (
+                              <button
+                                onClick={() => setSelectedConfirmationMessage({ 
+                                  booking, 
+                                  message: booking.fields['Confirmation Message']! 
+                                })}
+                                className="text-[#A39B8B] hover:text-white text-xs underline"
+                              >
+                                View
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleOpenConfirmationPreview(booking)}
+                            disabled={!booking.fields['Phone']}
+                            className="px-4 py-1 bg-[#D4A574] text-black text-xs tracking-wide hover:bg-[#C4956A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Send
+                          </button>
                         )}
                       </td>
                     </motion.tr>
@@ -698,6 +801,152 @@ export default function AdminPage() {
                   <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
                     {selectedGuestForm.fields['How Heard'] || '—'}
                   </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Confirmation Preview/Edit Modal */}
+        {confirmationPreview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50"
+            onClick={() => setConfirmationPreview(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#2A2726] border border-[#3A3736] max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-[#3A3736] flex justify-between items-center sticky top-0 bg-[#2A2726] z-10">
+                <h2 className="text-sm tracking-[0.3em]" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                  PREVIEW & EDIT MESSAGE
+                </h2>
+                <button
+                  onClick={() => setConfirmationPreview(null)}
+                  className="text-[#A39B8B] hover:text-[#E8E3DD] text-2xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <div>
+                  <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                    SENDING TO
+                  </p>
+                  <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                    {confirmationPreview.booking.fields['Name'] || 'Guest'} - {confirmationPreview.booking.fields['Phone']}
+                  </p>
+                </div>
+
+                <div className="w-full h-px bg-[#3A3736]" />
+
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <p className="text-xs text-[#A39B8B] tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                      MESSAGE (EDIT AS NEEDED)
+                    </p>
+                    <p className="text-xs text-[#5A544B]" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                      {editedMessage.length} chars
+                    </p>
+                  </div>
+                  <textarea
+                    value={editedMessage}
+                    onChange={(e) => setEditedMessage(e.target.value)}
+                    rows={16}
+                    className="w-full bg-[#1A1816] p-4 rounded border border-[#3A3736] text-sm text-white resize-none focus:outline-none focus:border-[#D4A574] transition-colors"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => setConfirmationPreview(null)}
+                    className="flex-1 px-6 py-3 border border-[#3A3736] text-[#A39B8B] text-sm tracking-wide hover:bg-[#3A3736] transition-colors"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleSendConfirmation(confirmationPreview.booking.id, editedMessage)}
+                    disabled={sendingConfirmation === confirmationPreview.booking.id || !editedMessage.trim()}
+                    className="flex-1 px-6 py-3 bg-[#D4A574] text-black text-sm tracking-wide hover:bg-[#C4956A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  >
+                    {sendingConfirmation === confirmationPreview.booking.id ? 'Sending...' : 'Send SMS →'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Confirmation Message Modal (View Sent) */}
+        {selectedConfirmationMessage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50"
+            onClick={() => setSelectedConfirmationMessage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#2A2726] border border-[#3A3736] max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-[#3A3736] flex justify-between items-center sticky top-0 bg-[#2A2726] z-10">
+                <h2 className="text-sm tracking-[0.3em]" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                  SENT CONFIRMATION
+                </h2>
+                <button
+                  onClick={() => setSelectedConfirmationMessage(null)}
+                  className="text-[#A39B8B] hover:text-[#E8E3DD] text-2xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <div>
+                  <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                    SENT TO
+                  </p>
+                  <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                    {selectedConfirmationMessage.booking.fields['Name'] || 'Guest'} - {selectedConfirmationMessage.booking.fields['Phone']}
+                  </p>
+                </div>
+
+                {selectedConfirmationMessage.booking.fields['Confirmation Sent At'] && (
+                  <div>
+                    <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                      SENT AT
+                    </p>
+                    <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                      {new Date(selectedConfirmationMessage.booking.fields['Confirmation Sent At']).toLocaleString()}
+                    </p>
+                  </div>
+                )}
+
+                <div className="w-full h-px bg-[#3A3736]" />
+
+                <div>
+                  <p className="text-xs text-[#A39B8B] mb-3 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                    MESSAGE CONTENT
+                  </p>
+                  <div className="bg-[#1A1816] p-4 rounded border border-[#3A3736]">
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                      {selectedConfirmationMessage.message}
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>

@@ -25,7 +25,17 @@ export const CURRENT_EVENT_CONFIG = {
   totalSeats: 16,
   
   // Event display name (optional)
-  displayName: 'TARE STUDIO - October 26, 2025'
+  displayName: 'TARE STUDIO - October 26, 2025',
+  
+  // Event time details for confirmation messages
+  eventTime: '11:00 AM - 1:00 PM',
+  doorsOpen: '10:45 AM', // 15 mins before start
+  
+  // Location details
+  address: '231 West 29th St, New York, NY 10001',
+  buzzer: '1207',
+  contactPhone: '4157079319',
+  contactName: 'Chris'
 };
 
 // Export individual values for convenience
