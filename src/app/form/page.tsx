@@ -41,13 +41,9 @@ export default function GuestFormPage() {
     howHeard: ""
   });
 
-  // Calculate total steps (some are conditional)
+  // Calculate total steps
   const getTotalSteps = () => {
-    let total = 10; // Base steps
-    if (formData.attendingWith.toLowerCase().includes('yes')) {
-      total += 1; // Add "attending with who" step
-    }
-    return total;
+    return 9; // Fixed number of steps
   };
 
   // Redirect to home after successful submission
@@ -70,23 +66,13 @@ export default function GuestFormPage() {
 
   const handleNext = () => {
     setDirection(1);
-    // Skip "attending with who" if they said no
-    if (currentStep === 2 && !formData.attendingWith.toLowerCase().includes('yes')) {
-      setCurrentStep(currentStep + 2);
-    } else {
-      setCurrentStep(currentStep + 1);
-    }
+    setCurrentStep(currentStep + 1);
     setError("");
   };
 
   const handleBack = () => {
     setDirection(-1);
-    // Skip "attending with who" when going back if they said no
-    if (currentStep === 4 && !formData.attendingWith.toLowerCase().includes('yes')) {
-      setCurrentStep(currentStep - 2);
-    } else {
-      setCurrentStep(currentStep - 1);
-    }
+    setCurrentStep(currentStep - 1);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent, isRequired: boolean = false) => {
@@ -330,10 +316,10 @@ export default function GuestFormPage() {
                 transition={{ delay: 0.2 }}
               >
                 <p className="text-3xl md:text-4xl font-light mb-2 leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                  Are you attending with anyone else?
+                  Are you attending with anyone?
                 </p>
                 <p className="text-gray-400 text-sm italic" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                  Helps us with seating and group dynamics
+                  If yes, write their name(s). This helps us with seating and group dynamics.
                 </p>
               </motion.div>
               <input
@@ -343,7 +329,7 @@ export default function GuestFormPage() {
                 onChange={handleChange}
                 onKeyPress={(e) => handleKeyPress(e)}
                 autoFocus
-                placeholder="Yes / No"
+                placeholder="e.g., Sarah and John, or just skip if attending alone"
                 className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-xl tracking-wide placeholder-gray-600 text-white transition-colors"
                 style={{ fontFamily: 'FragmentMono, monospace' }}
               />
@@ -353,39 +339,6 @@ export default function GuestFormPage() {
         );
 
       case 4:
-        if (!formData.attendingWith.toLowerCase().includes('yes')) {
-          handleNext();
-          return null;
-        }
-        return (
-          <>
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <p className="text-3xl md:text-4xl font-light leading-relaxed" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                  If yes, who?
-                </p>
-              </motion.div>
-              <input
-                type="text"
-                name="attendingWithWho"
-                value={formData.attendingWithWho}
-                onChange={handleChange}
-                onKeyPress={(e) => handleKeyPress(e)}
-                autoFocus
-                placeholder="Names of who you're attending with"
-                className="w-full bg-transparent border-b-2 border-gray-700 focus:outline-none focus:border-white py-4 text-xl tracking-wide placeholder-gray-600 text-white transition-colors"
-                style={{ fontFamily: 'FragmentMono, monospace' }}
-              />
-            </div>
-            {renderNavigation()}
-          </>
-        );
-
-      case 5:
         return (
           <>
             <div className="space-y-6">
@@ -419,7 +372,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 6:
+      case 5:
         return (
           <>
             <div className="space-y-6">
@@ -453,7 +406,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 7:
+      case 6:
         return (
           <>
             <div className="space-y-6">
@@ -487,7 +440,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 8:
+      case 7:
         return (
           <>
             <div className="space-y-6">
@@ -521,7 +474,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 9:
+      case 8:
         return (
           <>
             <div className="space-y-6">
@@ -556,7 +509,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 10:
+      case 9:
         return (
           <>
             <div className="space-y-6">
