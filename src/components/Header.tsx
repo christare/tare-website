@@ -56,17 +56,7 @@ export default function Header() {
             >
               STUDIO
             </Link>
-            <Link
-              href="/story"
-              className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/story" 
-                  ? "text-white" 
-                  : "text-gray-200 hover:text-white"
-              }`}
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              OUR STORY
-            </Link>
+            
             <Link
               href={waitlistUrl}
               className={`text-sm tracking-wide transition-colors duration-300 ${
@@ -77,6 +67,18 @@ export default function Header() {
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               WAITLIST
+            </Link>
+
+            <Link
+              href="/story"
+              className={`text-sm tracking-wide transition-colors duration-300 ${
+                pathname === "/story" 
+                  ? "text-white" 
+                  : "text-gray-200 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              OUR STORY
             </Link>
           </div>
           <a
