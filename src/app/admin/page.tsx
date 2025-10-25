@@ -30,7 +30,6 @@ interface GuestForm {
     'Phone Normalized'?: string;
     'Preferred Name'?: string;
     'Attending With'?: string;
-    'Attending With Who'?: string;
     'Pronouns'?: string;
     'Coffee Relationship'?: string;
     'Wellness Experience'?: string;
@@ -737,17 +736,6 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
                     {selectedGuestForm.fields['Attending With'] || '—'}
                   </p>
                 </div>
-
-                {selectedGuestForm.fields['Attending With Who'] && (
-                  <div>
-                    <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                      ATTENDING WITH WHO
-                    </p>
-                    <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                      {selectedGuestForm.fields['Attending With Who']}
-                    </p>
-                  </div>
-                )}
 
                 <div>
                   <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>

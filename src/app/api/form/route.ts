@@ -6,7 +6,6 @@ interface GuestFormData {
   phoneNumber: string;
   preferredName: string;
   attendingWith: string;
-  attendingWithWho: string;
   pronouns: string;
   coffeeRelationship: string;
   wellnessExperience: string;
@@ -59,7 +58,6 @@ export async function POST(request: Request) {
             'Phone Normalized': normalizedPhone,
             'Preferred Name': formData.preferredName || '',
             'Attending With': formData.attendingWith || '',
-            'Attending With Who': formData.attendingWithWho || '',
             'Pronouns': formData.pronouns || '',
             'Coffee Relationship': formData.coffeeRelationship || '',
             'Wellness Experience': formData.wellnessExperience || '',

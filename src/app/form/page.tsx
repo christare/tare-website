@@ -11,7 +11,6 @@ interface FormData {
   phoneNumber: string;
   preferredName: string;
   attendingWith: string;
-  attendingWithWho: string;
   pronouns: string;
   coffeeRelationship: string;
   wellnessExperience: string;
@@ -31,7 +30,6 @@ export default function GuestFormPage() {
     phoneNumber: "",
     preferredName: "",
     attendingWith: "",
-    attendingWithWho: "",
     pronouns: "",
     coffeeRelationship: "",
     wellnessExperience: "",
