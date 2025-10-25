@@ -35,7 +35,10 @@ export const CURRENT_EVENT_CONFIG = {
   address: '231 West 29th St, New York, NY 10001',
   buzzer: '1207',
   contactPhone: '4157079319',
-  contactName: 'Chris'
+  contactName: 'Chris',
+  
+  // 🔒 TOGGLE: Set to true to close bookings and redirect to waitlist
+  bookingsClosed: true
 };
 
 // Export individual values for convenience

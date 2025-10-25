@@ -5,7 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import Image from "next/image";
-import { CURRENT_EVENT_ID } from "@/config/events";
+import { CURRENT_EVENT_ID, CURRENT_EVENT_CONFIG } from "@/config/events";
 
 function StudioPageContent() {
   const router = useRouter();
@@ -100,6 +100,11 @@ function StudioPageContent() {
   const imagesInView = useInView(imagesRef, { once: true, margin: "-50px" });
 
   const handlePurchase = async (priceId: string) => {
+    if (CURRENT_EVENT_CONFIG.bookingsClosed) {
+      router.push('/waitlist');
+      return;
+    }
+
     if (isSoldOut) {
       setError("Sorry, this event is sold out");
       return;
@@ -297,13 +302,15 @@ function StudioPageContent() {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <p className="text-gray-300 text-xs sm:text-sm mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                {availableSeats !== null 
-                  ? `${availableSeats} seat${availableSeats !== 1 ? 's' : ''} remaining`
-                  : 'Limited seats available'}
+                {CURRENT_EVENT_CONFIG.bookingsClosed 
+                  ? '0 seats remaining'
+                  : availableSeats !== null 
+                    ? `${availableSeats} seat${availableSeats !== 1 ? 's' : ''} remaining`
+                    : 'Limited seats available'}
               </p>
               <motion.button
                 onClick={() => handlePurchase('price_1SHQJQF5JUni5zIQzHCq9zox')}
-                disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' || isSoldOut}
+                disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' || (isSoldOut && !CURRENT_EVENT_CONFIG.bookingsClosed)}
                 className="inline-block border border-white px-8 py-3 text-xs sm:text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ fontFamily: 'FragmentMono, monospace' }}
                 initial={{ opacity: 0 }}
@@ -312,9 +319,11 @@ function StudioPageContent() {
               >
                 {loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' 
                   ? 'PROCESSING...' 
-                  : isSoldOut 
-                    ? 'SOLD OUT' 
-                    : 'RESERVE YOUR SEAT'}
+                  : CURRENT_EVENT_CONFIG.bookingsClosed
+                    ? 'JOIN WAITLIST'
+                    : isSoldOut 
+                      ? 'SOLD OUT' 
+                      : 'RESERVE YOUR SEAT'}
               </motion.button>
               {error && (
                 <p className="text-red-400 text-xs mt-4" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
