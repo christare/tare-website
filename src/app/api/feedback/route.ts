@@ -40,17 +40,23 @@ export async function POST(request: Request) {
       const base = new Airtable({ apiKey: process.env.AIRTABLE_PAT }).base(process.env.AIRTABLE_FEEDBACK_BASE_ID!);
       const normalizedPhone = normalizePhone(formData.phone || '');
       
+      const fields: Record<string, any> = {
+        'Phone': formData.phone || '',
+        'Name': formData.name || '',
+        'Stood Out': formData.stoodOut || '',
+        'Different': formData.different || '',
+        'Improve': formData.improve || '',
+        'Testimonial': formData.testimonial || '',
+      };
+
+      // Only add Recommend Score if it has a value
+      if (formData.recommendScore) {
+        fields['Recommend Score'] = parseInt(formData.recommendScore);
+      }
+
       await base(process.env.AIRTABLE_FEEDBACK_TABLE_ID!).create([
         {
-          fields: {
-            'Phone': formData.phone || '',
-            'Name': formData.name || '',
-            'Stood Out': formData.stoodOut || '',
-            'Different': formData.different || '',
-            'Improve': formData.improve || '',
-            'Recommend Score': formData.recommendScore ? parseInt(formData.recommendScore) : null,
-            'Testimonial': formData.testimonial || '',
-          }
+          fields
         }
       ]);
       
