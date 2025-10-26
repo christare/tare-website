@@ -2,7 +2,7 @@
 
 ## 📊 Your Airtable Setup
 
-You have **TWO separate Airtable bases** for different purposes:
+You have **THREE separate Airtable bases** for different purposes:
 
 ### 1. **STUDIO Bookings Base** (Seat Tracking with Event Date)
 - **Base ID**: `app2NBRGBM2U6uuKO`
@@ -15,6 +15,14 @@ You have **TWO separate Airtable bases** for different purposes:
 - **Table ID**: `tbl9pXSdHRIG47ad2`
 - **Fields**: First Name, Last Name, Phone, Email, Why, Date Submitted, Instagram
 - **Used by**: Waitlist page (`/waitlist`)
+
+### 3. **Feedback Base** (Post-Experience Feedback)
+- **Base Name**: `Feedback`
+- **Base ID**: `appFFpFNdqtVIvka9`
+- **Table Name**: `Feedback Table 1`
+- **Table ID**: `tblp5vDDAqvlGaEVc`
+- **Fields**: Phone, Name, Stood Out, Different, Improve, Recommend Score, Testimonial
+- **Used by**: Feedback page (`/feedback`)
 
 ---
 
@@ -33,6 +41,10 @@ NEXT_PUBLIC_AIRTABLE_STUDIO_TABLE=tblB2i9J37It1akPf
 # Waitlist Submissions (separate base)
 NEXT_PUBLIC_AIRTABLE_WAITLIST_BASE_ID=app8dactae5SQZLqH
 NEXT_PUBLIC_AIRTABLE_WAITLIST_TABLE=tbl9pXSdHRIG47ad2
+
+# Feedback Form (post-experience feedback)
+AIRTABLE_FEEDBACK_BASE_ID=appFFpFNdqtVIvka9
+AIRTABLE_FEEDBACK_TABLE_ID=tblp5vDDAqvlGaEVc
 
 # Legacy variables (kept for backwards compatibility)
 NEXT_PUBLIC_AIRTABLE_BASE_ID=app2NBRGBM2U6uuKO
@@ -58,6 +70,11 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret
 2. No seat counting needed
 3. Just collects First Name, Last Name, Email, etc.
 
+### **Feedback Page**
+1. User submits feedback after experience → Saves to **FEEDBACK table**
+2. Collects Phone (required), Name (optional), experience feedback, recommendations
+3. Single-select testimonial permission field
+
 ---
 
 ## 📝 What's Been Updated
@@ -67,6 +84,8 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret
 2. `src/app/api/webhooks/stripe/route.ts` - Uses STUDIO-specific env vars
 3. `src/app/api/availability/route.ts` - Queries STUDIO table
 4. `src/app/api/admin/bookings/route.ts` - Displays STUDIO bookings
+5. `src/app/feedback/page.tsx` - NEW: Feedback form page
+6. `src/app/api/feedback/route.ts` - NEW: Feedback form API handler
 
 ### Files Still Using Old Env Vars:
 - `src/app/waitlist/page.tsx` - Still uses `NEXT_PUBLIC_AIRTABLE_BASE_ID` and `NEXT_PUBLIC_AIRTABLE_TABLE`
@@ -80,6 +99,7 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret
 2. **Restart your dev server**: `npm run dev`
 3. **Test the homepage** - it should now query the correct STUDIO table
 4. **Test the waitlist** - it should continue working with the WAITLIST base
+5. **Test the feedback form** - navigate to `/feedback` to test post-experience feedback
 
 ---
 
@@ -87,6 +107,7 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret
 
 - The code has **fallback logic**: If STUDIO-specific vars aren't set, it uses the general ones
 - Waitlist functionality won't break - it uses separate variables
-- Both bases can have different fields and structures
+- All three bases can have different fields and structures
 - The STUDIO table MUST have an `Event Date` field for seat tracking to work
+- The FEEDBACK table requires: Phone, Name, Stood Out, Different, Improve, Recommend Score (number), Testimonial (single select)
 
