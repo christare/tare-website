@@ -92,7 +92,7 @@ export default function RoomPage() {
       <div className="w-full py-4 md:py-6 px-6 mb-4">
         <div className="max-w-4xl mx-auto text-center space-y-3">
           <p className="text-white text-sm md:text-base font-light flex items-center justify-center gap-3" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-            <span>Sunday October 26</span>
+            <span>Saturday December 6</span>
             <span className="text-xs md:text-sm">•</span>
             <span>Seats Available</span>
           </p>

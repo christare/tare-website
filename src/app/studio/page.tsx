@@ -459,7 +459,7 @@ export default function StudioPage() {
                   transition={{ delay: 1.8, duration: 1 }}
                   className="text-gray-400 text-xs tracking-[0.15em] uppercase"
                 >
-                  June 7, 2025
+                  December 6, 2025
                 </motion.p>
               </motion.div>
               
@@ -869,7 +869,7 @@ export default function StudioPage() {
                     >
                       {[
                         { label: "Experience", value: "TARE STUDIO 02", delay: 0.1 },
-                        { label: "Date", value: "July 12, 2025", delay: 0.2 },
+                        { label: "Date", value: "December 6, 2025", delay: 0.2 },
                         { label: "Time", value: "11am - 12:30pm", delay: 0.3 },
                         { label: "Duration", value: "90 minutes", delay: 0.4 },
                         { label: "Location", value: "Midtown Manhattan", delay: 0.5 },

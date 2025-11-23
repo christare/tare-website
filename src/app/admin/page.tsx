@@ -403,7 +403,7 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
               AVAILABLE
             </p>
             <p className="text-4xl font-light text-[#7FB069]" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-              {CURRENT_EVENT_CONFIG.bookingsClosed ? 0 : (realAvailableSeats !== null ? realAvailableSeats : '—')}
+              {realAvailableSeats !== null ? realAvailableSeats : '—'}
             </p>
           </motion.div>
         </div>

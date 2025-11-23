@@ -100,7 +100,8 @@ function StudioPageContent() {
   const imagesInView = useInView(imagesRef, { once: true, margin: "-50px" });
 
   const handlePurchase = async (priceId: string) => {
-    if (CURRENT_EVENT_CONFIG.bookingsClosed) {
+    // If sold out, redirect to waitlist
+    if (isSoldOut) {
       router.push('/waitlist');
       return;
     }
@@ -271,7 +272,7 @@ function StudioPageContent() {
             {/* Date and Time */}
             <div className="text-center space-y-2">
               <p className="text-white text-base sm:text-lg font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                Sunday  ·  October 26  ·  2025
+                Saturday  ·  December 6  ·  2025
               </p>
               <p className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
                 11:00 AM - 1:00 PM
@@ -302,15 +303,13 @@ function StudioPageContent() {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <p className="text-gray-300 text-xs sm:text-sm mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                {CURRENT_EVENT_CONFIG.bookingsClosed 
-                  ? '0 seats remaining'
-                  : availableSeats !== null 
-                    ? `${availableSeats} seat${availableSeats !== 1 ? 's' : ''} remaining`
-                    : 'Limited seats available'}
+                {availableSeats !== null 
+                  ? `${availableSeats} seat${availableSeats !== 1 ? 's' : ''} remaining`
+                  : 'Limited seats available'}
               </p>
               <motion.button
                 onClick={() => handlePurchase('price_1SHQJQF5JUni5zIQzHCq9zox')}
-                disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' || (isSoldOut && !CURRENT_EVENT_CONFIG.bookingsClosed)}
+                disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' || isSoldOut}
                 className="inline-block border border-white px-8 py-3 text-xs sm:text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ fontFamily: 'FragmentMono, monospace' }}
                 initial={{ opacity: 0 }}
@@ -319,11 +318,9 @@ function StudioPageContent() {
               >
                 {loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' 
                   ? 'PROCESSING...' 
-                  : CURRENT_EVENT_CONFIG.bookingsClosed
-                    ? 'JOIN WAITLIST'
-                    : isSoldOut 
-                      ? 'SOLD OUT' 
-                      : 'RESERVE YOUR SEAT'}
+                  : isSoldOut 
+                    ? 'SOLD OUT - JOIN WAITLIST' 
+                    : 'RESERVE YOUR SEAT'}
               </motion.button>
               {error && (
                 <p className="text-red-400 text-xs mt-4" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>

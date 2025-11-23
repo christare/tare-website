@@ -52,8 +52,8 @@ export async function POST(request: Request) {
     
     // Base URL for redirects
     const baseUrl = process.env.VERCEL_ENV === 'production'
-      ? 'https://tarecoffeeroom.com' 
-      : 'http://localhost:3001'; // Use 3001 since dev server is on 3001
+      ? 'https://tarestudionyc.com' 
+      : 'http://localhost:3000';
     
     const successUrl = `${baseUrl}/checkout/success?type=room`;
     const cancelUrl = `${baseUrl}/?from=canceled`;

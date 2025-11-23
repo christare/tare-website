@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getAvailableSeats } from '@/lib/airtable-seats';
-import { CURRENT_EVENT_CONFIG } from '@/config/events';
 
 export async function GET(request: Request) {
   try {
@@ -12,14 +11,6 @@ export async function GET(request: Request) {
         { error: 'eventId (event date) required' },
         { status: 400 }
       );
-    }
-    
-    // If bookings are closed, return 0 seats available
-    if (CURRENT_EVENT_CONFIG.bookingsClosed) {
-      return NextResponse.json({ 
-        available: 0,
-        soldOut: true
-      });
     }
     
     const availableSeats = await getAvailableSeats(eventDate);

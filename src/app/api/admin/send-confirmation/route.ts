@@ -15,7 +15,7 @@ function formatPhoneForTwilio(phone: string): string {
   return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
 }
 
-// Format date for message (e.g., "Sunday, October 26th")
+// Format date for message (e.g., "Saturday, December 6th")
 function formatEventDate(dateString: string): string {
   const date = new Date(dateString + 'T12:00:00'); // Add time to avoid timezone issues
   const options: Intl.DateTimeFormatOptions = { 
