@@ -217,16 +217,33 @@ function StudioPageContent() {
             transition={{ duration: 0.8, delay: 0.7 }}
             className="text-center max-w-xl mx-auto px-4"
           >
-            <h2 className="text-lg sm:text-xl md:text-2xl text-white mb-5 sm:mb-6 leading-tight tracking-wide" style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}>
-              A Coffee Wellness Transformation
+            {/* Minimal hierarchy for home hero copy */}
+            <h2
+              className="text-xl sm:text-2xl md:text-3xl text-white mb-3 sm:mb-4 leading-tight tracking-wide"
+              style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}
+            >
+              Attention. Energy. Enjoyment.
             </h2>
-            <p className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base mb-3" style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}>
-              Meditation uses breath.<br />
-              Yoga uses movement.<br />
-              We use coffee.
+
+            <p
+              className="text-gray-400 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.25em] mb-6"
+              style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.25em' }}
+            >
+              One tool unlocks all three.
             </p>
-            <p className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base" style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}>
-              A two-hour guided experience using coffee as liquid, aroma, and texture — training you to actually pay attention.
+
+            <p
+              className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base mb-3"
+              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}
+            >
+              A 90-minute guided experience that uses coffee as a sensory tool to lift your mood, heighten your senses, and send you back into the city fully switched on.
+            </p>
+
+            <p
+              className="text-gray-400 leading-relaxed text-xs sm:text-sm md:text-base"
+              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}
+            >
+              Meditation uses breath. Yoga uses movement. We use coffee to change how you show up.
             </p>
           </motion.div>
         </div>
