@@ -243,7 +243,7 @@ function StudioPageContent() {
               className="text-gray-400 leading-relaxed text-xs sm:text-sm md:text-base"
               style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}
             >
-              Meditation uses breath. Yoga uses movement. We use coffee to change how you show up.
+              Meditation uses breath. Yoga uses movement. We use coffee to change how you feel.
             </p>
           </motion.div>
         </div>
