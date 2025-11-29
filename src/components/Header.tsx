@@ -69,17 +69,7 @@ export default function Header() {
               WAITLIST
             </Link>
 
-            <Link
-              href="/story"
-              className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/story" 
-                  ? "text-white" 
-                  : "text-gray-200 hover:text-white"
-              }`}
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              OUR STORY
-            </Link>
+            {/* Story link temporarily hidden */}
           </div>
           <a
             href="https://instagram.com/tarestudionyc"
@@ -106,17 +96,7 @@ export default function Header() {
           >
             STUDIO
           </Link>
-          <Link
-            href="/story"
-            className={`text-base tracking-wide transition-colors duration-300 ${
-              pathname === "/story" 
-                ? "text-white" 
-                : "text-gray-300 hover:text-white"
-            }`}
-            style={{ fontFamily: 'FragmentMono, monospace' }}
-          >
-            OUR STORY
-          </Link>
+          {/* Story link temporarily hidden */}
           <Link
             href={waitlistUrl}
             className={`text-base tracking-wide transition-colors duration-300 ${
