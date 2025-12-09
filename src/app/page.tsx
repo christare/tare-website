@@ -229,7 +229,7 @@ function StudioPageContent() {
               className="text-gray-400 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.25em] mb-6"
               style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.25em' }}
             >
-              One tool unlocks all three.
+              We designed a tool to activate all three.
             </p>
 
             <p
