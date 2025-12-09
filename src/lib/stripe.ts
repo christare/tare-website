@@ -104,6 +104,12 @@ export const createCheckoutSession = async ({
       phone_number_collection: {
         enabled: true,
       },
+      name_collection: {
+        individual: {
+          enabled: true,
+          optional: false, // Require name even when promo code makes it free
+        },
+      },
       ...(metadata && { metadata }),
     });
     

@@ -19,17 +19,17 @@
 
 export const CURRENT_EVENT_CONFIG = {
   // Event Date in YYYY-MM-DD format (CHANGE THIS FOR NEW EVENTS!)
-  eventId: '2025-12-06',
+  eventId: '2026-01-10',
   
   // Total seats available for this event
   totalSeats: 16,
   
   // Event display name (optional)
-  displayName: 'TARE STUDIO - December 6, 2025',
+  displayName: 'TARE STUDIO - January 10, 2026',
   
   // Event time details for confirmation messages
-  eventTime: '11:00 AM - 1:00 PM',
-  doorsOpen: '10:45 AM', // 15 mins before start
+  eventTime: '2:00 PM - 3:30 PM',
+  doorsOpen: '1:45 PM', // 15 mins before start
   
   // Location details
   address: '231 West 29th St, New York, NY 10001',

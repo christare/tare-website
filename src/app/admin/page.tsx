@@ -95,7 +95,7 @@ export default function AdminPage() {
     setLoading(true);
     setError('');
     try {
-      // Fetch bookings
+      // Always fetch bookings for the current event date from config
       const bookingsResponse = await fetch(`/api/admin/bookings?eventId=${CURRENT_EVENT_ID}`);
       const bookingsData = await bookingsResponse.json();
       

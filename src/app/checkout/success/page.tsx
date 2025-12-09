@@ -75,10 +75,10 @@ function SuccessContent() {
               
               <div className="py-4 px-4 space-y-4 max-w-md mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>
                 <div className="text-center">
-                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>10:45am doors open</span>
+                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>1:45pm doors open</span>
                 </div>
                 <div className="text-center">
-                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>11am - Ends around 12:30 PM</span>
+                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>2pm - Ends around 3:30 PM</span>
                 </div>
                 <div className="text-center">
                   <div className="text-white text-xs" style={{ fontFamily: 'FragmentMono, monospace' }}>

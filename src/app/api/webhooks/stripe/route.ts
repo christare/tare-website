@@ -71,8 +71,16 @@ export async function POST(req: Request) {
         promoInfo = 'Promo code applied';
       }
       
+      // Get name from multiple possible sources (name_collection, customer_details, or metadata)
+      const customerName = 
+        session.customer_details?.individual_name || 
+        session.customer_details?.name || 
+        (session.collected_information as any)?.individual_name ||
+        metadata.guestName || 
+        '';
+      
       const fieldsToSave = {
-        'Name': session.customer_details?.name || metadata.guestName || '',
+        'Name': customerName,
         'Phone': session.customer_details?.phone || '',
         'Email': session.customer_details?.email || '',
         'Amount Paid': `$${session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00'}`,

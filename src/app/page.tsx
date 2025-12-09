@@ -289,10 +289,10 @@ function StudioPageContent() {
             {/* Date and Time */}
             <div className="text-center space-y-2">
               <p className="text-white text-base sm:text-lg font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                Saturday  ·  December 6  ·  2025
+                Saturday  ·  January 10  ·  2026
               </p>
               <p className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                11:00 AM - 1:00 PM
+                2:00 PM - 3:30 PM
               </p>
           </div>
 

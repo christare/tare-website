@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getEventBookings } from '@/lib/airtable-seats';
+import { CURRENT_EVENT_ID } from '@/config/events';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const eventDate = searchParams.get('eventId');
+    // Always default to current event date from config
+    const eventDate = searchParams.get('eventId') || CURRENT_EVENT_ID;
 
     if (!eventDate) {
       return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });
