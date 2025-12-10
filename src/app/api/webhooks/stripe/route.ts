@@ -71,17 +71,8 @@ export async function POST(req: Request) {
         promoInfo = 'Promo code applied';
       }
       
-      // Get name from multiple possible sources (name_collection, customer_details, or metadata)
-      // individual_name is in collected_information when name_collection is enabled
-      const customerName = 
-        (session.customer_details as any)?.individual_name || 
-        session.customer_details?.name || 
-        (session.collected_information as any)?.individual_name ||
-        metadata.guestName || 
-        '';
-      
       const fieldsToSave = {
-        'Name': customerName,
+        'Name': session.customer_details?.name || metadata.guestName || '',
         'Phone': session.customer_details?.phone || '',
         'Email': session.customer_details?.email || '',
         'Amount Paid': `$${session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00'}`,
