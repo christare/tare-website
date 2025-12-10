@@ -72,8 +72,9 @@ export async function POST(req: Request) {
       }
       
       // Get name from multiple possible sources (name_collection, customer_details, or metadata)
+      // individual_name is in collected_information when name_collection is enabled
       const customerName = 
-        session.customer_details?.individual_name || 
+        (session.customer_details as any)?.individual_name || 
         session.customer_details?.name || 
         (session.collected_information as any)?.individual_name ||
         metadata.guestName || 
