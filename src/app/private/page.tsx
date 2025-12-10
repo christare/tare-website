@@ -222,29 +222,31 @@ function StudioPageContent() {
               className="text-xl sm:text-2xl md:text-3xl text-white mb-3 sm:mb-4 leading-tight tracking-wide"
               style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}
             >
-              Attention. Energy. Enjoyment.
+              Private Coffee Omakase For Two
             </h2>
 
-            <p
-              className="text-gray-400 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.25em] mb-6"
-              style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.25em' }}
-            >
-              We designed a tool to activate all three.
-            </p>
+            <div className="space-y-1.5 sm:space-y-2">
+              <p
+                className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base"
+                style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.6' }}
+              >
+                Five rare and experimental coffees
+              </p>
 
-            <p
-              className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base mb-3"
-              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}
-            >
-              A 90-minute guided experience that uses coffee as a sensory tool to lift your mood, heighten your senses, and send you back into the city fully switched on.
-            </p>
+              <p
+                className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base"
+                style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.6' }}
+              >
+                Hand selected for your group
+              </p>
 
-            <p
-              className="text-gray-400 leading-relaxed text-xs sm:text-sm md:text-base"
-              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}
-            >
-              Meditation uses breath. Yoga uses movement. We use coffee to change how you feel.
-            </p>
+              <p
+                className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base"
+                style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.6' }}
+              >
+                Served in a clear progression from familiar to extreme
+              </p>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -279,35 +281,31 @@ function StudioPageContent() {
           {/* <div style={{ height: '1px' }}></div> */}
 
           <div className="py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8 max-w-lg mx-auto">
-            {/* Next Event Label */}
-            <div className="text-center">
-              <p className="text-gray-400 text-xs tracking-widest mb-6" style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.2em' }}>
-                NEXT EVENT
-              </p>
-          </div>
-
             {/* Date and Time */}
             <div className="text-center space-y-2">
               <p className="text-white text-base sm:text-lg font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                Saturday  ·  January 10  ·  2026
+                Sunday  ·  December 21  ·  2025
               </p>
               <p className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                2:00 PM - 3:30 PM
+                11:00 AM - 12:30 PM
               </p>
           </div>
 
             {/* Location */}
             <div className="text-center space-y-2 pt-2">
               <div className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                <div>231 West 29th St</div>
-                <div>New York, NY 10001</div>
+                <div>2959 Northern Blvd 49D</div>
+                <div>Long Island City, NY 11101</div>
               </div>
             </div>
             
             {/* Price */}
             <div className="text-center pt-2">
               <p className="text-white text-lg sm:text-xl font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                $ 90
+                $ 200
+              </p>
+              <p className="text-gray-400 text-xs sm:text-sm mt-1" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                for 2 guests
               </p>
             </div>
             
@@ -319,21 +317,16 @@ function StudioPageContent() {
               animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <p className="text-gray-300 text-xs sm:text-sm mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                {availableSeats !== null 
-                  ? `${availableSeats} seat${availableSeats !== 1 ? 's' : ''} remaining`
-                  : 'Limited seats available'}
-              </p>
               <motion.button
-                onClick={() => handlePurchase('price_1SHQJQF5JUni5zIQzHCq9zox')}
-                disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' || isSoldOut}
+                onClick={() => handlePurchase('price_1SceUVF5JUni5zIQO1dwiuJ3')}
+                disabled={loadingPriceId === 'price_1SceUVF5JUni5zIQO1dwiuJ3' || isSoldOut}
                 className="inline-block border border-white px-8 py-3 text-xs sm:text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ fontFamily: 'FragmentMono, monospace' }}
                 initial={{ opacity: 0 }}
                 animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
               >
-                {loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' 
+                {loadingPriceId === 'price_1SceUVF5JUni5zIQO1dwiuJ3' 
                   ? 'PROCESSING...' 
                   : isSoldOut 
                     ? 'SOLD OUT - JOIN WAITLIST' 
@@ -567,3 +560,4 @@ export default function StudioPage() {
     </Suspense>
   );
 }
+

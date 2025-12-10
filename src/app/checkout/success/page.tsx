@@ -12,7 +12,7 @@ function SuccessContent() {
   const type = searchParams.get("type");
 
   // Determine product name based on type
-  const productName = type === "studio" ? "TARE STUDIO 02" : "TARE ROOM";
+  const productName = type === "studio" ? "TARE STUDIO" : "TARE ROOM";
 
   // Animation variants
   const containerVariants = {
