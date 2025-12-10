@@ -3,13 +3,6 @@ import Stripe from 'stripe';
 import Airtable from 'airtable';
 import { CURRENT_EVENT_ID } from '@/config/events';
 
-// Disable Next.js body parsing for this route
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-03-31.basil',
 });
