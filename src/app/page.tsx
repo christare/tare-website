@@ -155,10 +155,10 @@ function StudioPageContent() {
       <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
         {/* Dial background */}
         <motion.div 
-          className="absolute inset-0 flex items-center justify-center pointer-events-none" 
+          className="absolute top-0 left-1/2 h-full w-screen -translate-x-1/2 flex items-center justify-center pointer-events-none" 
           style={{ zIndex: 1 }}
           initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 0.3, scale: 0.7 }}
+          animate={{ opacity: 0.24, scale: 0.7 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
         >
           <Image
@@ -166,7 +166,7 @@ function StudioPageContent() {
             alt="Dial"
             width={1920}
             height={1080}
-            className="w-full h-full object-cover"
+            className="w-screen h-full object-cover"
             priority
           />
         </motion.div>
@@ -219,12 +219,12 @@ function StudioPageContent() {
           >
             {/* Primary intro */}
             <p
-              className="text-white leading-relaxed text-base sm:text-lg md:text-xl lg:text-2xl mb-3 sm:mb-4"
-              style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300, lineHeight: '1.7' }}
+              className="text-white mb-3 sm:mb-4 text-[clamp(0.95rem,2.6vw,1.5rem)] leading-[1.7]"
+              style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}
             >
-              A guided wellness session<br />
-              using coffee in multiple physical forms<br />
-              to improve the way you feel.
+              <span className="block whitespace-nowrap">A guided wellness session</span>
+              <span className="block whitespace-nowrap">using coffee in multiple physical forms</span>
+              <span className="block whitespace-nowrap">to improve the way you feel.</span>
             </p>
 
             {/* Quiet scroll CTA */}
@@ -264,11 +264,11 @@ function StudioPageContent() {
             A 90-MINUTE EXPERIENCE
           </h2>
           <p
-            className="text-gray-400 text-base sm:text-lg md:text-xl tracking-wide mb-6 sm:mb-7"
+            className="text-gray-400 tracking-wide mb-6 sm:mb-7 text-[clamp(0.95rem,1.8vw,1.2rem)] leading-[1.35]"
             style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}
           >
-            That takes you through the most<br />
-            effective elements of:
+            <span className="block whitespace-nowrap">that takes you through the most</span>
+            <span className="block whitespace-nowrap">effective elements of:</span>
           </p>
 
           {/* Modalities section */}
