@@ -152,13 +152,13 @@ function StudioPageContent() {
   return (
     <main className="min-h-screen text-white relative" style={{backgroundColor: '#2A2726'}}>
       {/* Hero section with dial background */}
-      <div className="w-full min-h-screen flex flex-col items-center justify-center relative">
+      <div className="w-full flex flex-col items-center justify-center relative py-16 sm:py-20 md:py-24">
         {/* Dial background */}
         <motion.div 
           className="absolute inset-0 flex items-center justify-center pointer-events-none" 
           style={{ zIndex: 1 }}
           initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 0.6, scale: 1 }}
+          animate={{ opacity: 0.3, scale: 0.7 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
         >
           <Image
@@ -175,7 +175,7 @@ function StudioPageContent() {
         <div className="relative z-10 w-full max-w-3xl mx-auto px-6 flex flex-col items-center justify-center">
           {/* TARE Studio Artifact - above logo */}
           <motion.div 
-            className="w-full flex justify-center mb-6 md:mb-10"
+            className="w-full flex justify-center mb-3 md:mb-4"
             initial={{ opacity: 0, scale: 0.3, rotate: -90 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ 
@@ -196,7 +196,7 @@ function StudioPageContent() {
 
           {/* Full-width logo section - DOMINANT ELEMENT */}
           <motion.div 
-            className="w-full flex justify-center mb-10 md:mb-14"
+            className="w-full flex justify-center mb-4 md:mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
@@ -219,41 +219,83 @@ function StudioPageContent() {
           >
             {/* Primary intro */}
             <p
-              className="text-white leading-relaxed text-sm sm:text-base md:text-lg mb-8"
+              className="text-white leading-relaxed text-base sm:text-lg md:text-xl lg:text-2xl mb-3 sm:mb-4"
               style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300, lineHeight: '1.7' }}
             >
-              A 90-minute guided wellness session using coffee in multiple physical forms to improve the way you feel.
+              A guided wellness session<br />
+              using coffee in multiple physical forms<br />
+              to improve the way you feel.
             </p>
 
-            {/* Modalities section - visually distinct */}
-            <div className="mb-8">
-              <p
-                className="text-gray-400 leading-relaxed text-xs sm:text-sm md:text-base mb-4"
-                style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.8' }}
-              >
-                We guide you through a structured sequence of:
-              </p>
-              <div
-                className="text-gray-300 text-xs sm:text-sm tracking-wider space-y-2"
-                style={{ fontFamily: 'FragmentMono, monospace' }}
-              >
-                <p>Aromatherapy</p>
-                <p>Skin treatments</p>
-                <p>Sound immersion</p>
-                <p>Breathwork</p>
-                <p>Deep tasting</p>
-              </div>
-            </div>
-
-            {/* Closing benefit - smaller, softer */}
-            <p
-              className="text-gray-500 leading-relaxed text-[11px] sm:text-xs max-w-md mx-auto"
-              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.8' }}
+            {/* Quiet scroll CTA */}
+            <button
+              onClick={() => {
+                const nextEventSection = document.getElementById('next-event-section');
+                if (nextEventSection) {
+                  nextEventSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              className="text-gray-400 hover:text-gray-300 hover:underline transition-all duration-200 cursor-pointer text-xs sm:text-sm md:text-base lg:text-lg"
+              style={{ 
+                fontFamily: 'NonBureauExtended, sans-serif', 
+                fontWeight: 300
+              }}
             >
-              We use coffee&apos;s sensory complexity and natural caffeine to leave you feeling sharp, refreshed, and alive.
-            </p>
+              Next session details ↓
+            </button>
           </motion.div>
         </div>
+      </div>
+
+      {/* Modalities and benefits section - below dial */}
+      <div className="w-full" style={{ backgroundColor: '#32302E' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
+          className="w-full max-w-3xl mx-auto px-6 pt-12 sm:pt-16 pb-12 sm:pb-16"
+        >
+          <div className="text-center max-w-xl mx-auto">
+          {/* Subheader */}
+          <h2
+            className="text-gray-200 text-base sm:text-lg md:text-xl lg:text-2xl tracking-wide mb-2 sm:mb-3"
+            style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}
+          >
+            A 90-MINUTE EXPERIENCE
+          </h2>
+          <p
+            className="text-gray-400 text-base sm:text-lg md:text-xl tracking-wide mb-6 sm:mb-7"
+            style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}
+          >
+            That takes you through the most<br />
+            effective elements of:
+          </p>
+
+          {/* Modalities section */}
+          <div className="mb-6 sm:mb-8">
+            <div
+              className="text-gray-300 text-sm sm:text-base tracking-wider space-y-1"
+              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.6' }}
+            >
+              <p>Aromatherapy</p>
+              <p>Skin treatments</p>
+              <p>Sound immersion</p>
+              <p>Breathwork</p>
+              <p>Deep tasting</p>
+            </div>
+          </div>
+
+          {/* Closing benefit */}
+          <p
+            className="text-gray-400 text-sm sm:text-base mb-3 sm:mb-4"
+            style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.6' }}
+          >
+            Each delivered through world-class coffee<br />
+        
+            and its well-documented physiological effects.
+          </p>
+          </div>
+        </motion.div>
       </div>
 
       <motion.div
@@ -266,7 +308,7 @@ function StudioPageContent() {
         <div className="space-y-8 sm:space-y-12">
           
           {/* Line 43 and Group 24 divider */}
-          <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="my-12 sm:my-16">
+          <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="my-11 sm:my-14">
             <Image
               src="/images/Line 43.png"
               alt="Line 43"
@@ -285,26 +327,26 @@ function StudioPageContent() {
 
           {/* <div style={{ height: '1px' }}></div> */}
 
-          <div className="py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8 max-w-lg mx-auto">
-            {/* Next Event Label */}
-            <div className="text-center">
-              <p className="text-gray-400 text-xs tracking-widest mb-6" style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.2em' }}>
-                NEXT EVENT
+          <div id="next-event-section" className="py-6 sm:py-8 px-4 sm:px-6 max-w-lg mx-auto">
+            {/* Next Session Label */}
+            <div className="text-center mb-3 sm:mb-4">
+              <p className="text-gray-400 text-xs tracking-widest" style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.2em' }}>
+                NEXT SESSION
               </p>
           </div>
 
-            {/* Date and Time */}
-            <div className="text-center space-y-2">
-              <p className="text-white text-base sm:text-lg font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+            {/* Date and Time - cohesive block */}
+            <div className="text-center mb-8 sm:mb-10">
+              <p className="text-white text-lg sm:text-xl md:text-2xl font-light mb-2" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
                 Saturday  ·  January 10  ·  2026
               </p>
-              <p className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              <p className="text-gray-400 text-sm sm:text-base font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
                 2:00 PM - 3:30 PM
               </p>
           </div>
 
             {/* Location */}
-            <div className="text-center space-y-2 pt-2">
+            <div className="text-center space-y-2 mb-8 sm:mb-10">
               <div className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
                 <div>231 West 29th St</div>
                 <div>New York, NY 10001</div>
@@ -312,8 +354,8 @@ function StudioPageContent() {
             </div>
             
             {/* Price */}
-            <div className="text-center pt-2">
-              <p className="text-white text-lg sm:text-xl font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+            <div className="text-center mb-6 sm:mb-7">
+              <p className="text-white text-xl sm:text-2xl font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
                 $ 90
               </p>
             </div>
@@ -321,12 +363,12 @@ function StudioPageContent() {
             {/* Reserve Button */}
             <motion.div 
               ref={buttonsRef}
-              className="text-center pt-4"
+              className="text-center"
               initial={{ opacity: 0 }}
               animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <p className="text-gray-300 text-xs sm:text-sm mb-6 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
+              <p className="text-gray-300 text-xs sm:text-sm mb-2 sm:mb-3 leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
                 {availableSeats !== null 
                   ? `${availableSeats} seat${availableSeats !== 1 ? 's' : ''} remaining`
                   : 'Limited seats available'}
@@ -334,7 +376,7 @@ function StudioPageContent() {
               <motion.button
                 onClick={() => handlePurchase('price_1SHQJQF5JUni5zIQzHCq9zox')}
                 disabled={loadingPriceId === 'price_1SHQJQF5JUni5zIQzHCq9zox' || isSoldOut}
-                className="inline-block border border-white px-8 py-3 text-xs sm:text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-block border-2 border-white px-12 py-4 text-sm sm:text-base tracking-wide hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed min-w-[220px]"
                 style={{ fontFamily: 'FragmentMono, monospace' }}
                 initial={{ opacity: 0 }}
                 animate={buttonsInView ? { opacity: 1 } : { opacity: 0 }}
