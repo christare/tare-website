@@ -152,7 +152,7 @@ function StudioPageContent() {
   return (
     <main className="min-h-screen text-white relative" style={{backgroundColor: '#2A2726'}}>
       {/* Hero section with dial background */}
-      <div className="w-full flex flex-col items-center justify-center relative py-16 sm:py-20 md:py-24">
+      <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
         {/* Dial background */}
         <motion.div 
           className="absolute inset-0 flex items-center justify-center pointer-events-none" 
@@ -172,7 +172,7 @@ function StudioPageContent() {
         </motion.div>
 
         {/* Content on top of dial */}
-        <div className="relative z-10 w-full max-w-3xl mx-auto px-6 flex flex-col items-center justify-center">
+        <div className="relative z-10 w-full max-w-3xl mx-auto px-6 py-16 sm:py-20 md:py-24 flex flex-col items-center justify-center">
           {/* TARE Studio Artifact - above logo */}
           <motion.div 
             className="w-full flex justify-center mb-3 md:mb-4"
