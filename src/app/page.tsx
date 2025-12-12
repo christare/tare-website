@@ -217,33 +217,40 @@ function StudioPageContent() {
             transition={{ duration: 0.8, delay: 0.7 }}
             className="text-center max-w-xl mx-auto px-4"
           >
-            {/* Minimal hierarchy for home hero copy */}
-            <h2
-              className="text-xl sm:text-2xl md:text-3xl text-white mb-3 sm:mb-4 leading-tight tracking-wide"
-              style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}
-            >
-              Attention. Energy. Enjoyment.
-            </h2>
-
+            {/* Primary intro */}
             <p
-              className="text-gray-400 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.25em] mb-6"
-              style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.25em' }}
+              className="text-white leading-relaxed text-sm sm:text-base md:text-lg mb-8"
+              style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300, lineHeight: '1.7' }}
             >
-              We designed a tool to activate all three.
+              A 90-minute guided wellness session using coffee in multiple physical forms to improve the way you feel.
             </p>
 
-            <p
-              className="text-gray-300 leading-relaxed text-xs sm:text-sm md:text-base mb-3"
-              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}
-            >
-              A 90-minute guided experience that uses coffee as a sensory tool to lift your mood, heighten your senses, and send you back into the city fully switched on.
-            </p>
+            {/* Modalities section - visually distinct */}
+            <div className="mb-8">
+              <p
+                className="text-gray-400 leading-relaxed text-xs sm:text-sm md:text-base mb-4"
+                style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.8' }}
+              >
+                We guide you through a structured sequence of:
+              </p>
+              <div
+                className="text-gray-300 text-xs sm:text-sm tracking-wider space-y-2"
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                <p>Aromatherapy</p>
+                <p>Skin treatments</p>
+                <p>Sound immersion</p>
+                <p>Breathwork</p>
+                <p>Deep tasting</p>
+              </div>
+            </div>
 
+            {/* Closing benefit - smaller, softer */}
             <p
-              className="text-gray-400 leading-relaxed text-xs sm:text-sm md:text-base"
-              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.7' }}
+              className="text-gray-500 leading-relaxed text-[11px] sm:text-xs max-w-md mx-auto"
+              style={{ fontFamily: 'FragmentMono, monospace', lineHeight: '1.8' }}
             >
-              Meditation uses breath. Yoga uses movement. We use coffee to change how you feel.
+              We use coffee&apos;s sensory complexity and natural caffeine to leave you feeling sharp, refreshed, and alive.
             </p>
           </motion.div>
         </div>
