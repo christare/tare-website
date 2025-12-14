@@ -66,7 +66,7 @@ export default function AdminPage() {
   const [selectedConfirmationMessage, setSelectedConfirmationMessage] = useState<{booking: Booking, message: string} | null>(null);
   const [confirmationPreview, setConfirmationPreview] = useState<{booking: Booking, message: string} | null>(null);
   const [editedMessage, setEditedMessage] = useState('');
-  const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const ADMIN_PASSWORD = 'tareadmin';
 
@@ -81,15 +81,46 @@ export default function AdminPage() {
     }
   };
 
-  const copyToClipboard = async (phone: string) => {
+  const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(phone);
-      setCopiedPhone(phone);
-      setTimeout(() => setCopiedPhone(null), 2000);
+      await navigator.clipboard.writeText(text);
+      setCopiedValue(text);
+      setTimeout(() => setCopiedValue(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Fallback for older browsers / clipboard permission issues
+      try {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        setCopiedValue(text);
+        setTimeout(() => setCopiedValue(null), 2000);
+      } catch (fallbackErr) {
+        console.error('Failed to copy:', err, fallbackErr);
+      }
     }
   };
+
+  const CopyButton = ({ text, className, title }: { text: string; className?: string; title?: string }) => (
+    <button
+      type="button"
+      onClick={() => copyToClipboard(text)}
+      className={
+        className ||
+        'px-2 py-1 border border-[#3A3736] text-[#A39B8B] hover:text-[#E8E3DD] hover:border-[#8B7F6F] transition-colors text-[10px] tracking-[0.25em]'
+      }
+      style={{ fontFamily: 'FragmentMono, monospace' }}
+      title={title || 'Copy to clipboard'}
+      aria-label={title || 'Copy to clipboard'}
+    >
+      {copiedValue === text ? 'COPIED' : 'COPY'}
+    </button>
+  );
 
   const fetchData = async () => {
     setLoading(true);
@@ -238,7 +269,7 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-[#1A1816] text-[#E8E3DD] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#1A1816] text-[#E8E3DD] flex items-center justify-center p-4 select-text cursor-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -317,7 +348,7 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
   const capacityPercentage = totalSeats > 0 ? (bookedSeats / totalSeats) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-[#1A1816] text-[#E8E3DD] p-4 sm:p-8">
+    <div className="min-h-screen bg-[#1A1816] text-[#E8E3DD] p-4 sm:p-8 select-text cursor-auto">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div 
@@ -496,17 +527,27 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
                       </td>
                       <td className="p-4 text-sm text-[#A39B8B] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
                         {booking.fields['Phone'] ? (
-                          <button
-                            onClick={() => copyToClipboard(booking.fields['Phone']!)}
-                            className="hover:text-[#E8E3DD] transition-colors cursor-pointer text-left"
-                            title="Click to copy"
-                          >
-                            {copiedPhone === booking.fields['Phone'] ? '✓ Copied!' : booking.fields['Phone']}
-                          </button>
-                        ) : '—'}
+                          <div className="flex items-center gap-2">
+                            <span className="select-text">{booking.fields['Phone']}</span>
+                            <CopyButton text={booking.fields['Phone']} title="Copy phone" />
+                          </div>
+                        ) : (
+                          '—'
+                        )}
                       </td>
-                      <td className="p-4 text-sm text-[#A39B8B] max-w-xs truncate" style={{ fontFamily: 'FragmentMono, monospace' }} title={booking.fields['Email']}>
-                        {booking.fields['Email'] || '—'}
+                      <td
+                        className="p-4 text-sm text-[#A39B8B] max-w-xs"
+                        style={{ fontFamily: 'FragmentMono, monospace' }}
+                        title={booking.fields['Email']}
+                      >
+                        {booking.fields['Email'] ? (
+                          <div className="flex items-center gap-2">
+                            <span className="truncate block max-w-[16rem] select-text">{booking.fields['Email']}</span>
+                            <CopyButton text={booking.fields['Email']} title="Copy email" />
+                          </div>
+                        ) : (
+                          '—'
+                        )}
                       </td>
                       <td className="p-4 text-sm text-[#D4A574] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
                         {booking.fields['Amount Paid'] || '—'}
@@ -623,14 +664,13 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
                       <td className="p-4 text-sm text-[#A39B8B]" 
                           style={{ fontFamily: 'FragmentMono, monospace' }}>
                         {form.fields['Phone Number'] ? (
-                          <button
-                            onClick={() => copyToClipboard(form.fields['Phone Number']!)}
-                            className="hover:text-[#E8E3DD] transition-colors cursor-pointer text-left"
-                            title="Click to copy"
-                          >
-                            {copiedPhone === form.fields['Phone Number'] ? '✓ Copied!' : form.fields['Phone Number']}
-                          </button>
-                        ) : '—'}
+                          <div className="flex items-center gap-2">
+                            <span className="select-text">{form.fields['Phone Number']}</span>
+                            <CopyButton text={form.fields['Phone Number']} title="Copy phone" />
+                          </div>
+                        ) : (
+                          '—'
+                        )}
                       </td>
                       <td className="p-4 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
                         <button
@@ -700,14 +740,12 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
                     PHONE NUMBER
                   </p>
                   {selectedGuestForm.fields['Phone Number'] ? (
-                    <button
-                      onClick={() => copyToClipboard(selectedGuestForm.fields['Phone Number']!)}
-                      className="text-sm hover:text-[#D4A574] transition-colors cursor-pointer text-left"
-                      style={{ fontFamily: 'FragmentMono, monospace' }}
-                      title="Click to copy"
-                    >
-                      {copiedPhone === selectedGuestForm.fields['Phone Number'] ? '✓ Copied!' : selectedGuestForm.fields['Phone Number']}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm select-text" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {selectedGuestForm.fields['Phone Number']}
+                      </span>
+                      <CopyButton text={selectedGuestForm.fields['Phone Number']} title="Copy phone" />
+                    </div>
                   ) : (
                     <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>—</p>
                   )}
@@ -867,13 +905,10 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
                   <div className="text-sm flex items-center gap-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
                     <span>{confirmationPreview.booking.fields['Name'] || 'Guest'} -</span>
                     {confirmationPreview.booking.fields['Phone'] && (
-                      <button
-                        onClick={() => copyToClipboard(confirmationPreview.booking.fields['Phone']!)}
-                        className="hover:text-[#D4A574] transition-colors cursor-pointer"
-                        title="Click to copy"
-                      >
-                        {copiedPhone === confirmationPreview.booking.fields['Phone'] ? '✓ Copied!' : confirmationPreview.booking.fields['Phone']}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <span className="select-text">{confirmationPreview.booking.fields['Phone']}</span>
+                        <CopyButton text={confirmationPreview.booking.fields['Phone']} title="Copy phone" />
+                      </div>
                     )}
                   </div>
                 </div>
@@ -881,13 +916,20 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
                 <div className="w-full h-px bg-[#3A3736]" />
 
                 <div>
-                  <div className="flex justify-between items-center mb-3">
+                  <div className="flex justify-between items-center mb-3 gap-3">
                     <p className="text-xs text-[#A39B8B] tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
                       MESSAGE (EDIT AS NEEDED)
                     </p>
-                    <p className="text-xs text-[#5A544B]" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                      {editedMessage.length} chars
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <CopyButton
+                        text={editedMessage}
+                        title="Copy message"
+                        className="px-2 py-1 border border-[#3A3736] text-[#A39B8B] hover:text-[#E8E3DD] hover:border-[#8B7F6F] transition-colors text-[10px] tracking-[0.25em]"
+                      />
+                      <p className="text-xs text-[#5A544B] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {editedMessage.length} chars
+                      </p>
+                    </div>
                   </div>
                   <textarea
                     value={editedMessage}
@@ -956,13 +998,10 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
                   <div className="text-sm flex items-center gap-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
                     <span>{selectedConfirmationMessage.booking.fields['Name'] || 'Guest'} -</span>
                     {selectedConfirmationMessage.booking.fields['Phone'] && (
-                      <button
-                        onClick={() => copyToClipboard(selectedConfirmationMessage.booking.fields['Phone']!)}
-                        className="hover:text-[#D4A574] transition-colors cursor-pointer"
-                        title="Click to copy"
-                      >
-                        {copiedPhone === selectedConfirmationMessage.booking.fields['Phone'] ? '✓ Copied!' : selectedConfirmationMessage.booking.fields['Phone']}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <span className="select-text">{selectedConfirmationMessage.booking.fields['Phone']}</span>
+                        <CopyButton text={selectedConfirmationMessage.booking.fields['Phone']} title="Copy phone" />
+                      </div>
                     )}
                   </div>
                 </div>
@@ -981,9 +1020,12 @@ When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${C
                 <div className="w-full h-px bg-[#3A3736]" />
 
                 <div>
-                  <p className="text-xs text-[#A39B8B] mb-3 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    MESSAGE CONTENT
-                  </p>
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <p className="text-xs text-[#A39B8B] tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                      MESSAGE CONTENT
+                    </p>
+                    <CopyButton text={selectedConfirmationMessage.message} title="Copy message" />
+                  </div>
                   <div className="bg-[#1A1816] p-4 rounded border border-[#3A3736]">
                     <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ fontFamily: 'FragmentMono, monospace' }}>
                       {selectedConfirmationMessage.message}
