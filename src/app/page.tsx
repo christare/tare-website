@@ -14,6 +14,15 @@ function StudioPageContent() {
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
   const [availableSeats, setAvailableSeats] = useState<number | null>(null);
   const [isSoldOut, setIsSoldOut] = useState(false);
+  const heroBackgroundMobileImage = "/images/Photo Wellness 1.jpg";
+  const heroBackgroundImages = [
+    
+    "/images/Photo Wellness 1.jpg",
+    "/images/Photo Wellness 3.jpg",
+
+    "/images/Photo Wellness 2.png",
+
+  ];
 
   // Event ID is imported from central config at top of file
 
@@ -153,10 +162,62 @@ function StudioPageContent() {
     <main className="min-h-screen text-white relative" style={{backgroundColor: '#2A2726'}}>
       {/* Hero section with dial background */}
       <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Full-screen background photos (ultra-faded) */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-0 pointer-events-none"
+        >
+          {/* Mobile: single full-screen image */}
+          <div className="absolute inset-0 md:hidden">
+            <Image
+              src={heroBackgroundMobileImage}
+              alt=""
+              fill
+              sizes="100vw"
+              priority
+              className="object-cover"
+              style={{
+                opacity: 0.4,
+                filter:
+                  "grayscale(100%) contrast(1.2) brightness(0.9) saturate(0) blur(0.75px)",
+              }}
+            />
+          </div>
+
+          {/* Desktop+: three-panel grid */}
+          <div className="absolute inset-0 hidden md:grid md:grid-cols-3">
+            {heroBackgroundImages.map((src, idx) => (
+              <div key={src} className="relative h-full w-full">
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  priority={idx === 0}
+                  className="object-cover"
+                  style={{
+                    opacity: 0.4,
+                    filter:
+                      "grayscale(100%) contrast(1.2) brightness(0.9) saturate(0) blur(0.75px)",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Soft wash to keep dial/text crisp and readable */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(42,39,38,0.18) 0%, rgba(42,39,38,0.55) 45%, rgba(42,39,38,0.92) 82%, rgba(42,39,38,1) 100%)",
+            }}
+          />
+        </div>
+
         {/* Dial background */}
         <motion.div 
-          className="absolute top-0 left-1/2 h-full w-screen -translate-x-1/2 flex items-center justify-center pointer-events-none" 
-          style={{ zIndex: 1 }}
+          className="absolute top-0 left-1/2 h-full w-screen -translate-x-1/2 flex items-center justify-center pointer-events-none z-10"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 0.24, scale: 0.7 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
@@ -172,7 +233,7 @@ function StudioPageContent() {
         </motion.div>
 
         {/* Content on top of dial */}
-        <div className="relative z-10 w-full max-w-3xl mx-auto px-6 py-16 sm:py-20 md:py-24 flex flex-col items-center justify-center">
+        <div className="relative z-20 w-full max-w-3xl mx-auto px-6 py-16 sm:py-20 md:py-24 flex flex-col items-center justify-center">
           {/* TARE Studio Artifact - above logo */}
           <motion.div 
             className="w-full flex justify-center mb-3 md:mb-4"
@@ -424,68 +485,13 @@ function StudioPageContent() {
         animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 1.0, ease: "easeOut" }}
       >
-        {/* First Row - Wellness Photos */}
+        {/* Gallery */}
         <div className="grid grid-cols-1 md:grid-cols-3 mb-0 md:mb-4">
           <motion.div 
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <Image
-              src="/images/Photo Wellness 1.jpg"
-              alt="TARE Studio Experience"
-              width={400}
-              height={500}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-              style={{ 
-                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
-              }}
-            />
-          </motion.div>
-          <motion.div 
-            className="aspect-[4/5] overflow-hidden relative"
-            initial={{ opacity: 0 }}
-            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-          >
-            <Image
-              src="/images/Photo Wellness 2.png"
-              alt="TARE Studio Experience"
-              width={400}
-              height={500}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-              style={{ 
-                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
-              }}
-            />
-          </motion.div>
-          <motion.div
-            className="aspect-[4/5] overflow-hidden relative"
-            initial={{ opacity: 0 }}
-            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          >
-            <Image
-              src="/images/Photo Wellness 3.jpg"
-              alt="TARE Studio Experience"
-              width={400}
-              height={500}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-              style={{ 
-                filter: 'grayscale(100%) contrast(1.4) brightness(1) saturate(0) hue-rotate(0deg) invert(0.1)'
-              }}
-            />
-          </motion.div>
-        </div>
-
-        {/* Second Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 mb-0 md:mb-4">
-          <motion.div 
-            className="aspect-[4/5] overflow-hidden relative"
-            initial={{ opacity: 0 }}
-            animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
           >
             <Image
               src="/images/Room1.jpg"
@@ -502,7 +508,7 @@ function StudioPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
           >
             <Image
               src="/images/Room3.jpg"
@@ -519,7 +525,7 @@ function StudioPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           >
             <Image
               src="/images/still5.png"
@@ -541,7 +547,7 @@ function StudioPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
           >
             <Image
               src="/images/still4.png"
@@ -558,7 +564,7 @@ function StudioPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.7 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
           >
             <Image
               src="/images/Still6.jpg"
@@ -576,7 +582,7 @@ function StudioPageContent() {
             className="aspect-[4/5] overflow-hidden relative"
             initial={{ opacity: 0 }}
             animate={imagesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
           >
             <Image
               src="/images/Room2.jpg"
