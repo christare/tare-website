@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { CURRENT_EVENT_CONFIG } from "@/config/events";
 
 // Client component that uses useSearchParams
 function SuccessContent() {
@@ -82,8 +83,8 @@ function SuccessContent() {
                 </div>
                 <div className="text-center">
                   <div className="text-white text-xs" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    <div>45 W 29th St, Suite 301</div>
-                    <div>New York, NY 10001</div>
+                    <div>{CURRENT_EVENT_CONFIG.addressLine1}</div>
+                    <div>{CURRENT_EVENT_CONFIG.addressLine2}</div>
                   </div>
                 </div>
                 <div className="text-center">

@@ -32,7 +32,10 @@ export const CURRENT_EVENT_CONFIG = {
   doorsOpen: '1:45 PM', // 15 mins before start
   
   // Location details
-  address: '231 West 29th St, New York, NY 10001',
+  // Keep Suite number consistent everywhere (website, SMS, calendar, etc.)
+  address: '45 W 29th St, Suite 301, New York, NY 10001',
+  addressLine1: '45 W 29th St, Suite 301',
+  addressLine2: 'New York, NY 10001',
   buzzer: '1207',
   contactPhone: '4157079319',
   contactName: 'Chris'

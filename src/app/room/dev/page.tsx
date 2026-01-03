@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { CURRENT_EVENT_CONFIG } from "@/config/events";
 
 export default function RoomDevPage() {
   const router = useRouter();
@@ -111,7 +112,7 @@ export default function RoomDevPage() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Location</span>
-              <span className="text-white">45 W 29th St Suite 301, New York, NY 10001</span>
+              <span className="text-white">{CURRENT_EVENT_CONFIG.address}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Price</span>

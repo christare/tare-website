@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Airtable from 'airtable';
 import twilio from 'twilio';
 import { CURRENT_EVENT_CONFIG } from '@/config/events';
+import { generateConfirmationMessage } from '@/lib/confirmation-message';
 
 // Format phone for Twilio (needs +1 prefix for US numbers)
 function formatPhoneForTwilio(phone: string): string {
@@ -15,34 +16,7 @@ function formatPhoneForTwilio(phone: string): string {
   return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
 }
 
-// Format date for message (e.g., "Saturday, December 6th")
-function formatEventDate(dateString: string): string {
-  const date = new Date(dateString + 'T12:00:00'); // Add time to avoid timezone issues
-  const options: Intl.DateTimeFormatOptions = { 
-    weekday: 'long', 
-    month: 'long', 
-    day: 'numeric' 
-  };
-  return date.toLocaleDateString('en-US', options);
-}
-
-// Generate confirmation message
-function generateConfirmationMessage(name: string | null, eventDate: string): string {
-  const formattedDate = formatEventDate(eventDate);
-  const greeting = name ? `Hey ${name}` : 'Hey there';
-  
-  return `${greeting}, your spot at TARE on ${formattedDate} is confirmed.
-
-Complete your pre-event form, which will help us tailor the experience to our group:
-tarestudionyc.com/form
-
-📍 ${CURRENT_EVENT_CONFIG.address}
-
-🕐 ${CURRENT_EVENT_CONFIG.eventTime}
-   Doors open: ${CURRENT_EVENT_CONFIG.doorsOpen}
-
-When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${CURRENT_EVENT_CONFIG.contactName} at ${CURRENT_EVENT_CONFIG.contactPhone}.`;
-}
+// Default confirmation message is generated in a shared helper (used by admin preview too)
 
 export async function POST(request: Request) {
   try {

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { CURRENT_EVENT_ID, CURRENT_EVENT_CONFIG } from '@/config/events';
+import { generateConfirmationMessage } from '@/lib/confirmation-message';
 
 interface Booking {
   id: string;
@@ -194,28 +195,8 @@ export default function AdminPage() {
   const generatePreviewMessage = (booking: Booking): string => {
     const name = booking.fields['Name'] || null;
     const eventDate = booking.fields['Event'] || CURRENT_EVENT_CONFIG.eventId;
-    
-    // Format date
-    const date = new Date(eventDate + 'T12:00:00');
-    const formattedDate = date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-    
-    const greeting = name ? `Hey ${name}` : 'Hey there';
-    
-    return `${greeting}, your spot at TARE on ${formattedDate} is confirmed.
 
-Complete your pre-event form, which will help us tailor the experience to our group:
-tarestudionyc.com/form
-
-📍 ${CURRENT_EVENT_CONFIG.address}
-
-🕐 ${CURRENT_EVENT_CONFIG.eventTime}
-   Doors open: ${CURRENT_EVENT_CONFIG.doorsOpen}
-
-When you arrive, buzz ${CURRENT_EVENT_CONFIG.buzzer} on the intercom or text ${CURRENT_EVENT_CONFIG.contactName} at ${CURRENT_EVENT_CONFIG.contactPhone}.`;
+    return generateConfirmationMessage(name, eventDate);
   };
 
   // Open preview modal

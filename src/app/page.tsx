@@ -409,8 +409,8 @@ function StudioPageContent() {
             {/* Location */}
             <div className="text-center space-y-2 mb-8 sm:mb-10">
               <div className="text-white text-sm sm:text-base" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                <div>231 West 29th St</div>
-                <div>New York, NY 10001</div>
+                <div>{CURRENT_EVENT_CONFIG.addressLine1}</div>
+                <div>{CURRENT_EVENT_CONFIG.addressLine2}</div>
               </div>
             </div>
             
