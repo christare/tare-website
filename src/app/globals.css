@@ -54,6 +54,53 @@ body {
   cursor: default;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Print / PDF layout helpers (Letter portrait)
+   ───────────────────────────────────────────────────────────── */
+.print-surface {
+  background: #111;
+  padding: 32px 0;
+}
+
+.print-page {
+  width: 8.5in;
+  height: 11in;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.print-hero {
+  height: 6.35in;
+}
+
+.print-90min {
+  height: 4.65in;
+}
+
+@media print {
+  @page {
+    size: Letter portrait;
+    margin: 0;
+  }
+
+  html, body {
+    background: #fff !important;
+  }
+
+  .print-surface {
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  .print-page {
+    width: 8.5in !important;
+    height: 11in !important;
+    margin: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
 /* Prevent text selection on specific elements */
 .no-select {
   -webkit-user-select: none;
