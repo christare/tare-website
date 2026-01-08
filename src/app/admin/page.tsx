@@ -16,6 +16,8 @@ interface Booking {
     'Coupon Used'?: string;
     'Event'?: string;
     'Event Date'?: string;
+    'Status'?: string;
+    'Notes'?: string;
     'Confirmation Text Sent'?: boolean;
     'Confirmation Message'?: string;
     'Confirmation Sent At'?: string;
@@ -41,6 +43,31 @@ interface GuestForm {
   };
 }
 
+function getDisplayName(booking: Booking): string | null {
+  // Priority:
+  // 1) Preferred name from guest form (if submitted)
+  // 2) Stripe billing name stored in booking "Name" field
+  // 3) Fallback: email local-part (before "@")
+  const preferredName = booking.guestForm?.fields?.['Preferred Name']?.trim();
+  if (preferredName) return preferredName;
+
+  const bookingName = booking.fields['Name']?.trim();
+  if (bookingName) return bookingName;
+
+  const email = booking.fields['Email']?.trim();
+  if (email && email.includes('@')) {
+    const local = email.split('@')[0]?.trim();
+    if (local) return local;
+  }
+
+  return null;
+}
+
+function getBookingStatus(booking: Booking): 'Active' | 'Cancelled' {
+  const status = booking.fields['Status']?.trim();
+  return status === 'Cancelled' ? 'Cancelled' : 'Active';
+}
+
 // Phone normalization utility
 function normalizePhone(phone: string): string {
   const cleaned = phone.replace(/\D/g, '');
@@ -54,12 +81,14 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]); // current event bookings (enhanced with guest form join)
+  const [otherBookings, setOtherBookings] = useState<Booking[]>([]); // non-current event bookings (raw)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [realAvailableSeats, setRealAvailableSeats] = useState<number | null>(null);
   const [totalSeats, setTotalSeats] = useState(16);
   const [showExtraColumns, setShowExtraColumns] = useState(false);
+  const [activeView, setActiveView] = useState<'current_active' | 'current_cancelled' | 'other'>('current_active');
   const [guestForms, setGuestForms] = useState<GuestForm[]>([]);
   const [unmatchedForms, setUnmatchedForms] = useState<GuestForm[]>([]);
   const [selectedGuestForm, setSelectedGuestForm] = useState<GuestForm | null>(null);
@@ -68,18 +97,19 @@ export default function AdminPage() {
   const [confirmationPreview, setConfirmationPreview] = useState<{booking: Booking, message: string} | null>(null);
   const [editedMessage, setEditedMessage] = useState('');
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const ADMIN_PASSWORD = 'tareadmin';
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [editForm, setEditForm] = useState<{ name: string; phone: string; email: string; eventDate: string; status: 'Active' | 'Cancelled'; notes: string }>({
+    name: '',
+    phone: '',
+    email: '',
+    eventDate: '',
+    status: 'Active',
+    notes: '',
+  });
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      setAuthenticated(true);
-      fetchData();
-    } else {
-      setError('Invalid credentials');
-      setTimeout(() => setError(''), 3000);
-    }
+    login();
   };
 
   const copyToClipboard = async (text: string) => {
@@ -127,16 +157,25 @@ export default function AdminPage() {
     setLoading(true);
     setError('');
     try {
-      // Always fetch bookings for the current event date from config
-      const bookingsResponse = await fetch(`/api/admin/bookings?eventId=${CURRENT_EVENT_ID}`);
+      // Fetch ALL bookings (we slice into current vs other on the client)
+      const bookingsResponse = await fetch(`/api/admin/bookings?scope=all`, { credentials: 'include' });
       const bookingsData = await bookingsResponse.json();
       
       // Fetch guest forms
-      const guestFormsResponse = await fetch('/api/admin/guest-forms');
+      const guestFormsResponse = await fetch('/api/admin/guest-forms', { credentials: 'include' });
       const guestFormsData = await guestFormsResponse.json();
       
+      if (bookingsResponse.status === 401 || guestFormsResponse.status === 401) {
+        setAuthenticated(false);
+        setError('Session expired. Please log in again.');
+        setLoading(false);
+        return;
+      }
+
       if (bookingsResponse.ok && guestFormsResponse.ok) {
-        const bookings = bookingsData.bookings || [];
+        const allBookings: Booking[] = bookingsData.bookings || [];
+        const currentEventBookings = allBookings.filter(b => (b.fields['Event Date'] || '') === CURRENT_EVENT_ID);
+        const otherEventBookings = allBookings.filter(b => (b.fields['Event Date'] || '') !== CURRENT_EVENT_ID);
         const guestForms = guestFormsData.guestForms || [];
         
         // Create phone -> form map (use normalized field from Airtable)
@@ -150,7 +189,7 @@ export default function AdminPage() {
         });
         
         // Match bookings with forms
-        const enhancedBookings = bookings.map((booking: Booking) => {
+        const enhancedBookings = currentEventBookings.map((booking: Booking) => {
           const bookingPhone = normalizePhone(booking.fields['Phone'] || '');
           const matchedForm = formsMap.get(bookingPhone);
           
@@ -169,6 +208,7 @@ export default function AdminPage() {
         const unmatched = Array.from(formsMap.values());
         
         setBookings(enhancedBookings);
+        setOtherBookings(otherEventBookings);
         setGuestForms(guestForms);
         setUnmatchedForms(unmatched);
       } else {
@@ -181,7 +221,9 @@ export default function AdminPage() {
       
       if (availabilityResponse.ok) {
         setRealAvailableSeats(availabilityData.available);
-        const bookedSeats = bookingsData.bookings?.length || 0;
+        const allBookings: Booking[] = bookingsData.bookings || [];
+        const currentActiveBookedSeats = allBookings.filter(b => (b.fields['Event Date'] || '') === CURRENT_EVENT_ID && getBookingStatus(b) !== 'Cancelled').length;
+        const bookedSeats = currentActiveBookedSeats;
         setTotalSeats(availabilityData.available + bookedSeats);
       }
     } catch (error) {
@@ -193,7 +235,7 @@ export default function AdminPage() {
 
   // Generate preview message
   const generatePreviewMessage = (booking: Booking): string => {
-    const name = booking.fields['Name'] || null;
+    const name = getDisplayName(booking);
     const eventDate = booking.fields['Event'] || CURRENT_EVENT_CONFIG.eventId;
 
     return generateConfirmationMessage(name, eventDate);
@@ -206,6 +248,163 @@ export default function AdminPage() {
     setConfirmationPreview({ booking, message });
   };
 
+  const login = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const resp = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ password }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Login failed');
+        setLoading(false);
+        return;
+      }
+      setAuthenticated(true);
+      await fetchData();
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
+    } catch {}
+    setAuthenticated(false);
+    setPassword('');
+  };
+
+  const openEditBooking = (booking: Booking) => {
+    setEditingBooking(booking);
+    setEditForm({
+      name: booking.fields['Name'] || '',
+      phone: booking.fields['Phone'] || '',
+      email: booking.fields['Email'] || '',
+      eventDate: booking.fields['Event Date'] || '',
+      status: getBookingStatus(booking),
+      notes: booking.fields['Notes'] || '',
+    });
+  };
+
+  const saveEditBooking = async () => {
+    if (!editingBooking) return;
+    setLoading(true);
+    setError('');
+    try {
+      const resp = await fetch('/api/admin/bookings/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          bookingId: editingBooking.id,
+          fields: {
+            Name: editForm.name,
+            Phone: editForm.phone,
+            Email: editForm.email,
+            'Event Date': editForm.eventDate,
+            Status: editForm.status,
+            Notes: editForm.notes,
+          },
+        }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Failed to save');
+        return;
+      }
+      setEditingBooking(null);
+      await fetchData();
+    } catch (err) {
+      console.error('Save edit error:', err);
+      setError('Failed to save changes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelBooking = async (bookingId: string) => {
+    if (!confirm('Cancel this reservation? (You can restore it later)')) return;
+    setLoading(true);
+    setError('');
+    try {
+      const resp = await fetch('/api/admin/bookings/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ bookingId }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Failed to cancel');
+        return;
+      }
+      await fetchData();
+    } catch (err) {
+      console.error('Cancel error:', err);
+      setError('Failed to cancel reservation');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const restoreBooking = async (bookingId: string) => {
+    if (!confirm('Restore this reservation (set Status=Active)?')) return;
+    setLoading(true);
+    setError('');
+    try {
+      const resp = await fetch('/api/admin/bookings/restore', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ bookingId }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Failed to restore');
+        return;
+      }
+      await fetchData();
+    } catch (err) {
+      console.error('Restore error:', err);
+      setError('Failed to restore reservation');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const moveBookingToCurrentEvent = async (bookingId: string) => {
+    if (!confirm(`Move this reservation to ${CURRENT_EVENT_ID}?`)) return;
+    setLoading(true);
+    setError('');
+    try {
+      const resp = await fetch('/api/admin/bookings/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ bookingId, eventDate: CURRENT_EVENT_ID }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Failed to move');
+        return;
+      }
+      await fetchData();
+    } catch (err) {
+      console.error('Move error:', err);
+      setError('Failed to move reservation');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Send the confirmation with edited message
   const handleSendConfirmation = async (bookingId: string, customMessage?: string) => {
     setSendingConfirmation(bookingId);
@@ -215,6 +414,7 @@ export default function AdminPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ 
           bookingId,
           customMessage: customMessage || undefined
@@ -241,11 +441,10 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (authenticated) {
-      fetchData();
-      const interval = setInterval(fetchData, 30000);
-      return () => clearInterval(interval);
-    }
+    if (!authenticated) return;
+    fetchData();
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, [authenticated]);
 
   if (!authenticated) {
@@ -314,10 +513,11 @@ export default function AdminPage() {
 
             <button
               type="submit"
-              className="w-full bg-[#E8E3DD] text-[#1A1816] py-4 hover:bg-[#D4CEC4] transition-all duration-300 tracking-[0.3em] text-xs font-medium"
+              disabled={loading}
+              className="w-full bg-[#E8E3DD] text-[#1A1816] py-4 hover:bg-[#D4CEC4] transition-all duration-300 tracking-[0.3em] text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
-              ACCESS DASHBOARD
+              {loading ? 'CHECKING...' : 'ACCESS DASHBOARD'}
             </button>
           </form>
         </motion.div>
@@ -325,7 +525,16 @@ export default function AdminPage() {
     );
   }
 
-  const bookedSeats = bookings.length;
+  const currentActiveBookings = bookings.filter(b => getBookingStatus(b) !== 'Cancelled');
+  const currentCancelledBookings = bookings.filter(b => getBookingStatus(b) === 'Cancelled');
+  const displayBookings =
+    activeView === 'current_active'
+      ? currentActiveBookings
+      : activeView === 'current_cancelled'
+        ? currentCancelledBookings
+        : [];
+
+  const bookedSeats = currentActiveBookings.length;
   const capacityPercentage = totalSeats > 0 ? (bookedSeats / totalSeats) * 100 : 0;
 
   return (
@@ -452,10 +661,44 @@ export default function AdminPage() {
           transition={{ delay: 0.6 }}
           className="bg-[#2A2726] border border-[#3A3736]"
         >
-          <div className="p-6 border-b border-[#3A3736] flex justify-between items-center">
-            <h2 className="text-sm tracking-[0.3em] text-[#E8E3DD]" style={{ fontFamily: 'FragmentMono, monospace' }}>
-              RESERVATIONS
-            </h2>
+          <div className="p-6 border-b border-[#3A3736] flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-sm tracking-[0.3em] text-[#E8E3DD]" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                  RESERVATIONS
+                </h2>
+                <button
+                  onClick={logout}
+                  className="text-xs tracking-wider text-[#8B7F6F] hover:text-[#A39B8B] transition-colors px-3 py-1 border border-[#3A3736] hover:border-[#8B7F6F]"
+                  style={{ fontFamily: 'FragmentMono, monospace' }}
+                >
+                  LOG OUT
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setActiveView('current_active')}
+                  className={`text-xs tracking-wider px-3 py-1 border transition-colors ${activeView === 'current_active' ? 'border-[#D4A574] text-[#D4A574]' : 'border-[#3A3736] text-[#8B7F6F] hover:border-[#8B7F6F] hover:text-[#A39B8B]'}`}
+                  style={{ fontFamily: 'FragmentMono, monospace' }}
+                >
+                  CURRENT (ACTIVE) · {currentActiveBookings.length}
+                </button>
+                <button
+                  onClick={() => setActiveView('current_cancelled')}
+                  className={`text-xs tracking-wider px-3 py-1 border transition-colors ${activeView === 'current_cancelled' ? 'border-[#D4A574] text-[#D4A574]' : 'border-[#3A3736] text-[#8B7F6F] hover:border-[#8B7F6F] hover:text-[#A39B8B]'}`}
+                  style={{ fontFamily: 'FragmentMono, monospace' }}
+                >
+                  CURRENT (CANCELLED) · {currentCancelledBookings.length}
+                </button>
+                <button
+                  onClick={() => setActiveView('other')}
+                  className={`text-xs tracking-wider px-3 py-1 border transition-colors ${activeView === 'other' ? 'border-[#D4A574] text-[#D4A574]' : 'border-[#3A3736] text-[#8B7F6F] hover:border-[#8B7F6F] hover:text-[#A39B8B]'}`}
+                  style={{ fontFamily: 'FragmentMono, monospace' }}
+                >
+                  OTHER DATES · {otherBookings.length}
+                </button>
+              </div>
+            </div>
             <button
               onClick={() => setShowExtraColumns(!showExtraColumns)}
               className="md:hidden text-xs tracking-wider text-[#8B7F6F] hover:text-[#A39B8B] transition-colors px-3 py-1 border border-[#3A3736] hover:border-[#8B7F6F]"
@@ -472,10 +715,68 @@ export default function AdminPage() {
                 LOADING...
               </p>
             </div>
-          ) : bookings.length === 0 ? (
+          ) : activeView === 'other' ? (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[#3A3736]">
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>EVENT DATE</th>
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>NAME</th>
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>PHONE</th>
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>EMAIL</th>
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>STATUS</th>
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {otherBookings.map((b, index) => (
+                    <motion.tr
+                      key={b.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.7 + index * 0.03 }}
+                      className="border-b border-[#3A3736] hover:bg-[#33302E] transition-colors"
+                    >
+                      <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {b.fields['Event Date'] || '—'}
+                      </td>
+                      <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {b.fields['Name'] || '—'}
+                      </td>
+                      <td className="p-4 text-sm text-[#A39B8B] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {b.fields['Phone'] || '—'}
+                      </td>
+                      <td className="p-4 text-sm text-[#A39B8B] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {b.fields['Email'] || '—'}
+                      </td>
+                      <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {getBookingStatus(b) === 'Cancelled' ? <span className="text-[#8B7F6F]">Cancelled</span> : <span className="text-[#7FB069]">Active</span>}
+                      </td>
+                      <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => moveBookingToCurrentEvent(b.id)}
+                            className="px-3 py-1 border border-[#3A3736] text-[#A39B8B] hover:text-[#E8E3DD] hover:border-[#8B7F6F] transition-colors text-[10px] tracking-[0.25em]"
+                          >
+                            MOVE → CURRENT
+                          </button>
+                          <button
+                            onClick={() => openEditBooking(b)}
+                            className="px-3 py-1 border border-[#3A3736] text-[#A39B8B] hover:text-[#E8E3DD] hover:border-[#8B7F6F] transition-colors text-[10px] tracking-[0.25em]"
+                          >
+                            EDIT
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : displayBookings.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-sm text-[#A39B8B] tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                NO RESERVATIONS YET
+                NO RESERVATIONS
               </p>
             </div>
           ) : (
@@ -490,12 +791,14 @@ export default function AdminPage() {
                     <th className={`text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap ${showExtraColumns ? '' : 'hidden md:table-cell'}`} style={{ fontFamily: 'FragmentMono, monospace' }}>COUPON</th>
                     <th className={`text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap ${showExtraColumns ? '' : 'hidden md:table-cell'}`} style={{ fontFamily: 'FragmentMono, monospace' }}>EVENT</th>
                     <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>EVENT DATE</th>
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>STATUS</th>
                     <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>FORM STATUS</th>
                     <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>CONFIRMATION</th>
+                    <th className="text-left p-4 text-xs text-[#A39B8B] tracking-[0.2em] font-normal whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {bookings.map((booking, index) => (
+                  {displayBookings.map((booking, index) => (
                     <motion.tr
                       key={booking.id}
                       initial={{ opacity: 0 }}
@@ -504,7 +807,7 @@ export default function AdminPage() {
                       className="border-b border-[#3A3736] hover:bg-[#33302E] transition-colors"
                     >
                       <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {booking.fields['Name'] || '—'}
+                        {getDisplayName(booking) || '—'}
                       </td>
                       <td className="p-4 text-sm text-[#A39B8B] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
                         {booking.fields['Phone'] ? (
@@ -543,6 +846,9 @@ export default function AdminPage() {
                         {booking.fields['Event Date'] || '—'}
                       </td>
                       <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        {getBookingStatus(booking) === 'Cancelled' ? <span className="text-[#8B7F6F]">Cancelled</span> : <span className="text-[#7FB069]">Active</span>}
+                      </td>
+                      <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
                         {booking.guestFormSubmitted ? (
                           <button
                             onClick={() => setSelectedGuestForm(booking.guestForm)}
@@ -579,6 +885,31 @@ export default function AdminPage() {
                             Send
                           </button>
                         )}
+                      </td>
+                      <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => openEditBooking(booking)}
+                            className="px-3 py-1 border border-[#3A3736] text-[#A39B8B] hover:text-[#E8E3DD] hover:border-[#8B7F6F] transition-colors text-[10px] tracking-[0.25em]"
+                          >
+                            EDIT
+                          </button>
+                          {getBookingStatus(booking) === 'Cancelled' ? (
+                            <button
+                              onClick={() => restoreBooking(booking.id)}
+                              className="px-3 py-1 border border-[#3A3736] text-[#7FB069] hover:text-[#E8E3DD] hover:border-[#8B7F6F] transition-colors text-[10px] tracking-[0.25em]"
+                            >
+                              RESTORE
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => cancelBooking(booking.id)}
+                              className="px-3 py-1 border border-[#3A3736] text-[#D4A574] hover:text-[#E8E3DD] hover:border-[#8B7F6F] transition-colors text-[10px] tracking-[0.25em]"
+                            >
+                              CANCEL
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </motion.tr>
                   ))}
@@ -884,7 +1215,7 @@ export default function AdminPage() {
                     SENDING TO
                   </p>
                   <div className="text-sm flex items-center gap-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    <span>{confirmationPreview.booking.fields['Name'] || 'Guest'} -</span>
+                    <span>{getDisplayName(confirmationPreview.booking) || 'Guest'} -</span>
                     {confirmationPreview.booking.fields['Phone'] && (
                       <div className="flex items-center gap-2">
                         <span className="select-text">{confirmationPreview.booking.fields['Phone']}</span>
@@ -977,7 +1308,7 @@ export default function AdminPage() {
                     SENT TO
                   </p>
                   <div className="text-sm flex items-center gap-2" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    <span>{selectedConfirmationMessage.booking.fields['Name'] || 'Guest'} -</span>
+                    <span>{getDisplayName(selectedConfirmationMessage.booking) || 'Guest'} -</span>
                     {selectedConfirmationMessage.booking.fields['Phone'] && (
                       <div className="flex items-center gap-2">
                         <span className="select-text">{selectedConfirmationMessage.booking.fields['Phone']}</span>
@@ -1012,6 +1343,119 @@ export default function AdminPage() {
                       {selectedConfirmationMessage.message}
                     </p>
                   </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Booking Modal */}
+      <AnimatePresence>
+        {editingBooking && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50"
+            onClick={() => setEditingBooking(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#2A2726] border border-[#3A3736] max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-[#3A3736] flex justify-between items-center sticky top-0 bg-[#2A2726] z-10">
+                <h2 className="text-sm tracking-[0.3em]" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                  EDIT RESERVATION
+                </h2>
+                <button
+                  onClick={() => setEditingBooking(null)}
+                  className="text-[#A39B8B] hover:text-[#E8E3DD] text-2xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>NAME</p>
+                    <input
+                      value={editForm.name}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full bg-[#1A1816] border border-[#3A3736] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8B7F6F]"
+                      style={{ fontFamily: 'FragmentMono, monospace' }}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>STATUS</p>
+                    <select
+                      value={editForm.status}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as any }))}
+                      className="w-full bg-[#1A1816] border border-[#3A3736] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8B7F6F]"
+                      style={{ fontFamily: 'FragmentMono, monospace' }}
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                  <div>
+                    <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>PHONE</p>
+                    <input
+                      value={editForm.phone}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                      className="w-full bg-[#1A1816] border border-[#3A3736] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8B7F6F]"
+                      style={{ fontFamily: 'FragmentMono, monospace' }}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>EMAIL</p>
+                    <input
+                      value={editForm.email}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full bg-[#1A1816] border border-[#3A3736] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8B7F6F]"
+                      style={{ fontFamily: 'FragmentMono, monospace' }}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>EVENT DATE</p>
+                    <input
+                      value={editForm.eventDate}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, eventDate: e.target.value }))}
+                      className="w-full bg-[#1A1816] border border-[#3A3736] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8B7F6F]"
+                      style={{ fontFamily: 'FragmentMono, monospace' }}
+                      placeholder="YYYY-MM-DD"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-[#A39B8B] mb-2 tracking-wider" style={{ fontFamily: 'FragmentMono, monospace' }}>NOTES</p>
+                  <textarea
+                    value={editForm.notes}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
+                    rows={5}
+                    className="w-full bg-[#1A1816] border border-[#3A3736] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8B7F6F]"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => setEditingBooking(null)}
+                    className="flex-1 px-6 py-3 border border-[#3A3736] text-[#A39B8B] text-sm tracking-wide hover:bg-[#3A3736] transition-colors"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveEditBooking}
+                    disabled={loading}
+                    className="flex-1 px-6 py-3 bg-[#D4A574] text-black text-sm tracking-wide hover:bg-[#C4956A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: 'FragmentMono, monospace' }}
+                  >
+                    {loading ? 'Saving...' : 'Save'}
+                  </button>
                 </div>
               </div>
             </motion.div>

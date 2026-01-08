@@ -13,6 +13,12 @@ const airtableBaseId = process.env.NEXT_PUBLIC_AIRTABLE_STUDIO_BASE_ID || proces
 const airtableTableName = process.env.NEXT_PUBLIC_AIRTABLE_STUDIO_TABLE || process.env.NEXT_PUBLIC_AIRTABLE_TABLE!;
 const airtablePAT = process.env.NEXT_PUBLIC_AIRTABLE_PAT!;
 
+function emailLocalPart(email?: string | null): string {
+  const e = (email || '').trim();
+  if (!e || !e.includes('@')) return '';
+  return e.split('@')[0]?.trim() || '';
+}
+
 export async function POST(req: Request) {
   let event: Stripe.Event;
   try {
@@ -64,10 +70,25 @@ export async function POST(req: Request) {
         promoInfo = 'Promo code applied';
       }
       
+      const email =
+        session.customer_details?.email ||
+        // Some Stripe flows populate these alternatively
+        (session as any).customer_email ||
+        metadata.email ||
+        '';
+      const phone =
+        session.customer_details?.phone ||
+        metadata.phone ||
+        '';
+      const stripeName = (session.customer_details?.name || '').trim();
+      const metadataName = (metadata.guestName || '').trim();
+      const nameFallbackFromEmail = emailLocalPart(email);
+      const nameToSave = stripeName || metadataName || nameFallbackFromEmail || '';
+
       const fieldsToSave = {
-        'Name': session.customer_details?.name || metadata.guestName || '',
-        'Phone': session.customer_details?.phone || '',
-        'Email': session.customer_details?.email || '',
+        'Name': nameToSave,
+        'Phone': phone,
+        'Email': email,
         'Amount Paid': `$${session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00'}`,
         'Coupon Used': promoInfo,
         'Event': bookingType,

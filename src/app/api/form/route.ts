@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Airtable from 'airtable';
 import twilio from 'twilio';
+import { CURRENT_EVENT_ID } from '@/config/events';
 
 interface GuestFormData {
   phoneNumber: string;
@@ -39,6 +40,29 @@ function formatPhoneForTwilio(phone: string): string {
   return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
 }
 
+function getStudioBookingsTable() {
+  const airtableBaseId =
+    process.env.NEXT_PUBLIC_AIRTABLE_STUDIO_BASE_ID ||
+    process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID;
+  const airtableTableName =
+    process.env.NEXT_PUBLIC_AIRTABLE_STUDIO_TABLE ||
+    process.env.NEXT_PUBLIC_AIRTABLE_TABLE;
+  const airtablePAT = process.env.AIRTABLE_PAT || process.env.NEXT_PUBLIC_AIRTABLE_PAT;
+
+  if (!airtableBaseId || !airtableTableName || !airtablePAT) {
+    throw new Error('Missing Airtable STUDIO environment variables');
+  }
+
+  const base = new Airtable({ apiKey: airtablePAT }).base(airtableBaseId);
+  return base(airtableTableName);
+}
+
+function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
 export async function POST(request: Request) {
   console.log('Starting guest form API route handler');
   
@@ -68,6 +92,36 @@ export async function POST(request: Request) {
           }
         }
       ]);
+
+      // Best-effort: if this guest has a booking for the current event, copy Preferred Name into the booking's Name field.
+      // This ensures the admin portal "Name" column (and confirmations) can use the preferred name even without joining tables.
+      try {
+        const preferredName = (formData.preferredName || '').trim();
+        if (preferredName && normalizedPhone) {
+          const studioTable = getStudioBookingsTable();
+          // Match any record whose Phone, when stripped to digits, ends in the normalized 10 digits.
+          // Update ALL matching bookings (across event dates), per admin preference.
+          const filterByFormula =
+            `RIGHT(REGEX_REPLACE({Phone}, '\\\\D', ''), 10) = '${normalizedPhone}'`;
+
+          const matches = await studioTable.select({ filterByFormula }).all();
+          if (!matches.length) return;
+
+          const updates = matches.map((r) => ({
+            id: r.id,
+            fields: { Name: preferredName }
+          }));
+
+          for (const batch of chunk(updates, 10)) {
+            await studioTable.update(batch as any);
+          }
+
+          console.log(`✅ Updated ${matches.length} STUDIO booking Name value(s) for phone ${normalizedPhone}`);
+        }
+      } catch (bookingUpdateError: any) {
+        // Non-critical: do not fail guest form submission if we can't update the booking record.
+        console.error('Failed to update STUDIO booking name (non-critical):', bookingUpdateError?.message || bookingUpdateError);
+      }
       
       console.log('Successfully submitted guest form data to Airtable');
       

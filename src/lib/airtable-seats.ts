@@ -13,6 +13,8 @@ interface AirtableBooking {
     'Coupon Used'?: string;
     'Event'?: string;
     'Event Date'?: string;
+    'Status'?: string;
+    'Notes'?: string;
   };
 }
 
@@ -40,7 +42,8 @@ export const getAvailableSeats = async (eventDate: string): Promise<number> => {
     
     // Query records filtered by Event Date
     const records = await table.select({
-      filterByFormula: `{Event Date} = '${eventDate}'`
+      // Exclude cancelled reservations from seat counts
+      filterByFormula: `AND({Event Date} = '${eventDate}', OR({Status} = 'Active', {Status} = BLANK()))`
     }).all();
 
     console.log(`✅ Found ${records.length} bookings for ${eventDate}`);

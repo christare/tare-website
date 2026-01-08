@@ -3,6 +3,7 @@ import Airtable from 'airtable';
 import twilio from 'twilio';
 import { CURRENT_EVENT_CONFIG } from '@/config/events';
 import { generateConfirmationMessage } from '@/lib/confirmation-message';
+import { requireAdmin } from '../_auth';
 
 // Format phone for Twilio (needs +1 prefix for US numbers)
 function formatPhoneForTwilio(phone: string): string {
@@ -19,6 +20,9 @@ function formatPhoneForTwilio(phone: string): string {
 // Default confirmation message is generated in a shared helper (used by admin preview too)
 
 export async function POST(request: Request) {
+  const unauthorized = requireAdmin(request);
+  if (unauthorized) return unauthorized;
+
   try {
     const { bookingId, customMessage } = await request.json();
     
