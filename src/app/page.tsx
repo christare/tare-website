@@ -399,10 +399,13 @@ function StudioPageContent() {
             {/* Date and Time - cohesive block */}
             <div className="text-center mb-8 sm:mb-10">
               <p className="text-white text-lg sm:text-xl md:text-2xl font-light mb-2" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                Saturday  ·  January 10  ·  2026
+                Sunday  ·  February 1  ·  2026
               </p>
               <p className="text-gray-400 text-sm sm:text-base font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-                2:00 PM - 3:30 PM
+                {CURRENT_EVENT_CONFIG.eventTime}
+              </p>
+              <p className="text-gray-400 text-sm sm:text-base font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
+                Doors open {CURRENT_EVENT_CONFIG.doorsOpen}
               </p>
           </div>
 

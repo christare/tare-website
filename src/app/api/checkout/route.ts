@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getSalesSettings } from '@/lib/airtable-settings';
 
 // Helper function to verify environment variables
 function checkEnvironmentVariables() {
@@ -48,6 +49,15 @@ export async function POST(request: Request) {
   console.log('Starting checkout API route handler');
   
   try {
+    // Enforce sales open/closed (server-side; UI-only is not enough)
+    const salesSettings = await getSalesSettings();
+    if (!salesSettings.salesOpen) {
+      return NextResponse.json(
+        { error: salesSettings.message || 'Ticket sales are currently paused.' },
+        { status: 403 }
+      );
+    }
+
     // First, check environment variables
     let secretKeyInfo;
     try {

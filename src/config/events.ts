@@ -19,23 +19,23 @@
 
 export const CURRENT_EVENT_CONFIG = {
   // Event Date in YYYY-MM-DD format (CHANGE THIS FOR NEW EVENTS!)
-  eventId: '2026-01-10',
+  eventId: '2026-02-01',
   
   // Total seats available for this event
-  totalSeats: 16,
+  totalSeats: 4,
   
   // Event display name (optional)
-  displayName: 'TARE STUDIO - January 10, 2026',
+  displayName: 'TARE STUDIO - February 1, 2026',
   
   // Event time details for confirmation messages
   eventTime: '2:00 PM - 3:30 PM',
-  doorsOpen: '1:45 PM', // 15 mins before start
+  doorsOpen: '1:50 PM', // 10 mins before start
   
   // Location details
   // Keep Suite number consistent everywhere (website, SMS, calendar, etc.)
-  address: '45 W 29th St, Suite 301, New York, NY 10001',
-  addressLine1: '45 W 29th St, Suite 301',
-  addressLine2: 'New York, NY 10001',
+  address: '2959 Northern Blvd 49D, Long Island City, NY 11101',
+  addressLine1: '2959 Northern Blvd 49D',
+  addressLine2: 'Long Island City, NY 11101',
   buzzer: '1207',
   contactPhone: '4157079319',
   contactName: 'Chris'

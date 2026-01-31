@@ -33,6 +33,7 @@ export default function Header() {
   const runwayUrl = isProduction ? "/runway" : "/runway";
   const waitlistUrl = isProduction ? "/waitlist" : "/waitlist";
   const studioUrl = isProduction ? "/" : "/";
+  const labUrl = isProduction ? "/lab" : "/lab";
 
   return (
     <header 
@@ -56,7 +57,7 @@ export default function Header() {
             >
               STUDIO
             </Link>
-            
+
             <Link
               href={waitlistUrl}
               className={`text-sm tracking-wide transition-colors duration-300 ${
@@ -67,6 +68,18 @@ export default function Header() {
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               WAITLIST
+            </Link>
+
+            <Link
+              href={labUrl}
+              className={`text-sm tracking-wide transition-colors duration-300 ${
+                pathname === "/lab"
+                  ? "text-white"
+                  : "text-gray-200 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              LAB
             </Link>
 
             {/* Story link temporarily hidden */}
@@ -107,6 +120,18 @@ export default function Header() {
             style={{ fontFamily: 'FragmentMono, monospace' }}
           >
             WAITLIST
+          </Link>
+
+          <Link
+            href={labUrl}
+            className={`text-base tracking-wide transition-colors duration-300 ${
+              pathname === "/lab"
+                ? "text-white"
+                : "text-gray-300 hover:text-white"
+            }`}
+            style={{ fontFamily: 'FragmentMono, monospace' }}
+          >
+            LAB
           </Link>
         </nav>
         

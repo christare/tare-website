@@ -41,7 +41,7 @@ export default function GuestFormPage() {
 
   // Calculate total steps
   const getTotalSteps = () => {
-    return 10; // Fixed number of steps
+    return 9; // Last step index (0-based)
   };
 
   // Redirect to home after successful submission
@@ -185,7 +185,7 @@ export default function GuestFormPage() {
           <motion.button
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            onClick={currentStep === 1 ? () => {
+            onClick={currentStep === 0 ? () => {
               if (!formData.phoneNumber) {
                 setError("Phone number is required");
                 return;
@@ -208,42 +208,6 @@ export default function GuestFormPage() {
     
     switch (currentStep) {
       case 0:
-        return (
-          <>
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <p
-                  className="text-sm tracking-widest text-gray-500 mb-4"
-                  style={{ fontFamily: "FragmentMono, monospace" }}
-                >
-                  EVENT LOCATION - UPDATED
-                </p>
-                <p
-                  className="text-2xl md:text-3xl font-light mb-4 leading-relaxed text-gray-200"
-                  style={{ fontFamily: "NonBureauExtended, sans-serif" }}
-                >
-                  This session will take place at our larger studio, a few blocks
-                  from our usual space.
-                </p>
-
-                <div
-                  className="text-gray-300 text-base md:text-lg"
-                  style={{ fontFamily: "FragmentMono, monospace" }}
-                >
-                  <div>45 W 29th St, Suite 301</div>
-                  <div>New York, NY 10001</div>
-                </div>
-              </motion.div>
-            </div>
-            {renderNavigation(false, false)}
-          </>
-        );
-
-      case 1:
         return (
           <>
             <div className="space-y-6">
@@ -279,7 +243,7 @@ export default function GuestFormPage() {
           </>
         );
       
-      case 2:
+      case 1:
         return (
           <>
             <div className="space-y-6">
@@ -308,7 +272,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 3:
+      case 2:
         return (
           <>
             <div className="space-y-6">
@@ -340,7 +304,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 4:
+      case 3:
         return (
           <>
             <div className="space-y-6">
@@ -372,7 +336,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 5:
+      case 4:
         return (
           <>
             <div className="space-y-6">
@@ -406,7 +370,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 6:
+      case 5:
         return (
           <>
             <div className="space-y-6">
@@ -440,7 +404,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 7:
+      case 6:
         return (
           <>
             <div className="space-y-6">
@@ -474,7 +438,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 8:
+      case 7:
         return (
           <>
             <div className="space-y-6">
@@ -508,7 +472,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 9:
+      case 8:
         return (
           <>
             <div className="space-y-6">
@@ -543,7 +507,7 @@ export default function GuestFormPage() {
           </>
         );
 
-      case 10:
+      case 9:
         return (
           <>
             <div className="space-y-6">
