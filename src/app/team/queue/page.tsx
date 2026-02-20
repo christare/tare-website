@@ -47,7 +47,7 @@ function minutesAgo(iso: string | null) {
 }
 
 export default function TeamQueuePage() {
-  const [authed, setAuthed] = useState<"unknown" | "ok" | "needs_pin">("unknown");
+  const [needsPin, setNeedsPin] = useState(false);
   const [pin, setPin] = useState("");
   const [pinInput, setPinInput] = useState("");
   const [records, setRecords] = useState<QueueRecord[]>([]);
@@ -70,18 +70,19 @@ export default function TeamQueuePage() {
 
   const fetchList = async () => {
     setLoading(true);
-    setError("");
+    // Don't clear error every poll; keep it visible if APIs are failing.
     try {
       const url = `/api/queue/list?includeArchive=${showArchive ? "1" : "0"}`;
       const res = await fetch(url, { headers });
       const data = await res.json();
       if (res.status === 401) {
-        setAuthed("needs_pin");
-        throw new Error("Unauthorized (PIN required)");
+        setNeedsPin(true);
+        throw new Error("Unauthorized");
       }
       if (!res.ok) throw new Error(data?.error || "Failed to load queue");
       setRecords(data.records || []);
-      setAuthed("ok");
+      setNeedsPin(false);
+      setError("");
     } catch (e: any) {
       setError(e?.message || "Failed to load queue");
     } finally {
@@ -165,7 +166,9 @@ export default function TeamQueuePage() {
     await reorderWaiting(next);
   };
 
-  if (authed !== "ok") {
+  // If we have no saved/entered pin AND the server says we need one, show login.
+  // If a pin exists (even if wrong), show the dashboard shell and surface the error banner.
+  if (needsPin && !pin) {
     return (
       <main className="min-h-screen text-white" style={{ backgroundColor: "#2A2726" }}>
         <div className="min-h-screen flex items-center justify-center px-6">
@@ -198,10 +201,11 @@ export default function TeamQueuePage() {
             <input
               value={pinInput}
               onChange={(e) => setPinInput(e.target.value)}
-              placeholder='Password (must include "TARE")'
+              placeholder="Password"
               className="w-full bg-transparent border-b border-white/30 focus:outline-none focus:border-white py-3 text-lg text-white placeholder-gray-500"
               style={{ fontFamily: "FragmentMono, monospace" }}
-              inputMode="numeric"
+              autoCapitalize="none"
+              autoCorrect="off"
             />
             <button
               className="mt-6 w-full border-2 border-white px-10 py-4 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300"
@@ -210,6 +214,8 @@ export default function TeamQueuePage() {
                 const p = pinInput.trim();
                 window.localStorage.setItem(PIN_STORAGE_KEY, p);
                 setPin(p);
+                setNeedsPin(false);
+                setError("");
               }}
               disabled={!pinInput.trim()}
             >

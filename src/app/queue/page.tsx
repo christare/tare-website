@@ -8,9 +8,6 @@ export default function QueueSignupPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [partySize, setPartySize] = useState(1);
   const [specialRequests, setSpecialRequests] = useState("");
-  const [textCallPreference, setTextCallPreference] = useState<"text" | "call">(
-    "text"
-  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -37,7 +34,6 @@ export default function QueueSignupPage() {
           phoneNumber,
           partySize,
           specialRequests,
-          textCallPreference,
         }),
       });
       const data = await res.json();
@@ -48,7 +44,6 @@ export default function QueueSignupPage() {
       setPhoneNumber("");
       setPartySize(1);
       setSpecialRequests("");
-      setTextCallPreference("text");
     } catch (e: any) {
       setError(e?.message || "Something went wrong");
     } finally {
@@ -57,8 +52,14 @@ export default function QueueSignupPage() {
   };
 
   return (
-    <main className="min-h-screen text-white" style={{ backgroundColor: "#2A2726" }}>
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12">
+    <main
+      className="text-white overflow-x-hidden"
+      style={{ backgroundColor: "#2A2726" }}
+    >
+      <div
+        className="flex flex-col items-center justify-center px-6 py-12"
+        style={{ minHeight: "100svh" }}
+      >
         <div className="w-full max-w-xl">
           <div className="flex flex-col items-center text-center mb-8">
             <Image
@@ -146,7 +147,7 @@ export default function QueueSignupPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
                   <div>
                     <label
                       className="block text-xs tracking-widest text-gray-400 mb-2"
@@ -165,30 +166,6 @@ export default function QueueSignupPage() {
                           {n}
                         </option>
                       ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      className="block text-xs tracking-widest text-gray-400 mb-2"
-                      style={{ fontFamily: "FragmentMono, monospace", letterSpacing: "0.2em" }}
-                    >
-                      CONTACT
-                    </label>
-                    <select
-                      value={textCallPreference}
-                      onChange={(e) =>
-                        setTextCallPreference(e.target.value === "call" ? "call" : "text")
-                      }
-                      className="w-full bg-transparent border border-white/20 px-4 py-3 text-base text-white"
-                      style={{ fontFamily: "FragmentMono, monospace" }}
-                    >
-                      <option value="text" className="text-black">
-                        Text
-                      </option>
-                      <option value="call" className="text-black">
-                        Call
-                      </option>
                     </select>
                   </div>
                 </div>

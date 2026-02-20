@@ -1,5 +1,13 @@
 import { NextResponse } from "next/server";
-import { createQueueRecord, normalizePhoneDigits } from "@/lib/airtable-queue";
+import twilio from "twilio";
+import {
+  QueueFields,
+  appendQueueLog,
+  createQueueRecord,
+  formatPhoneForTwilio,
+  getQueueTableForServer,
+  normalizePhoneDigits,
+} from "@/lib/airtable-queue";
 
 export async function POST(request: Request) {
   try {
@@ -11,8 +19,6 @@ export async function POST(request: Request) {
     const notes = typeof body?.notes === "string" ? body.notes : "";
     const specialRequests =
       typeof body?.specialRequests === "string" ? body.specialRequests : "";
-    const textCallPreference =
-      body?.textCallPreference === "call" ? "call" : "text";
 
     if (!guestName) {
       return NextResponse.json(
@@ -42,8 +48,52 @@ export async function POST(request: Request) {
       partySize: Math.round(partySize),
       notes,
       specialRequests,
-      textCallPreference,
+      textCallPreference: "text",
     });
+
+    // Best-effort: send confirmation SMS with queue position
+    try {
+      if (
+        process.env.TWILIO_ACCOUNT_SID &&
+        process.env.TWILIO_AUTH_TOKEN &&
+        process.env.TWILIO_PHONE_NUMBER
+      ) {
+        const table = getQueueTableForServer();
+        const waitingRecords = await table
+          .select({
+            filterByFormula: `{${QueueFields.status}} = 'waiting'`,
+            sort: [{ field: QueueFields.sortOrder, direction: "asc" }],
+            pageSize: 200,
+          })
+          .all();
+
+        const idx = waitingRecords.findIndex((r: any) => r.id === record.id);
+        const position = idx >= 0 ? idx + 1 : null;
+
+        const template =
+          process.env.QUEUE_JOIN_CONFIRMATION_MESSAGE ||
+          "You're in the tasting queue, {name}. Spot: {position}. We'll text you when it's your turn.";
+        const message = template
+          .replaceAll("{name}", guestName)
+          .replaceAll("{position}", position ? String(position) : "—");
+
+        const client = twilio(
+          process.env.TWILIO_ACCOUNT_SID,
+          process.env.TWILIO_AUTH_TOKEN
+        );
+        const to = formatPhoneForTwilio(phoneNumberRaw);
+
+        await client.messages.create({
+          to,
+          from: process.env.TWILIO_PHONE_NUMBER,
+          body: message,
+        });
+
+        await appendQueueLog(record.id, `JOIN_CONFIRMATION -> SMS to ${to}: ${message}`);
+      }
+    } catch (smsError: any) {
+      console.error("Queue join confirmation SMS failed (non-critical):", smsError);
+    }
 
     return NextResponse.json({ success: true, record });
   } catch (error: any) {
