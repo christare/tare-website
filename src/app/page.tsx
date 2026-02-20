@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { CURRENT_EVENT_ID, CURRENT_EVENT_CONFIG } from "@/config/events";
 
 function StudioPageContent() {
@@ -278,32 +279,36 @@ function StudioPageContent() {
             transition={{ duration: 0.8, delay: 0.7 }}
             className="text-center max-w-xl mx-auto px-4"
           >
-            {/* Primary intro */}
-            <p
-              className="text-white mb-3 sm:mb-4 text-[clamp(0.95rem,2.6vw,1.5rem)] leading-[1.7]"
-              style={{ fontFamily: 'NonBureauExtended, sans-serif', fontWeight: 300 }}
-            >
-              <span className="block whitespace-nowrap">A guided wellness session</span>
-              <span className="block whitespace-nowrap">using coffee in multiple physical forms</span>
-              <span className="block whitespace-nowrap">to improve the way you feel.</span>
-            </p>
+            <div className="flex flex-col gap-3 items-center">
+              <button
+                onClick={() => {
+                  const nextEventSection = document.getElementById("next-event-section");
+                  if (nextEventSection) {
+                    nextEventSection.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+                className="inline-block border-2 border-white px-12 py-4 text-sm sm:text-base tracking-wide hover:bg-white hover:text-black transition-all duration-300 min-w-[260px]"
+                style={{ fontFamily: "FragmentMono, monospace" }}
+              >
+                NEXT EVENT
+              </button>
 
-            {/* Quiet scroll CTA */}
-            <button
-              onClick={() => {
-                const nextEventSection = document.getElementById('next-event-section');
-                if (nextEventSection) {
-                  nextEventSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-              className="text-gray-400 hover:text-gray-300 hover:underline transition-all duration-200 cursor-pointer text-xs sm:text-sm md:text-base lg:text-lg"
-              style={{ 
-                fontFamily: 'NonBureauExtended, sans-serif', 
-                fontWeight: 300
-              }}
-            >
-              Next session details ↓
-            </button>
+              <Link
+                href="/queue"
+                className="inline-block border border-white/70 px-12 py-4 text-sm sm:text-base tracking-wide hover:bg-white hover:text-black transition-all duration-300 min-w-[260px]"
+                style={{ fontFamily: "FragmentMono, monospace" }}
+              >
+                IN‑PERSON TASTING QUEUE
+              </Link>
+
+              <Link
+                href="/team/queue"
+                className="inline-block border border-white/40 px-12 py-4 text-sm sm:text-base tracking-wide hover:bg-white hover:text-black transition-all duration-300 min-w-[260px] text-gray-200"
+                style={{ fontFamily: "FragmentMono, monospace" }}
+              >
+                TEAM LOGIN
+              </Link>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -389,12 +394,12 @@ function StudioPageContent() {
           {/* <div style={{ height: '1px' }}></div> */}
 
           <div id="next-event-section" className="py-6 sm:py-8 px-4 sm:px-6 max-w-lg mx-auto">
-            {/* Next Session Label */}
+            {/* Next Event Label */}
             <div className="text-center mb-3 sm:mb-4">
               <p className="text-gray-400 text-xs tracking-widest" style={{ fontFamily: 'FragmentMono, monospace', letterSpacing: '0.2em' }}>
-                NEXT SESSION
+                NEXT EVENT
               </p>
-          </div>
+            </div>
 
             {/* Date and Time - cohesive block */}
             <div className="text-center mb-8 sm:mb-10">
@@ -407,7 +412,7 @@ function StudioPageContent() {
               <p className="text-gray-400 text-sm sm:text-base font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
                 Doors open {CURRENT_EVENT_CONFIG.doorsOpen}
               </p>
-          </div>
+            </div>
 
             {/* Location */}
             <div className="text-center space-y-2 mb-8 sm:mb-10">
@@ -416,14 +421,14 @@ function StudioPageContent() {
                 <div>{CURRENT_EVENT_CONFIG.addressLine2}</div>
               </div>
             </div>
-            
+
             {/* Price */}
             <div className="text-center mb-6 sm:mb-7">
               <p className="text-white text-xl sm:text-2xl font-light" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
                 $ 90
               </p>
             </div>
-            
+
             {/* Reserve Button */}
             <motion.div 
               ref={buttonsRef}
@@ -456,7 +461,7 @@ function StudioPageContent() {
                 <p className="text-red-400 text-xs mt-4" style={{ fontFamily: 'FragmentMono, monospace' }}>{error}</p>
               )}
             </motion.div>
-            </div>
+          </div>
             
           {/* <div style={{ height: '1px' }}></div> */}
           

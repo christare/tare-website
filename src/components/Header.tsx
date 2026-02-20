@@ -33,7 +33,7 @@ export default function Header() {
   const runwayUrl = isProduction ? "/runway" : "/runway";
   const waitlistUrl = isProduction ? "/waitlist" : "/waitlist";
   const studioUrl = isProduction ? "/" : "/";
-  const labUrl = isProduction ? "/lab" : "/lab";
+  const privateUrl = isProduction ? "/private" : "/private";
 
   return (
     <header 
@@ -59,6 +59,18 @@ export default function Header() {
             </Link>
 
             <Link
+              href={privateUrl}
+              className={`text-sm tracking-wide transition-colors duration-300 ${
+                pathname === "/private"
+                  ? "text-white"
+                  : "text-gray-200 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              PRIVATE
+            </Link>
+
+            <Link
               href={waitlistUrl}
               className={`text-sm tracking-wide transition-colors duration-300 ${
                 pathname === "/waitlist" 
@@ -68,18 +80,6 @@ export default function Header() {
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               WAITLIST
-            </Link>
-
-            <Link
-              href={labUrl}
-              className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/lab"
-                  ? "text-white"
-                  : "text-gray-200 hover:text-white"
-              }`}
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              LAB
             </Link>
 
             {/* Story link temporarily hidden */}
@@ -109,6 +109,17 @@ export default function Header() {
           >
             STUDIO
           </Link>
+          <Link
+            href={privateUrl}
+            className={`text-base tracking-wide transition-colors duration-300 ${
+              pathname === "/private"
+                ? "text-white"
+                : "text-gray-300 hover:text-white"
+            }`}
+            style={{ fontFamily: 'FragmentMono, monospace' }}
+          >
+            PRIVATE
+          </Link>
           {/* Story link temporarily hidden */}
           <Link
             href={waitlistUrl}
@@ -122,17 +133,6 @@ export default function Header() {
             WAITLIST
           </Link>
 
-          <Link
-            href={labUrl}
-            className={`text-base tracking-wide transition-colors duration-300 ${
-              pathname === "/lab"
-                ? "text-white"
-                : "text-gray-300 hover:text-white"
-            }`}
-            style={{ fontFamily: 'FragmentMono, monospace' }}
-          >
-            LAB
-          </Link>
         </nav>
         
         {/* Instagram Link - Desktop */}
