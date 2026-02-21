@@ -32,6 +32,17 @@ type QueueRecord = {
 
 const PIN_STORAGE_KEY = "tare_queue_team_pin";
 
+const STATUS_OPTIONS: Array<{ value: QueueStatus; label: string }> = [
+  { value: "waiting", label: "Waiting" },
+  { value: "notified", label: "Notified" },
+  { value: "in_service", label: "In service" },
+  { value: "served", label: "Served" },
+  { value: "skipped", label: "Skipped" },
+  { value: "no_show", label: "No-show" },
+  { value: "removed", label: "Deleted" },
+  { value: "error", label: "Error" },
+];
+
 function last4(phone: string | null) {
   if (!phone) return "";
   const digits = phone.replace(/\D/g, "");
@@ -44,6 +55,20 @@ function minutesAgo(iso: string | null) {
   if (!Number.isFinite(t)) return null;
   const mins = Math.floor((Date.now() - t) / 60000);
   return mins >= 0 ? mins : 0;
+}
+
+function sortLane(items: QueueRecord[]) {
+  const copy = [...items];
+  copy.sort((a, b) => {
+    const ao = a.sortOrder ?? 1_000_000_000;
+    const bo = b.sortOrder ?? 1_000_000_000;
+    if (ao !== bo) return ao - bo;
+    const at = a.checkInTimestamp ? new Date(a.checkInTimestamp).getTime() : 0;
+    const bt = b.checkInTimestamp ? new Date(b.checkInTimestamp).getTime() : 0;
+    if (at !== bt) return at - bt;
+    return a.id.localeCompare(b.id);
+  });
+  return copy;
 }
 
 export default function TeamQueuePage() {
@@ -72,7 +97,8 @@ export default function TeamQueuePage() {
     setLoading(true);
     // Don't clear error every poll; keep it visible if APIs are failing.
     try {
-      const url = `/api/queue/list?includeArchive=${showArchive ? "1" : "0"}`;
+      // Always fetch archive so staff can restore/move between stages at any time.
+      const url = `/api/queue/list?includeArchive=1`;
       const res = await fetch(url, { headers });
       const data = await res.json();
       if (res.status === 401) {
@@ -117,9 +143,6 @@ export default function TeamQueuePage() {
       headers,
       body: JSON.stringify({
         recordId: r.id,
-        phoneNumber: r.phoneNumber,
-        guestName: r.guestName,
-        attemptCounter: r.attemptCounter || 0,
       }),
     });
     const data = await res.json();
@@ -127,7 +150,7 @@ export default function TeamQueuePage() {
     await fetchList();
   };
 
-  const reorderWaiting = async (orderedIds: string[]) => {
+  const reorderLane = async (orderedIds: string[]) => {
     const res = await fetch("/api/queue/reorder", {
       method: "POST",
       headers,
@@ -139,17 +162,33 @@ export default function TeamQueuePage() {
   };
 
   const waiting = useMemo(() => {
-    return records
-      .filter((r) => r.status === "waiting")
-      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    return sortLane(records.filter((r) => r.status === "waiting"));
   }, [records]);
 
-  const notified = useMemo(() => records.filter((r) => r.status === "notified"), [records]);
-  const inService = useMemo(() => records.filter((r) => r.status === "in_service"), [records]);
-  const skipped = useMemo(() => records.filter((r) => r.status === "skipped"), [records]);
-  const noShow = useMemo(() => records.filter((r) => r.status === "no_show"), [records]);
-  const served = useMemo(() => records.filter((r) => r.status === "served"), [records]);
-  const removed = useMemo(() => records.filter((r) => r.status === "removed"), [records]);
+  const notified = useMemo(
+    () => sortLane(records.filter((r) => r.status === "notified")),
+    [records]
+  );
+  const inService = useMemo(
+    () => sortLane(records.filter((r) => r.status === "in_service")),
+    [records]
+  );
+  const skipped = useMemo(
+    () => sortLane(records.filter((r) => r.status === "skipped")),
+    [records]
+  );
+  const noShow = useMemo(
+    () => sortLane(records.filter((r) => r.status === "no_show")),
+    [records]
+  );
+  const served = useMemo(
+    () => sortLane(records.filter((r) => r.status === "served")),
+    [records]
+  );
+  const removed = useMemo(
+    () => sortLane(records.filter((r) => r.status === "removed")),
+    [records]
+  );
 
   const handleDropReorder = async (targetId: string) => {
     if (!draggingId || draggingId === targetId) return;
@@ -163,7 +202,7 @@ export default function TeamQueuePage() {
     next.splice(to, 0, moved);
 
     setDraggingId(null);
-    await reorderWaiting(next);
+    await reorderLane(next);
   };
 
   // If we have no saved/entered pin AND the server says we need one, show login.
@@ -272,6 +311,7 @@ export default function TeamQueuePage() {
           {items.map((r) => {
             const joinedMins = minutesAgo(r.checkInTimestamp);
             const notifiedMins = minutesAgo(r.lastNotifiedAt);
+            const textDisabled = (r.attemptCounter || 0) >= 2;
             return (
               <div
                 key={r.id}
@@ -331,6 +371,57 @@ export default function TeamQueuePage() {
 
                   <div className="flex flex-col items-end gap-2">
                     <div className="flex gap-2 flex-wrap justify-end">
+                      <select
+                        value={(r.status || "waiting") as QueueStatus}
+                        onChange={(e) => {
+                          const next = e.target.value as QueueStatus;
+                          update(r.id, { status: next, appendLog: `STATUS -> ${next}` }).catch((err) =>
+                            setError(err.message)
+                          );
+                        }}
+                        className="bg-transparent border border-white/25 px-2.5 py-1 text-[11px] text-white"
+                        style={{ fontFamily: "FragmentMono, monospace" }}
+                      >
+                        {STATUS_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value} className="text-black">
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+
+                      <button
+                        className="border border-white/25 px-2 py-1 text-[11px] hover:bg-white hover:text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{ fontFamily: "FragmentMono, monospace" }}
+                        disabled={items.length < 2 || items[0]?.id === r.id}
+                        onClick={() => {
+                          const idx = items.findIndex((x) => x.id === r.id);
+                          if (idx <= 0) return;
+                          const ids = items.map((x) => x.id);
+                          const next = [...ids];
+                          const [moved] = next.splice(idx, 1);
+                          next.splice(idx - 1, 0, moved);
+                          reorderLane(next).catch((e) => setError(e.message));
+                        }}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        className="border border-white/25 px-2 py-1 text-[11px] hover:bg-white hover:text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{ fontFamily: "FragmentMono, monospace" }}
+                        disabled={items.length < 2 || items[items.length - 1]?.id === r.id}
+                        onClick={() => {
+                          const idx = items.findIndex((x) => x.id === r.id);
+                          if (idx === -1 || idx >= items.length - 1) return;
+                          const ids = items.map((x) => x.id);
+                          const next = [...ids];
+                          const [moved] = next.splice(idx, 1);
+                          next.splice(idx + 1, 0, moved);
+                          reorderLane(next).catch((e) => setError(e.message));
+                        }}
+                      >
+                        ↓
+                      </button>
+
                       {!r.claimedBy ? (
                         <button
                           className="border border-white/25 px-2.5 py-1 text-[11px] hover:bg-white hover:text-black transition-colors"
@@ -362,11 +453,12 @@ export default function TeamQueuePage() {
                       )}
 
                       <button
-                        className="border border-white/25 px-2.5 py-1 text-[11px] hover:bg-white hover:text-black transition-colors"
+                        className="border border-white/25 px-2.5 py-1 text-[11px] hover:bg-white hover:text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ fontFamily: "FragmentMono, monospace" }}
+                        disabled={textDisabled}
                         onClick={() => notify(r).catch((e) => setError(e.message))}
                       >
-                        TEXT
+                        {textDisabled ? "TEXTED" : "TEXT"}
                       </button>
 
                       <button
@@ -439,12 +531,13 @@ export default function TeamQueuePage() {
                         className="border border-white/25 px-2.5 py-1 text-[11px] hover:bg-white hover:text-black transition-colors"
                         style={{ fontFamily: "FragmentMono, monospace" }}
                         onClick={() =>
-                          update(r.id, { status: "removed", appendLog: "STATUS -> removed" }).catch((e) =>
-                            setError(e.message)
-                          )
+                          (window.confirm("Delete this entry? (It will be archived under DELETED)") &&
+                            update(r.id, { status: "removed", appendLog: "DELETE (archived)" }).catch((e) =>
+                              setError(e.message)
+                            ))
                         }
                       >
-                        REMOVE
+                        DELETE
                       </button>
                     </div>
                   </div>
@@ -531,10 +624,10 @@ export default function TeamQueuePage() {
           <Lane title="IN SERVICE" items={inService} tone="green" />
           <Lane title="SKIPPED" items={skipped} tone="gray" />
           <Lane title="NO SHOW" items={noShow} tone="red" />
+          <Lane title="DELETED" items={removed} tone="gray" />
           {showArchive && (
             <>
               <Lane title="SERVED" items={served} tone="gray" />
-              <Lane title="REMOVED" items={removed} tone="gray" />
             </>
           )}
         </div>

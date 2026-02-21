@@ -4,6 +4,7 @@ import {
   QueueFields,
   appendQueueLog,
   formatPhoneForTwilio,
+  getQueueTableForServer,
   updateQueueRecord,
 } from "@/lib/airtable-queue";
 import { requireQueueTeamAccess } from "../_auth";
@@ -22,14 +23,33 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const recordId = String(body?.recordId || "").trim();
-    const phoneNumber = String(body?.phoneNumber || "").trim();
-    const guestName = String(body?.guestName || "").trim() || "there";
-    const attemptCounter = Number(body?.attemptCounter || 0);
 
-    if (!recordId || !phoneNumber) {
+    if (!recordId) {
       return NextResponse.json(
-        { error: "recordId and phoneNumber required" },
+        { error: "recordId required" },
         { status: 400 }
+      );
+    }
+
+    // Enforce max SMS count server-side (join confirmation + one notify).
+    const table = getQueueTableForServer();
+    const record = await table.find(recordId);
+    const fields = record.fields as any;
+    const phoneNumber = String(fields?.["Phone Number"] || "").trim();
+    const guestName = String(fields?.["Guest Name"] || "").trim() || "there";
+    const currentAttempts = Number(fields?.["Attempt Counter"] || 0) || 0;
+
+    if (!phoneNumber) {
+      return NextResponse.json(
+        { error: "No phone number found for this record" },
+        { status: 400 }
+      );
+    }
+
+    if (currentAttempts >= 2) {
+      return NextResponse.json(
+        { error: "Max texts already sent for this guest" },
+        { status: 409 }
       );
     }
 
@@ -52,7 +72,7 @@ export async function POST(request: Request) {
     await updateQueueRecord(recordId, {
       [QueueFields.status]: "notified",
       [QueueFields.lastNotifiedAt]: now,
-      [QueueFields.attemptCounter]: Math.max(0, Math.round(attemptCounter)) + 1,
+      [QueueFields.attemptCounter]: currentAttempts + 1,
     });
 
     await appendQueueLog(recordId, `NOTIFY -> SMS to ${to}: ${message}`);

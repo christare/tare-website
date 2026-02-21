@@ -99,7 +99,7 @@ export default function QueueSignupPage() {
                 className="text-gray-300 text-sm md:text-base"
                 style={{ fontFamily: "FragmentMono, monospace" }}
               >
-                Feel free to shop—when your tasting is ready, we’ll notify you.
+                Feel free to shop. We’ll notify you when your tasting is ready.
               </p>
               <button
                 className="mt-6 inline-block border border-white px-8 py-3 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300"

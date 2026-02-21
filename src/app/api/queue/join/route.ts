@@ -7,6 +7,7 @@ import {
   formatPhoneForTwilio,
   getQueueTableForServer,
   normalizePhoneDigits,
+  updateQueueRecord,
 } from "@/lib/airtable-queue";
 
 export async function POST(request: Request) {
@@ -87,6 +88,11 @@ export async function POST(request: Request) {
           to,
           from: process.env.TWILIO_PHONE_NUMBER,
           body: message,
+        });
+
+        // Count this as text #1 (so guests receive at most 2 total).
+        await updateQueueRecord(record.id, {
+          [QueueFields.attemptCounter]: 1,
         });
 
         await appendQueueLog(record.id, `JOIN_CONFIRMATION -> SMS to ${to}: ${message}`);
