@@ -352,7 +352,7 @@ function StudioPageContent() {
                     ADDRESS
                   </p>
                   <p className="text-white text-sm sm:text-base leading-snug" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {CURRENT_EVENT_CONFIG.addressLine1}<br />
+                    {CURRENT_EVENT_CONFIG.addressLine1Public}<br />
                     {CURRENT_EVENT_CONFIG.addressLine2}
                   </p>
                 </div>

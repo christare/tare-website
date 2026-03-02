@@ -112,7 +112,7 @@ export default function RoomDevPage() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Location</span>
-              <span className="text-white">{CURRENT_EVENT_CONFIG.address}</span>
+              <span className="text-white">{CURRENT_EVENT_CONFIG.addressLine1Public}, {CURRENT_EVENT_CONFIG.addressLine2}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>Price</span>
