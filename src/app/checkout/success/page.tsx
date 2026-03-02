@@ -44,36 +44,26 @@ function SuccessContent() {
 
   return (
     <motion.div
-      className="relative w-full max-w-lg mx-auto text-center px-6"
+      className="relative z-10 w-full max-w-lg mx-auto text-center px-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      {/* Signature dial — subtle background, surrounds content */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(180vw,720px)] h-[min(180vw,720px)] pointer-events-none opacity-[0.08] z-0">
-        <Image
-          src="/images/Group 15.png"
-          alt=""
-          width={480}
-          height={480}
-          className="w-full h-full object-contain"
-          aria-hidden
-        />
-      </div>
-
-      {/* Artifact */}
-      <motion.div className="relative z-10 flex justify-center mb-6" variants={itemVariants}>
+      {/* Content card — compact, no scroll */}
+      <div className="relative border border-white/25 rounded-sm bg-[#2A2726]/80 backdrop-blur-[1px] py-5 sm:py-6 px-5 sm:px-8 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+        {/* Artifact */}
+      <motion.div className="relative z-10 flex justify-center mb-3" variants={itemVariants}>
         <Image
           src="/FinalDelivery/symbols/Artifacts/pngs/TARE-room-artifact-white.png"
           alt=""
           width={64}
           height={64}
-          className="w-12 h-auto opacity-90"
+          className="w-10 h-auto opacity-90"
         />
       </motion.div>
 
       <motion.p
-        className="relative z-10 text-gray-500 text-xs tracking-[0.25em] mb-4"
+        className="relative z-10 text-gray-500 text-xs tracking-[0.25em] mb-2"
         style={{ fontFamily: "FragmentMono, monospace" }}
         variants={itemVariants}
       >
@@ -81,7 +71,7 @@ function SuccessContent() {
       </motion.p>
 
       <motion.h1
-        className="relative z-10 text-2xl sm:text-3xl font-light text-white tracking-wide mb-3"
+        className="relative z-10 text-xl sm:text-2xl font-light text-white tracking-wide mb-2"
         style={{ fontFamily: "NonBureauExtended, sans-serif", fontWeight: 300 }}
         variants={itemVariants}
       >
@@ -91,12 +81,12 @@ function SuccessContent() {
 
       {/* DETAILS: address, time, then selected date */}
       <motion.div
-        className="relative z-10 border border-white/20 rounded-sm py-6 px-5 sm:py-8 sm:px-8 mb-8 text-left"
+        className="relative z-10 border border-white/20 rounded-sm py-3 px-4 sm:py-4 sm:px-5 mb-4 text-left"
         style={{ fontFamily: "FragmentMono, monospace" }}
         variants={itemVariants}
       >
-        <p className="text-gray-500 text-xs tracking-[0.2em] mb-5">DETAILS</p>
-        <div className="space-y-4 text-sm text-gray-300">
+        <p className="text-gray-500 text-xs tracking-[0.2em] mb-3">DETAILS</p>
+        <div className="space-y-2.5 text-sm text-gray-300">
           <div>
             <span className="text-gray-500 text-xs tracking-wider block mb-0.5">ADDRESS</span>
             <div className="text-white">
@@ -119,7 +109,7 @@ function SuccessContent() {
       </motion.div>
 
       <motion.p
-        className="relative z-10 text-gray-300 text-sm leading-relaxed mb-10 max-w-md mx-auto"
+        className="relative z-10 text-gray-300 text-xs sm:text-sm leading-snug mb-4 max-w-md mx-auto"
         style={{ fontFamily: "FragmentMono, monospace" }}
         variants={itemVariants}
       >
@@ -135,6 +125,7 @@ function SuccessContent() {
           RETURN HOME
         </Link>
       </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -153,7 +144,7 @@ function SuccessLoading() {
 export default function SuccessPage() {
   return (
     <main
-      className="min-h-screen flex flex-col items-center justify-center py-16 text-white"
+      className="min-h-screen flex flex-col items-center justify-center py-6 sm:py-8 text-white"
       style={{ backgroundColor: "#2A2726" }}
     >
       <Suspense fallback={<SuccessLoading />}>
