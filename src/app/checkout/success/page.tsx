@@ -3,161 +3,162 @@
 import { Suspense } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { CURRENT_EVENT_CONFIG } from "@/config/events";
 
-// Client component that uses useSearchParams
+function formatSessionDate(dateStr: string | null): string | null {
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
+  const d = new Date(dateStr + "T12:00:00");
+  return d.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+// Time display: match config (use en-dash for range)
+const EVENT_TIME = CURRENT_EVENT_CONFIG.eventTime.replace(" - ", " – ");
+const DOORS_OPEN = CURRENT_EVENT_CONFIG.doorsOpen;
+
 function SuccessContent() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
-
-  // Determine product name based on type
+  const dateParam = searchParams.get("date");
+  const sessionDateFormatted = formatSessionDate(dateParam);
   const productName = type === "studio" ? "TARE STUDIO" : "TARE ROOM";
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      },
+      transition: { staggerChildren: 0.12, delayChildren: 0.2 },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] },
-    },
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
   };
-
-
 
   return (
     <motion.div
-      className="max-w-xl w-full text-center"
+      className="relative w-full max-w-lg mx-auto text-center px-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <motion.h1
-        className="text-3xl md:text-5xl font-light mb-8 tracking-wide"
-        variants={itemVariants}
-      >
-        CONFIRMED
-      </motion.h1>
+      {/* Signature dial — subtle background, surrounds content */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(180vw,720px)] h-[min(180vw,720px)] pointer-events-none opacity-[0.08] z-0">
+        <Image
+          src="/images/Group 15.png"
+          alt=""
+          width={480}
+          height={480}
+          className="w-full h-full object-contain"
+          aria-hidden
+        />
+      </div>
 
-      <motion.div variants={itemVariants} className="mb-12">
-        <div className="w-12 h-px bg-white mx-auto mb-10" />
-        
-        {type === "room" ? (
-          <>
-            <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-              Thank you! We're excited to welcome you to TARE ROOM.
-            </p>
-            
-            {/* Event Details Table */}
-            <div className="py-8">
-              {/* Line 43 above event details */}
-              <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="mb-8">
-                <Image
-                  src="/images/Line 43.png"
-                  alt="Line 43"
-                  width={1920}
-                  height={100}
-                  style={{ width: '100vw', height: 'auto', display: 'block', opacity: '0.2' }}
-                />
-              </div>
-              
-              <div className="py-4 px-4 space-y-4 max-w-md mx-auto" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                <div className="text-center">
-                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>1:45pm doors open</span>
-                </div>
-                <div className="text-center">
-                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>2pm - Ends around 3:30 PM</span>
-                </div>
-                <div className="text-center">
-                  <div className="text-white text-xs" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    <div>{CURRENT_EVENT_CONFIG.addressLine1}</div>
-                    <div>{CURRENT_EVENT_CONFIG.addressLine2}</div>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <span className="text-white text-xs block" style={{ fontFamily: 'FragmentMono, monospace' }}>$90</span>
-                </div>
-              </div>
-              
-              {/* Line 44 below event details */}
-              <div style={{ position: 'relative', width: '100vw', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', zIndex: 10 }} className="mt-8">
-                <Image
-                  src="/images/Line 44.png"
-                  alt="Line 44"
-                  width={1920}
-                  height={100}
-                  style={{ width: '100vw', height: 'auto', display: 'block', opacity: '0.2' }}
-                />
-              </div>
-            </div>
-            
-            <p className="text-gray-400 text-sm mt-10">
-              — Chris, TARE
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="text-gray-300 text-lg italic mb-8 leading-relaxed">
-              Your seat at {productName} is reserved.
-            </p>
-            
-            <p className="text-gray-300 mb-8 leading-relaxed">
-              I'll be reaching out personally with location details closer to the date.
-            </p>
-            
-            <p className="text-gray-400 text-sm mt-10">
-              — Chris, TARE
-            </p>
-          </>
-        )}
+      {/* Artifact */}
+      <motion.div className="relative z-10 flex justify-center mb-6" variants={itemVariants}>
+        <Image
+          src="/FinalDelivery/symbols/Artifacts/pngs/TARE-room-artifact-white.png"
+          alt=""
+          width={64}
+          height={64}
+          className="w-12 h-auto opacity-90"
+        />
       </motion.div>
 
+      <motion.p
+        className="relative z-10 text-gray-500 text-xs tracking-[0.25em] mb-4"
+        style={{ fontFamily: "FragmentMono, monospace" }}
+        variants={itemVariants}
+      >
+        YOU&apos;RE IN
+      </motion.p>
 
+      <motion.h1
+        className="relative z-10 text-2xl sm:text-3xl font-light text-white tracking-wide mb-3"
+        style={{ fontFamily: "NonBureauExtended, sans-serif", fontWeight: 300 }}
+        variants={itemVariants}
+      >
+        Your seat at {productName}
+        {sessionDateFormatted ? ` for ${sessionDateFormatted}` : ""} is reserved.
+      </motion.h1>
 
-      <motion.div variants={itemVariants}>
+      {/* DETAILS: address, time, then selected date */}
+      <motion.div
+        className="relative z-10 border border-white/20 rounded-sm py-6 px-5 sm:py-8 sm:px-8 mb-8 text-left"
+        style={{ fontFamily: "FragmentMono, monospace" }}
+        variants={itemVariants}
+      >
+        <p className="text-gray-500 text-xs tracking-[0.2em] mb-5">DETAILS</p>
+        <div className="space-y-4 text-sm text-gray-300">
+          <div>
+            <span className="text-gray-500 text-xs tracking-wider block mb-0.5">ADDRESS</span>
+            <div className="text-white">
+              <div>{CURRENT_EVENT_CONFIG.addressLine1}</div>
+              <div>{CURRENT_EVENT_CONFIG.addressLine2}</div>
+            </div>
+          </div>
+          <div>
+            <span className="text-gray-500 text-xs tracking-wider block mb-0.5">TIME</span>
+            <span className="text-white">{EVENT_TIME}</span>
+            <span className="text-gray-400 block mt-0.5 text-xs">Doors open {DOORS_OPEN}</span>
+          </div>
+          {sessionDateFormatted && (
+            <div>
+              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">DATE</span>
+              <span className="text-white">{sessionDateFormatted}</span>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      <motion.p
+        className="relative z-10 text-gray-300 text-sm leading-relaxed mb-10 max-w-md mx-auto"
+        style={{ fontFamily: "FragmentMono, monospace" }}
+        variants={itemVariants}
+      >
+        You&apos;ll get a confirmation text with the details and a short questionnaire so we can tailor the experience.
+      </motion.p>
+
+      <motion.div className="relative z-10" variants={itemVariants}>
         <Link
           href="/"
-          className="border border-gray-700 px-8 py-3 text-sm tracking-wide hover:border-white hover:text-white transition-all duration-300 inline-block text-gray-400"
+          className="inline-block border-2 border-white px-8 py-3 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300"
+          style={{ fontFamily: "FragmentMono, monospace" }}
         >
-          RETURN
+          RETURN HOME
         </Link>
       </motion.div>
     </motion.div>
   );
 }
 
-// Loading fallback for Suspense
 function SuccessLoading() {
   return (
-    <div className="max-w-xl w-full text-center">
-      <h1 className="text-3xl font-light mb-8 tracking-wide">
+    <div className="w-full max-w-lg mx-auto text-center px-6">
+      <div className="w-12 h-12 border border-white/20 rounded-sm mx-auto mb-6 animate-pulse" />
+      <p className="text-gray-500 text-xs tracking-widest" style={{ fontFamily: "FragmentMono, monospace" }}>
         LOADING...
-      </h1>
-      <div className="w-12 h-px bg-white mx-auto mb-8" />
+      </p>
     </div>
   );
 }
 
-// Main page component with Suspense boundary
 export default function SuccessPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 text-white" style={{backgroundColor: '#2A2726'}}>
+    <main
+      className="min-h-screen flex flex-col items-center justify-center py-16 text-white"
+      style={{ backgroundColor: "#2A2726" }}
+    >
       <Suspense fallback={<SuccessLoading />}>
         <SuccessContent />
       </Suspense>
     </main>
   );
-} 
+}

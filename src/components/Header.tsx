@@ -45,44 +45,57 @@ export default function Header() {
           backgroundColor: scrolled ? 'rgba(42, 39, 38, 0.95)' : 'rgba(42, 39, 38, 0.8)',
           backdropFilter: 'blur(12px)'
         }}>
-          <div className="flex space-x-4">
-            <Link
-              href={studioUrl}
-              className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/" 
-                  ? "text-white" 
-                  : "text-gray-200 hover:text-white"
-              }`}
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              STUDIO
-            </Link>
-
-            <Link
-              href={privateUrl}
-              className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/private"
-                  ? "text-white"
-                  : "text-gray-200 hover:text-white"
-              }`}
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              PRIVATE
-            </Link>
-
-            <Link
-              href={waitlistUrl}
-              className={`text-sm tracking-wide transition-colors duration-300 ${
-                pathname === "/waitlist" 
-                  ? "text-white" 
-                  : "text-gray-200 hover:text-white"
-              }`}
-              style={{ fontFamily: 'FragmentMono, monospace' }}
-            >
-              WAITLIST
-            </Link>
-
-            {/* Story link temporarily hidden */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
+              <Link
+                href={studioUrl}
+                className={`text-sm tracking-wide transition-colors duration-300 ${
+                  pathname === "/" ? "text-white" : "text-gray-200 hover:text-white"
+                }`}
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                STUDIO
+              </Link>
+              <Link
+                href={privateUrl}
+                className={`text-sm tracking-wide transition-colors duration-300 ${
+                  pathname === "/private" ? "text-white" : "text-gray-200 hover:text-white"
+                }`}
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                PRIVATE
+              </Link>
+              <Link
+                href={waitlistUrl}
+                className={`text-sm tracking-wide transition-colors duration-300 ${
+                  pathname === "/waitlist" ? "text-white" : "text-gray-200 hover:text-white"
+                }`}
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                WAITLIST
+              </Link>
+            </div>
+            <span className="text-white/20" style={{ fontFamily: 'FragmentMono, monospace' }}>|</span>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/queue"
+                className={`text-sm tracking-wide transition-colors duration-300 ${
+                  pathname === "/queue" ? "text-white" : "text-gray-200 hover:text-white"
+                }`}
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                IN-PERSON QUEUE
+              </Link>
+              <Link
+                href="/team/queue"
+                className={`text-sm tracking-wide transition-colors duration-300 ${
+                  pathname === "/team/queue" ? "text-white" : "text-gray-200 hover:text-white"
+                }`}
+                style={{ fontFamily: 'FragmentMono, monospace' }}
+              >
+                TEAM LOGIN
+              </Link>
+            </div>
           </div>
           <a
             href="https://instagram.com/tarestudionyc"
@@ -96,43 +109,57 @@ export default function Header() {
           </a>
         </nav>
 
-        {/* Desktop Navigation - vertical on left */}
-        <nav className="hidden md:flex fixed left-6 top-8 z-50 flex-col space-y-3">
-          <Link
-            href={studioUrl}
-            className={`text-base tracking-wide transition-colors duration-300 ${
-              pathname === "/" 
-                ? "text-white" 
-                : "text-gray-300 hover:text-white"
-            }`}
-            style={{ fontFamily: 'FragmentMono, monospace' }}
-          >
-            STUDIO
-          </Link>
-          <Link
-            href={privateUrl}
-            className={`text-base tracking-wide transition-colors duration-300 ${
-              pathname === "/private"
-                ? "text-white"
-                : "text-gray-300 hover:text-white"
-            }`}
-            style={{ fontFamily: 'FragmentMono, monospace' }}
-          >
-            PRIVATE
-          </Link>
-          {/* Story link temporarily hidden */}
-          <Link
-            href={waitlistUrl}
-            className={`text-base tracking-wide transition-colors duration-300 ${
-              pathname === "/waitlist" 
-                ? "text-white" 
-                : "text-gray-300 hover:text-white"
-            }`}
-            style={{ fontFamily: 'FragmentMono, monospace' }}
-          >
-            WAITLIST
-          </Link>
-
+        {/* Desktop Navigation - vertical on left, two groups */}
+        <nav className="hidden md:flex fixed left-6 top-8 z-50 flex-col">
+          <div className="flex flex-col space-y-3">
+            <Link
+              href={studioUrl}
+              className={`text-base tracking-wide transition-colors duration-300 ${
+                pathname === "/" ? "text-white" : "text-gray-300 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              STUDIO
+            </Link>
+            <Link
+              href={privateUrl}
+              className={`text-base tracking-wide transition-colors duration-300 ${
+                pathname === "/private" ? "text-white" : "text-gray-300 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              PRIVATE
+            </Link>
+            <Link
+              href={waitlistUrl}
+              className={`text-base tracking-wide transition-colors duration-300 ${
+                pathname === "/waitlist" ? "text-white" : "text-gray-300 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              WAITLIST
+            </Link>
+          </div>
+          <div className="mt-4 pt-4 border-t border-white/20 flex flex-col space-y-3">
+            <Link
+              href="/queue"
+              className={`text-base tracking-wide transition-colors duration-300 ${
+                pathname === "/queue" ? "text-white" : "text-gray-300 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              IN-PERSON QUEUE
+            </Link>
+            <Link
+              href="/team/queue"
+              className={`text-base tracking-wide transition-colors duration-300 ${
+                pathname === "/team/queue" ? "text-white" : "text-gray-300 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              TEAM LOGIN
+            </Link>
+          </div>
         </nav>
         
         {/* Instagram Link - Desktop */}

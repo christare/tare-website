@@ -31,6 +31,7 @@ type QueueRecord = {
 };
 
 const PIN_STORAGE_KEY = "tare_queue_team_pin";
+const UI_STATE_STORAGE_KEY = "tare_queue_ui_state_v1";
 
 const STATUS_OPTIONS: Array<{ value: QueueStatus; label: string }> = [
   { value: "waiting", label: "Waiting" },
@@ -42,6 +43,34 @@ const STATUS_OPTIONS: Array<{ value: QueueStatus; label: string }> = [
   { value: "removed", label: "Deleted" },
   { value: "error", label: "Error" },
 ];
+
+type LaneKey =
+  | "waiting"
+  | "notified"
+  | "in_service"
+  | "skipped"
+  | "no_show"
+  | "deleted"
+  | "served";
+
+function formatLaneTitle(key: LaneKey) {
+  switch (key) {
+    case "waiting":
+      return "WAITING";
+    case "notified":
+      return "NOTIFIED";
+    case "in_service":
+      return "IN SERVICE";
+    case "skipped":
+      return "SKIPPED";
+    case "no_show":
+      return "NO SHOW";
+    case "deleted":
+      return "DELETED";
+    case "served":
+      return "SERVED";
+  }
+}
 
 function last4(phone: string | null) {
   if (!phone) return "";
@@ -81,11 +110,44 @@ export default function TeamQueuePage() {
   const [showArchive, setShowArchive] = useState(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const pollingRef = useRef<number | null>(null);
+  const [activeLane, setActiveLane] = useState<LaneKey>("waiting");
+  const [collapsed, setCollapsed] = useState<Record<LaneKey, boolean>>({
+    waiting: false,
+    notified: false,
+    in_service: false,
+    skipped: true,
+    no_show: true,
+    deleted: true,
+    served: true,
+  });
 
   useEffect(() => {
     const saved = window.localStorage.getItem(PIN_STORAGE_KEY) || "";
     if (saved) setPin(saved);
   }, []);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(UI_STATE_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as any;
+      if (parsed?.activeLane) setActiveLane(parsed.activeLane);
+      if (parsed?.collapsed) setCollapsed((prev) => ({ ...prev, ...parsed.collapsed }));
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        UI_STATE_STORAGE_KEY,
+        JSON.stringify({ activeLane, collapsed })
+      );
+    } catch {
+      // ignore
+    }
+  }, [activeLane, collapsed]);
 
   const headers = useMemo(() => {
     const h: Record<string, string> = { "Content-Type": "application/json" };
@@ -275,14 +337,15 @@ export default function TeamQueuePage() {
   }
 
   const Lane = ({
-    title,
+    laneKey,
     items,
     tone,
   }: {
-    title: string;
+    laneKey: LaneKey;
     items: QueueRecord[];
     tone: "white" | "amber" | "green" | "gray" | "red";
   }) => {
+    const title = formatLaneTitle(laneKey);
     const toneClass =
       tone === "amber"
         ? "border-amber-200/30"
@@ -296,18 +359,33 @@ export default function TeamQueuePage() {
 
     return (
       <div className={`border ${toneClass} bg-white/5 p-4`}>
-        <div className="flex items-baseline justify-between gap-4 mb-3">
-          <h2
-            className="text-sm tracking-widest text-gray-300"
-            style={{ fontFamily: "FragmentMono, monospace", letterSpacing: "0.2em" }}
-          >
-            {title}
-          </h2>
+        <button
+          type="button"
+          className="w-full flex items-baseline justify-between gap-4 mb-3 text-left"
+          onClick={() => setCollapsed((prev) => ({ ...prev, [laneKey]: !prev[laneKey] }))}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className="text-gray-400 text-xs"
+              style={{ fontFamily: "FragmentMono, monospace" }}
+              aria-hidden="true"
+            >
+              {collapsed[laneKey] ? "▸" : "▾"}
+            </span>
+            <h2
+              className="text-sm tracking-widest text-gray-300"
+              style={{ fontFamily: "FragmentMono, monospace", letterSpacing: "0.2em" }}
+            >
+              {title}
+            </h2>
+          </div>
           <span className="text-gray-400 text-xs" style={{ fontFamily: "FragmentMono, monospace" }}>
             {items.length}
           </span>
-        </div>
-        <div className="space-y-2">
+        </button>
+
+        {!collapsed[laneKey] && (
+          <div className="space-y-2">
           {items.map((r) => {
             const joinedMins = minutesAgo(r.checkInTimestamp);
             const notifiedMins = minutesAgo(r.lastNotifiedAt);
@@ -545,7 +623,8 @@ export default function TeamQueuePage() {
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -618,18 +697,56 @@ export default function TeamQueuePage() {
           </p>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Lane title="WAITING" items={waiting} tone="white" />
-          <Lane title="NOTIFIED" items={notified} tone="amber" />
-          <Lane title="IN SERVICE" items={inService} tone="green" />
-          <Lane title="SKIPPED" items={skipped} tone="gray" />
-          <Lane title="NO SHOW" items={noShow} tone="red" />
-          <Lane title="DELETED" items={removed} tone="gray" />
-          {showArchive && (
-            <>
-              <Lane title="SERVED" items={served} tone="gray" />
-            </>
-          )}
+        {/* Mobile: tabbed lanes */}
+        <div className="md:hidden">
+          <div className="flex gap-2 overflow-x-auto pb-3 -mx-1 px-1">
+            {(
+              [
+                ["waiting", waiting.length],
+                ["notified", notified.length],
+                ["in_service", inService.length],
+                ["skipped", skipped.length],
+                ["no_show", noShow.length],
+                ["deleted", removed.length],
+                ...(showArchive ? ([["served", served.length]] as any) : []),
+              ] as Array<[LaneKey, number]>
+            ).map(([key, count]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setActiveLane(key)}
+                className={`shrink-0 border px-3 py-2 text-[11px] tracking-widest transition-colors ${
+                  activeLane === key
+                    ? "border-white text-white"
+                    : "border-white/25 text-gray-300 hover:text-white hover:border-white/50"
+                }`}
+                style={{ fontFamily: "FragmentMono, monospace", letterSpacing: "0.18em" }}
+              >
+                {formatLaneTitle(key)} ({count})
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-4">
+            {activeLane === "waiting" && <Lane laneKey="waiting" items={waiting} tone="white" />}
+            {activeLane === "notified" && <Lane laneKey="notified" items={notified} tone="amber" />}
+            {activeLane === "in_service" && <Lane laneKey="in_service" items={inService} tone="green" />}
+            {activeLane === "skipped" && <Lane laneKey="skipped" items={skipped} tone="gray" />}
+            {activeLane === "no_show" && <Lane laneKey="no_show" items={noShow} tone="red" />}
+            {activeLane === "deleted" && <Lane laneKey="deleted" items={removed} tone="gray" />}
+            {activeLane === "served" && showArchive && <Lane laneKey="served" items={served} tone="gray" />}
+          </div>
+        </div>
+
+        {/* Desktop+: grid lanes */}
+        <div className="hidden md:grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Lane laneKey="waiting" items={waiting} tone="white" />
+          <Lane laneKey="notified" items={notified} tone="amber" />
+          <Lane laneKey="in_service" items={inService} tone="green" />
+          <Lane laneKey="skipped" items={skipped} tone="gray" />
+          <Lane laneKey="no_show" items={noShow} tone="red" />
+          <Lane laneKey="deleted" items={removed} tone="gray" />
+          {showArchive && <Lane laneKey="served" items={served} tone="gray" />}
         </div>
 
         <p className="text-gray-500 text-xs mt-8" style={{ fontFamily: "FragmentMono, monospace" }}>

@@ -80,7 +80,6 @@ export const createCheckoutSession = async ({
   try {
     console.log('Creating checkout session with:', { priceId, successUrl, cancelUrl });
     
-    // This will only run on the server during request time, not during build
     const stripe = getStripe();
     
     const session = await stripe.checkout.sessions.create({

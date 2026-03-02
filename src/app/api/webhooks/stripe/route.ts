@@ -38,12 +38,14 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const metadata = session.metadata || {};
     
-    // Always use the current event from central config - don't rely on Stripe metadata
-    const eventDate = CURRENT_EVENT_ID;
-    
-    // Safety check - make sure we have a valid event date
+    // Use the date the customer picked (from checkout metadata), fallback to config
+    const eventDate =
+      metadata.eventId && typeof metadata.eventId === 'string'
+        ? metadata.eventId
+        : CURRENT_EVENT_ID;
+
     if (!eventDate) {
-      console.error('❌ CRITICAL: CURRENT_EVENT_ID is undefined! Event Date will not be saved.');
+      console.error('❌ CRITICAL: No event date from metadata or CURRENT_EVENT_ID. Event Date will not be saved.');
     }
     
     // Log successful payment/booking (including free ones)

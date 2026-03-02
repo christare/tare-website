@@ -104,7 +104,7 @@ export async function POST(request: Request) {
       ? 'https://tarestudionyc.com' 
       : 'http://localhost:3000';
     
-    const successUrl = `${baseUrl}/checkout/success?type=${type}`;
+    const successUrl = `${baseUrl}/checkout/success?type=${type}&date=${encodeURIComponent(eventId)}`;
     const cancelUrl = `${baseUrl}/?from=canceled`;
     
     // Log request details
@@ -136,7 +136,7 @@ export async function POST(request: Request) {
         priceId,
         successUrl,
         cancelUrl,
-        metadata: { eventId }
+        metadata: { eventId },
       });
       
       if (!result.success) {
