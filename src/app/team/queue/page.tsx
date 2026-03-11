@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type QueueStatus =
   | "waiting"
@@ -32,6 +33,12 @@ type QueueRecord = {
 
 const PIN_STORAGE_KEY = "tare_queue_team_pin";
 const UI_STATE_STORAGE_KEY = "tare_queue_ui_state_v1";
+
+const HERO_BG_IMAGES = [
+  "/images/Photo Wellness 1.jpg",
+  "/images/Photo Wellness 3.jpg",
+  "/images/Photo Wellness 2.png",
+];
 
 const STATUS_OPTIONS: Array<{ value: QueueStatus; label: string }> = [
   { value: "waiting", label: "Waiting" },
@@ -157,15 +164,14 @@ export default function TeamQueuePage() {
 
   const fetchList = async () => {
     setLoading(true);
-    // Don't clear error every poll; keep it visible if APIs are failing.
     try {
-      // Always fetch archive so staff can restore/move between stages at any time.
       const url = `/api/queue/list?includeArchive=1`;
       const res = await fetch(url, { headers });
       const data = await res.json();
       if (res.status === 401) {
         setNeedsPin(true);
-        throw new Error("Unauthorized");
+        setError("Unauthorized");
+        return;
       }
       if (!res.ok) throw new Error(data?.error || "Failed to load queue");
       setRecords(data.records || []);
@@ -195,6 +201,11 @@ export default function TeamQueuePage() {
       body: JSON.stringify({ recordId, ...patch }),
     });
     const data = await res.json();
+    if (res.status === 401) {
+      setNeedsPin(true);
+      setError("Unauthorized");
+      return;
+    }
     if (!res.ok) throw new Error(data?.error || "Update failed");
     await fetchList();
   };
@@ -203,11 +214,14 @@ export default function TeamQueuePage() {
     const res = await fetch("/api/queue/notify", {
       method: "POST",
       headers,
-      body: JSON.stringify({
-        recordId: r.id,
-      }),
+      body: JSON.stringify({ recordId: r.id }),
     });
     const data = await res.json();
+    if (res.status === 401) {
+      setNeedsPin(true);
+      setError("Unauthorized");
+      return;
+    }
     if (!res.ok) throw new Error(data?.error || "Notify failed");
     await fetchList();
   };
@@ -219,6 +233,11 @@ export default function TeamQueuePage() {
       body: JSON.stringify({ orderedIds }),
     });
     const data = await res.json();
+    if (res.status === 401) {
+      setNeedsPin(true);
+      setError("Unauthorized");
+      return;
+    }
     if (!res.ok) throw new Error(data?.error || "Reorder failed");
     await fetchList();
   };
@@ -267,14 +286,34 @@ export default function TeamQueuePage() {
     await reorderLane(next);
   };
 
-  // If we have no saved/entered pin AND the server says we need one, show login.
-  // If a pin exists (even if wrong), show the dashboard shell and surface the error banner.
+  // Single team entry: only this page has the login form. From here you can switch to Taste dashboard.
   if (needsPin && !pin) {
     return (
-      <main className="min-h-screen text-white" style={{ backgroundColor: "#2A2726" }}>
-        <div className="min-h-screen flex items-center justify-center px-6">
-          <div className="w-full max-w-md border border-white/20 bg-white/5 p-6">
-            <div className="flex items-center gap-3 mb-4">
+      <main className="min-h-screen text-white relative" style={{ backgroundColor: "#2A2726" }}>
+        <div aria-hidden className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 md:hidden">
+            <Image
+              src={HERO_BG_IMAGES[0]}
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+              style={{ opacity: 0.25, filter: "grayscale(100%) contrast(1.2) brightness(0.9) saturate(0) blur(0.75px)" }}
+            />
+          </div>
+          <div className="absolute inset-0 hidden md:grid md:grid-cols-3">
+            {HERO_BG_IMAGES.map((src) => (
+              <div key={src} className="relative h-full w-full">
+                <Image src={src} alt="" fill sizes="100vw" className="object-cover"
+                  style={{ opacity: 0.25, filter: "grayscale(100%) contrast(1.2) brightness(0.9) saturate(0) blur(0.75px)" }} />
+              </div>
+            ))}
+          </div>
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(42,39,38,0.35) 0%, rgba(42,39,38,0.75) 50%, rgba(42,39,38,1) 100%)" }} />
+        </div>
+        <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
+          <div className="w-full max-w-md border border-white/20 bg-[#2A2726]/90 backdrop-blur-sm p-6 sm:p-8">
+            <div className="flex items-center gap-3 mb-5">
               <Image
                 src="/FinalDelivery/symbols/Artifacts/pngs/TARE-room-artifact-white.png"
                 alt="TARE"
@@ -284,21 +323,17 @@ export default function TeamQueuePage() {
                 priority
               />
               <div>
-                <p
-                  className="text-xs tracking-widest text-gray-400"
-                  style={{ fontFamily: "FragmentMono, monospace", letterSpacing: "0.2em" }}
-                >
+                <p className="text-xs tracking-widest text-gray-400" style={{ fontFamily: "FragmentMono, monospace", letterSpacing: "0.2em" }}>
                   TEAM ACCESS
                 </p>
-                <h1
-                  className="text-xl font-light"
-                  style={{ fontFamily: "NonBureauExtended, sans-serif" }}
-                >
-                  Queue Dashboard
+                <h1 className="text-xl font-light" style={{ fontFamily: "NonBureauExtended, sans-serif" }}>
+                  Queue & events
                 </h1>
               </div>
             </div>
-
+            <p className="text-gray-400 text-xs mb-4" style={{ fontFamily: "FragmentMono, monospace" }}>
+              Log in to manage the in‑person queue and blind test RSVPs.
+            </p>
             <input
               value={pinInput}
               onChange={(e) => setPinInput(e.target.value)}
@@ -326,9 +361,7 @@ export default function TeamQueuePage() {
               If you’re already logged into admin on this device, you can also use that session.
             </p>
             {error && (
-              <p className="text-red-300 text-xs mt-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-                {error}
-              </p>
+              <p className="text-red-300 text-xs mt-3" style={{ fontFamily: "FragmentMono, monospace" }}>{error}</p>
             )}
           </div>
         </div>
@@ -630,8 +663,23 @@ export default function TeamQueuePage() {
   };
 
   return (
-    <main className="min-h-screen text-white" style={{ backgroundColor: "#2A2726" }}>
-      <div className="px-6 pt-24 pb-10 max-w-7xl mx-auto">
+    <main className="min-h-screen text-white relative" style={{ backgroundColor: "#2A2726" }}>
+      <div aria-hidden className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 md:hidden">
+          <Image src={HERO_BG_IMAGES[0]} alt="" fill sizes="100vw" className="object-cover"
+            style={{ opacity: 0.2, filter: "grayscale(100%) contrast(1.2) brightness(0.9) saturate(0) blur(0.75px)" }} />
+        </div>
+        <div className="absolute inset-0 hidden md:grid md:grid-cols-3">
+          {HERO_BG_IMAGES.map((src) => (
+            <div key={src} className="relative h-full w-full">
+              <Image src={src} alt="" fill sizes="100vw" className="object-cover"
+                style={{ opacity: 0.2, filter: "grayscale(100%) contrast(1.2) brightness(0.9) saturate(0) blur(0.75px)" }} />
+            </div>
+          ))}
+        </div>
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(42,39,38,0.4) 0%, rgba(42,39,38,0.85) 40%, rgba(42,39,38,1) 100%)" }} />
+      </div>
+      <div className="relative z-10 px-6 pt-24 pb-10 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
           <div className="flex items-center gap-3">
             <Image
@@ -659,6 +707,13 @@ export default function TeamQueuePage() {
           </div>
 
           <div className="flex flex-wrap gap-3 items-center justify-start md:justify-end">
+            <Link
+              href="/team/taste"
+              className="border border-white/25 px-4 py-2 text-xs tracking-wide hover:bg-white hover:text-black transition-colors"
+              style={{ fontFamily: "FragmentMono, monospace" }}
+            >
+              TASTE DASHBOARD
+            </Link>
             <button
               className="border border-white/25 px-4 py-2 text-xs tracking-wide hover:bg-white hover:text-black transition-colors"
               style={{ fontFamily: "FragmentMono, monospace" }}
@@ -750,7 +805,7 @@ export default function TeamQueuePage() {
         </div>
 
         <p className="text-gray-500 text-xs mt-8" style={{ fontFamily: "FragmentMono, monospace" }}>
-          Tip: drag to reorder within WAITING. All actions write to Airtable.
+          Drag to reorder within WAITING. Use TASTE DASHBOARD above to manage blind test RSVPs.
           {loading ? " • loading…" : ""}
         </p>
       </div>

@@ -32,8 +32,11 @@ export default function ClientLayout({
   return (
     <>
       {!isPrintRoute && <Header />}
-      {children}
+      {/* Reserve space for fixed mobile header (h-14) so content doesn't overlap */}
+      <div className={!isPrintRoute ? "pt-14 md:pt-0" : ""}>
+        {children}
       
+      </div>
       {/* Global Footer with Social Links */}
       {!isPrintRoute && (
         <footer className="pb-12 pt-8 px-6" style={{backgroundColor: '#2A2726'}}>
