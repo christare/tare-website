@@ -65,6 +65,18 @@ export async function POST(request: Request) {
           body: message,
         });
         await appendMessageLog(record.id, `CONFIRMATION SMS -> ${to}: ${message}`);
+
+        // Notify staff on every new RSVP. RSVP_NOTIFY_PHONE = one number or comma-separated (e.g. "4157079319,5551234567")
+        const notifyPhonesRaw = process.env.RSVP_NOTIFY_PHONE || "4157079319";
+        const notifyPhones = notifyPhonesRaw.split(",").map((s) => s.trim()).filter(Boolean);
+        const notifyBody = `TARE RSVP: ${guestName} just RSVP'd for ${BLIND_TASTE_EVENT.title}.`;
+        for (const phone of notifyPhones) {
+          await client.messages.create({
+            to: formatPhoneForTwilio(phone),
+            from: process.env.TWILIO_PHONE_NUMBER,
+            body: notifyBody,
+          });
+        }
       }
     } catch (smsErr: any) {
       console.error("Blind test confirmation SMS failed (non-critical):", smsErr);

@@ -106,13 +106,13 @@ export async function createEventRsvp(input: {
 }): Promise<EventRsvpRecord> {
   const table = getTable();
   const nowIso = new Date().toISOString();
-  const fields: Record<string, unknown> = {
+  const fields = {
     [FIELDS.eventId]: input.eventId,
     [FIELDS.guestName]: input.guestName,
     [FIELDS.phoneNumber]: input.phoneNumber,
     [FIELDS.rsvpAt]: nowIso,
     [FIELDS.messageLog]: "",
-  };
+  } as Record<string, string | number | boolean>;
   // If your base has "Show on list" (checkbox), new RSVPs will show by default (missing = true in mapRecord)
   const created = await table.create([{ fields }]);
   return mapRecord(created[0] as any);

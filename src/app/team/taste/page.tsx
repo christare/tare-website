@@ -57,6 +57,7 @@ export default function TeamTastePage() {
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [notifyNumbers, setNotifyNumbers] = useState<string[]>([]);
 
   // Single team entry: only /team/queue has the login form. If no saved PIN, redirect there.
   useEffect(() => {
@@ -100,6 +101,21 @@ export default function TeamTastePage() {
     fetchList();
     const interval = setInterval(fetchList, 5000);
     return () => clearInterval(interval);
+  }, [pin]);
+
+  useEffect(() => {
+    if (!pin) return;
+    (async () => {
+      try {
+        const res = await fetch("/api/events-rsvp/notify-numbers", { headers, cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          setNotifyNumbers(data.numbers || []);
+        }
+      } catch {
+        setNotifyNumbers([]);
+      }
+    })();
   }, [pin]);
 
   const sendMessage = async (recordId: string) => {
@@ -283,6 +299,12 @@ export default function TeamTastePage() {
         {error && (
           <p className="text-red-300 text-sm mb-4" style={{ fontFamily: "FragmentMono, monospace" }}>
             {error}
+          </p>
+        )}
+
+        {notifyNumbers.length > 0 && (
+          <p className="text-gray-500 text-xs mb-4" style={{ fontFamily: "FragmentMono, monospace" }}>
+            Notifications sent to: {notifyNumbers.join(", ")}
           </p>
         )}
 
