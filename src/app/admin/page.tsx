@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { CURRENT_EVENT_ID, CURRENT_EVENT_CONFIG } from '@/config/events';
@@ -107,6 +107,19 @@ export default function AdminPage() {
     notes: '',
   });
 
+  /** Which event date the dashboard is showing (bookings + capacity). Persists in localStorage. */
+  const [selectedEventDate, setSelectedEventDate] = useState<string>(CURRENT_EVENT_ID);
+  const [availableEventDates, setAvailableEventDates] = useState<string[]>([CURRENT_EVENT_ID]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('tare_admin_event_date');
+      if (saved) setSelectedEventDate(saved);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     login();
@@ -153,18 +166,18 @@ export default function AdminPage() {
     </button>
   );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      // Fetch ALL bookings (we slice into current vs other on the client)
+      // Fetch ALL bookings (we slice into selected date vs other on the client)
       const bookingsResponse = await fetch(`/api/admin/bookings?scope=all`, { credentials: 'include' });
       const bookingsData = await bookingsResponse.json();
-      
+
       // Fetch guest forms
       const guestFormsResponse = await fetch('/api/admin/guest-forms', { credentials: 'include' });
       const guestFormsData = await guestFormsResponse.json();
-      
+
       if (bookingsResponse.status === 401 || guestFormsResponse.status === 401) {
         setAuthenticated(false);
         setError('Session expired. Please log in again.');
@@ -174,39 +187,49 @@ export default function AdminPage() {
 
       if (bookingsResponse.ok && guestFormsResponse.ok) {
         const allBookings: Booking[] = bookingsData.bookings || [];
-        const currentEventBookings = allBookings.filter(b => (b.fields['Event Date'] || '') === CURRENT_EVENT_ID);
-        const otherEventBookings = allBookings.filter(b => (b.fields['Event Date'] || '') !== CURRENT_EVENT_ID);
+        const dateSet = new Set<string>([CURRENT_EVENT_ID, selectedEventDate]);
+        allBookings.forEach((b) => {
+          const d = (b.fields['Event Date'] || '').toString().trim();
+          if (d) dateSet.add(d);
+        });
+        setAvailableEventDates(Array.from(dateSet).sort((a, b) => b.localeCompare(a)));
+
+        const currentEventBookings = allBookings.filter(
+          (b) => (b.fields['Event Date'] || '') === selectedEventDate
+        );
+        const otherEventBookings = allBookings.filter(
+          (b) => (b.fields['Event Date'] || '') !== selectedEventDate
+        );
         const guestForms = guestFormsData.guestForms || [];
-        
+
         // Create phone -> form map (use normalized field from Airtable)
         const formsMap = new Map<string, GuestForm>();
         guestForms.forEach((form: GuestForm) => {
-          // Use the Phone Normalized field if available, otherwise normalize on the fly
-          const phone = (form.fields as any)['Phone Normalized'] || normalizePhone(form.fields['Phone Number'] || '');
+          const phone =
+            (form.fields as any)['Phone Normalized'] || normalizePhone(form.fields['Phone Number'] || '');
           if (phone) {
             formsMap.set(phone, form);
           }
         });
-        
-        // Match bookings with forms
+
+        // Match bookings with forms (only for the selected event date)
         const enhancedBookings = currentEventBookings.map((booking: Booking) => {
           const bookingPhone = normalizePhone(booking.fields['Phone'] || '');
           const matchedForm = formsMap.get(bookingPhone);
-          
+
           if (matchedForm) {
-            formsMap.delete(bookingPhone); // Remove matched forms
+            formsMap.delete(bookingPhone);
           }
-          
+
           return {
             ...booking,
             guestFormSubmitted: !!matchedForm,
-            guestForm: matchedForm
+            guestForm: matchedForm,
           };
         });
-        
-        // Remaining forms in map are unmatched
+
         const unmatched = Array.from(formsMap.values());
-        
+
         setBookings(enhancedBookings);
         setOtherBookings(otherEventBookings);
         setGuestForms(guestForms);
@@ -215,23 +238,27 @@ export default function AdminPage() {
         setError(`Failed to fetch data`);
       }
 
-      // Fetch availability
-      const availabilityResponse = await fetch(`/api/availability?eventId=${CURRENT_EVENT_ID}`);
+      // Capacity for the selected event date (same logic as site checkout)
+      const availabilityResponse = await fetch(
+        `/api/availability?eventId=${encodeURIComponent(selectedEventDate)}`
+      );
       const availabilityData = await availabilityResponse.json();
-      
+
       if (availabilityResponse.ok) {
         setRealAvailableSeats(availabilityData.available);
         const allBookings: Booking[] = bookingsData.bookings || [];
-        const currentActiveBookedSeats = allBookings.filter(b => (b.fields['Event Date'] || '') === CURRENT_EVENT_ID && getBookingStatus(b) !== 'Cancelled').length;
-        const bookedSeats = currentActiveBookedSeats;
-        setTotalSeats(availabilityData.available + bookedSeats);
+        const currentActiveBookedSeats = allBookings.filter(
+          (b) =>
+            (b.fields['Event Date'] || '') === selectedEventDate && getBookingStatus(b) !== 'Cancelled'
+        ).length;
+        setTotalSeats(availabilityData.available + currentActiveBookedSeats);
       }
     } catch (error) {
       console.error('Error fetching admin data:', error);
       setError('Connection failed');
     }
     setLoading(false);
-  };
+  }, [selectedEventDate]);
 
   // Generate preview message
   const generatePreviewMessage = (booking: Booking): string => {
@@ -445,7 +472,7 @@ export default function AdminPage() {
     fetchData();
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, [authenticated]);
+  }, [authenticated, fetchData]);
 
   if (!authenticated) {
     return (
@@ -579,11 +606,37 @@ export default function AdminPage() {
             className="bg-[#2A2726] border border-[#3A3736] p-6 hover:border-[#8B7F6F] transition-colors"
           >
             <p className="text-xs text-[#A39B8B] mb-3 tracking-[0.2em]" style={{ fontFamily: 'FragmentMono, monospace' }}>
-              EVENT DATE
+              EVENT DATE (VIEW)
             </p>
-            <p className="text-2xl font-light tracking-wider" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-              {CURRENT_EVENT_ID}
-            </p>
+            <select
+              value={selectedEventDate}
+              onChange={(e) => {
+                const v = e.target.value;
+                setSelectedEventDate(v);
+                try {
+                  localStorage.setItem('tare_admin_event_date', v);
+                } catch {
+                  /* ignore */
+                }
+              }}
+              className="w-full max-w-[280px] bg-[#1A1816] border border-[#3A3736] text-[#E8E3DD] px-3 py-2 text-sm tracking-wide focus:outline-none focus:border-[#8B7F6F]"
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+              aria-label="Select event date to view"
+            >
+              {Array.from(new Set([...availableEventDates, selectedEventDate]))
+                .sort((a, b) => b.localeCompare(a))
+                .map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                    {d === CURRENT_EVENT_ID ? ' · site default' : ''}
+                  </option>
+                ))}
+            </select>
+            {selectedEventDate !== CURRENT_EVENT_ID && (
+              <p className="text-[10px] text-[#8B7F6F] mt-2 tracking-wide" style={{ fontFamily: 'FragmentMono, monospace' }}>
+                Site checkout still uses {CURRENT_EVENT_ID} until you change config.
+              </p>
+            )}
           </motion.div>
 
           <motion.div
@@ -681,14 +734,14 @@ export default function AdminPage() {
                   className={`text-xs tracking-wider px-3 py-1 border transition-colors ${activeView === 'current_active' ? 'border-[#D4A574] text-[#D4A574]' : 'border-[#3A3736] text-[#8B7F6F] hover:border-[#8B7F6F] hover:text-[#A39B8B]'}`}
                   style={{ fontFamily: 'FragmentMono, monospace' }}
                 >
-                  CURRENT (ACTIVE) · {currentActiveBookings.length}
+                  ACTIVE · {currentActiveBookings.length}
                 </button>
                 <button
                   onClick={() => setActiveView('current_cancelled')}
                   className={`text-xs tracking-wider px-3 py-1 border transition-colors ${activeView === 'current_cancelled' ? 'border-[#D4A574] text-[#D4A574]' : 'border-[#3A3736] text-[#8B7F6F] hover:border-[#8B7F6F] hover:text-[#A39B8B]'}`}
                   style={{ fontFamily: 'FragmentMono, monospace' }}
                 >
-                  CURRENT (CANCELLED) · {currentCancelledBookings.length}
+                  CANCELLED · {currentCancelledBookings.length}
                 </button>
                 <button
                   onClick={() => setActiveView('other')}
