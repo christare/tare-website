@@ -191,9 +191,6 @@ function ShopContent() {
                 <p className="text-gray-200 text-sm sm:text-[15px] mb-3 max-w-md leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
                   Four coffees selected for contrast, progression, and recall.
                 </p>
-                <p className="text-gray-300 text-sm sm:text-[15px] max-w-md leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  Sequential tasting format.
-                </p>
               </div>
 
               <div
@@ -316,31 +313,9 @@ function ShopContent() {
                     </div>
                   </div>
                   <div className="mt-4 space-y-1 text-gray-300 text-xs sm:text-sm leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                    <p>curated lineup</p>
                     <p>FORMAT</p>
                     <p>whole bean</p>
                     <p>self-brew</p>
-                    <p>sequential tasting format</p>
-                  </div>
-                </div>
-
-                <div className="border-b border-white/10 pb-5" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  <p className="text-gray-400 text-[11px] tracking-[0.24em] mb-3">SET INFO</p>
-                  <div>
-                    <p className="text-gray-400 text-[11px] tracking-[0.2em] mb-1.5">SET FORMAT</p>
-                    <p className="text-gray-200 text-xs sm:text-sm">4 bags / 100g each</p>
-                  </div>
-                  <div className="mt-3">
-                    <p className="text-gray-400 text-[11px] tracking-[0.2em] mb-1.5">SHIPPING</p>
-                    <div className="space-y-0.5 text-gray-200 text-xs sm:text-sm">
-                      <p>standard - $8 / 3-5 days</p>
-                      <p>fast - $14 / 2-day</p>
-                    </div>
-                    <p className="mt-1.5 text-gray-400 text-[11px]">tax calculated at checkout</p>
-                  </div>
-                  <div className="mt-3">
-                    <p className="text-gray-400 text-[11px] tracking-[0.2em] mb-1.5">RELEASE</p>
-                    <p className="text-gray-200 text-xs sm:text-sm">03.2026</p>
                   </div>
                 </div>
 
