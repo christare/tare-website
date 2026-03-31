@@ -4,11 +4,11 @@ import { resolveStripeShopSource } from "@/lib/shop-stripe";
 
 export async function GET() {
   let enabled = false;
-  let displayPrice = SHOP_PRODUCT.priceLabel;
-  let checkoutItem = SHOP_PRODUCT.slug;
-  let productName = SHOP_PRODUCT.name;
-  let productId = "";
-  let priceId = "";
+  let displayPrice: string = SHOP_PRODUCT.priceLabel;
+  let checkoutItem: string = SHOP_PRODUCT.slug;
+  let productName: string = SHOP_PRODUCT.name;
+  let productId: string = "";
+  let priceId: string = "";
 
   try {
     const stripeSource = await resolveStripeShopSource();
