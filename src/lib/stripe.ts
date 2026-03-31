@@ -71,11 +71,17 @@ export const createCheckoutSession = async ({
   successUrl,
   cancelUrl,
   metadata,
+  shippingOptions,
+  shippingAddressCountries,
+  automaticTax,
 }: {
   priceId: string;
   successUrl: string;
   cancelUrl: string;
   metadata?: Record<string, string>;
+  shippingOptions?: Stripe.Checkout.SessionCreateParams.ShippingOption[];
+  shippingAddressCountries?: Stripe.Checkout.SessionCreateParams.ShippingAddressCollection["allowed_countries"];
+  automaticTax?: boolean;
 }) => {
   try {
     console.log('Creating checkout session with:', { priceId, successUrl, cancelUrl });
@@ -103,6 +109,11 @@ export const createCheckoutSession = async ({
       phone_number_collection: {
         enabled: true,
       },
+      ...(shippingOptions && shippingOptions.length > 0 ? { shipping_options: shippingOptions } : {}),
+      ...(shippingAddressCountries && shippingAddressCountries.length > 0
+        ? { shipping_address_collection: { allowed_countries: shippingAddressCountries } }
+        : {}),
+      ...(automaticTax ? { automatic_tax: { enabled: true } } : {}),
       ...(metadata && { metadata }),
     });
     

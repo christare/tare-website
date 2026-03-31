@@ -12,7 +12,12 @@ function CanceledContent() {
   const [redirectCounter, setRedirectCounter] = useState(5);
 
   // Determine where to redirect based on type with parameter to indicate return from checkout
-  const redirectPath = type === "studio" ? "/studio?from=canceled" : "/room?from=canceled";
+  const redirectPath =
+    type === "studio"
+      ? "/?from=canceled"
+      : type === "beans"
+        ? "/shop?from=canceled"
+        : "/room?from=canceled";
 
   // Redirect after 5 seconds
   useEffect(() => {

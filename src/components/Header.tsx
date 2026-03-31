@@ -50,6 +50,7 @@ export default function Header() {
 
   const mobileNavLinks = [
     { href: studioUrl, label: "STUDIO" },
+    { href: "/shop", label: "SHOP" },
     { href: privateUrl, label: "PRIVATE" },
     { href: waitlistUrl, label: "WAITLIST" },
     { href: "/taste", label: "TASTE" },
@@ -152,6 +153,15 @@ export default function Header() {
               style={{ fontFamily: 'FragmentMono, monospace' }}
             >
               STUDIO
+            </Link>
+            <Link
+              href="/shop"
+              className={`text-base tracking-wide transition-colors duration-300 ${
+                pathname === "/shop" ? "text-white" : "text-gray-300 hover:text-white"
+              }`}
+              style={{ fontFamily: 'FragmentMono, monospace' }}
+            >
+              SHOP
             </Link>
             <Link
               href={privateUrl}

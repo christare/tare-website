@@ -27,7 +27,10 @@ function SuccessContent() {
   const type = searchParams.get("type");
   const dateParam = searchParams.get("date");
   const sessionDateFormatted = formatSessionDate(dateParam);
-  const productName = type === "studio" ? "TARE STUDIO" : "TARE ROOM";
+  const isBeans = type === "beans";
+  const isLineup = type === "lineup";
+  const productName =
+    type === "studio" ? "TARE STUDIO" : isLineup ? "TARE LINEUP 01" : isBeans ? "TARE BEANS" : "TARE ROOM";
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -75,54 +78,102 @@ function SuccessContent() {
         style={{ fontFamily: "NonBureauExtended, sans-serif", fontWeight: 300 }}
         variants={itemVariants}
       >
-        Your seat at {productName}
-        {sessionDateFormatted ? ` for ${sessionDateFormatted}` : ""} is reserved.
+        {isLineup
+          ? "Your lineup order is in."
+          : isBeans
+          ? "Your coffee order is in."
+          : `Your seat at ${productName}${sessionDateFormatted ? ` for ${sessionDateFormatted}` : ""} is reserved.`}
       </motion.h1>
 
-      {/* DETAILS: address, time, then selected date */}
-      <motion.div
-        className="relative z-10 border border-white/20 rounded-sm py-3 px-4 sm:py-4 sm:px-5 mb-4 text-left"
-        style={{ fontFamily: "FragmentMono, monospace" }}
-        variants={itemVariants}
-      >
-        <p className="text-gray-500 text-xs tracking-[0.2em] mb-3">DETAILS</p>
-        <div className="space-y-2.5 text-sm text-gray-300">
-          <div>
-            <span className="text-gray-500 text-xs tracking-wider block mb-0.5">ADDRESS</span>
-            <div className="text-white">
-              <div>{CURRENT_EVENT_CONFIG.addressLine1}</div>
-              <div>{CURRENT_EVENT_CONFIG.addressLine2}</div>
-            </div>
-          </div>
-          <div>
-            <span className="text-gray-500 text-xs tracking-wider block mb-0.5">TIME</span>
-            <span className="text-white">{EVENT_TIME}</span>
-            <span className="text-gray-400 block mt-0.5 text-xs">Doors open {DOORS_OPEN}</span>
-          </div>
-          {sessionDateFormatted && (
+      {isLineup ? (
+        <motion.div
+          className="relative z-10 border border-white/20 rounded-sm py-3 px-4 sm:py-4 sm:px-5 mb-4 text-left"
+          style={{ fontFamily: "FragmentMono, monospace" }}
+          variants={itemVariants}
+        >
+          <p className="text-gray-500 text-xs tracking-[0.2em] mb-3">ORDER DETAILS</p>
+          <div className="space-y-2.5 text-sm text-gray-300">
             <div>
-              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">DATE</span>
-              <span className="text-white">{sessionDateFormatted}</span>
+              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">PRODUCT</span>
+              <span className="text-white">TARE Lineup 01 · 4 x 100g</span>
             </div>
-          )}
-        </div>
-      </motion.div>
+            <div>
+              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">STATUS</span>
+              <span className="text-white">Order received</span>
+            </div>
+          </div>
+        </motion.div>
+      ) : isBeans ? (
+        <motion.div
+          className="relative z-10 border border-white/20 rounded-sm py-3 px-4 sm:py-4 sm:px-5 mb-4 text-left"
+          style={{ fontFamily: "FragmentMono, monospace" }}
+          variants={itemVariants}
+        >
+          <p className="text-gray-500 text-xs tracking-[0.2em] mb-3">ORDER DETAILS</p>
+          <div className="space-y-2.5 text-sm text-gray-300">
+            <div>
+              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">PRODUCT</span>
+              <span className="text-white">TARE Release 01 · 120g bag</span>
+            </div>
+            <div>
+              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">STATUS</span>
+              <span className="text-white">Order received</span>
+            </div>
+            <div>
+              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">NEXT</span>
+              <span className="text-white">Fulfillment and shipping copy can be added once logistics are connected.</span>
+            </div>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          className="relative z-10 border border-white/20 rounded-sm py-3 px-4 sm:py-4 sm:px-5 mb-4 text-left"
+          style={{ fontFamily: "FragmentMono, monospace" }}
+          variants={itemVariants}
+        >
+          <p className="text-gray-500 text-xs tracking-[0.2em] mb-3">DETAILS</p>
+          <div className="space-y-2.5 text-sm text-gray-300">
+            <div>
+              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">ADDRESS</span>
+              <div className="text-white">
+                <div>{CURRENT_EVENT_CONFIG.addressLine1}</div>
+                <div>{CURRENT_EVENT_CONFIG.addressLine2}</div>
+              </div>
+            </div>
+            <div>
+              <span className="text-gray-500 text-xs tracking-wider block mb-0.5">TIME</span>
+              <span className="text-white">{EVENT_TIME}</span>
+              <span className="text-gray-400 block mt-0.5 text-xs">Doors open {DOORS_OPEN}</span>
+            </div>
+            {sessionDateFormatted && (
+              <div>
+                <span className="text-gray-500 text-xs tracking-wider block mb-0.5">DATE</span>
+                <span className="text-white">{sessionDateFormatted}</span>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
 
       <motion.p
         className="relative z-10 text-gray-300 text-xs sm:text-sm leading-snug mb-4 max-w-md mx-auto"
         style={{ fontFamily: "FragmentMono, monospace" }}
         variants={itemVariants}
       >
-        You&apos;ll get a confirmation text with the details and a short questionnaire so we can tailor the experience.
+        {isLineup
+          ? "Confirmation is complete. Shipping and fulfillment updates follow your selected delivery method."
+          : isBeans
+          ? "This page is ready for beans checkout now; fulfillment messaging can be refined once shipping or pickup is finalized."
+          : "You&apos;ll get a confirmation text with the details and a short questionnaire so we can tailor the experience."}
       </motion.p>
 
       <motion.div className="relative z-10" variants={itemVariants}>
         <Link
-          href="/"
+          href={isBeans || isLineup ? "/shop" : "/"}
           className="inline-block border-2 border-white px-8 py-3 text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300"
           style={{ fontFamily: "FragmentMono, monospace" }}
         >
-          RETURN HOME
+          {isBeans || isLineup ? "RETURN TO SHOP" : "RETURN HOME"}
         </Link>
       </motion.div>
       </div>
