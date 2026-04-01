@@ -66,7 +66,7 @@ export default function Header() {
       >
         {/* Mobile: minimal bar — hamburger + Instagram, fixed height so content doesn't overlap */}
         <div
-          className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center justify-between h-14 px-4 safe-area-inset"
+          className="fixed top-0 left-0 right-0 z-50 flex lg:hidden items-center justify-between h-14 px-4 safe-area-inset"
           style={{
             backgroundColor: scrolled || mobileMenuOpen ? "rgba(42, 39, 38, 0.98)" : "rgba(42, 39, 38, 0.92)",
             backdropFilter: "blur(12px)",
@@ -109,7 +109,7 @@ export default function Header() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="fixed inset-0 z-40 bg-black/50 md:hidden"
+                className="fixed inset-0 z-40 bg-black/50 lg:hidden"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-hidden
               />
@@ -118,7 +118,7 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="fixed top-14 left-0 right-0 z-50 md:hidden overflow-y-auto border-b border-white/10 py-4 px-4 max-h-[calc(100vh-3.5rem)]"
+                className="fixed top-14 left-0 right-0 z-50 lg:hidden overflow-y-auto border-b border-white/10 py-4 px-4 max-h-[calc(100vh-3.5rem)]"
                 style={{
                   backgroundColor: "rgba(42, 39, 38, 0.98)",
                   backdropFilter: "blur(12px)",
@@ -143,7 +143,7 @@ export default function Header() {
         </AnimatePresence>
 
         {/* Desktop Navigation - vertical on left, two groups */}
-        <nav className="hidden md:flex fixed left-6 top-8 z-50 flex-col">
+        <nav className="hidden lg:flex fixed left-6 top-8 z-50 flex-col">
           <div className="flex flex-col space-y-3">
             <Link
               href={studioUrl}
@@ -214,7 +214,7 @@ export default function Header() {
         </nav>
         
         {/* Instagram Link - Desktop */}
-        <div className="hidden md:flex fixed right-6 top-8 z-50">
+        <div className="hidden lg:flex fixed right-6 top-8 z-50">
           <a
             href="https://instagram.com/tarestudionyc"
             target="_blank"
