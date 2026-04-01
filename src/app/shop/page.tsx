@@ -232,7 +232,7 @@ function ShopContent() {
             }}
           />
           <section className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] items-start">
-            <div className="space-y-6 pt-2 lg:pt-8">
+            <div className="pt-2 lg:pt-8 order-1 lg:order-none lg:col-start-1">
               <motion.div
                 className="rounded-sm border px-5 py-6 sm:px-8 sm:py-7"
                 style={{
@@ -265,66 +265,9 @@ function ShopContent() {
                   FROM TARE STUDIO IN NYC
                 </p>
               </motion.div>
-
-              <motion.div
-                className="rounded-sm border p-5 sm:p-6"
-                style={{
-                  backgroundColor: "rgba(23, 21, 21, 0.74)",
-                  borderColor: SHOP_SURFACE.panelBorder,
-                  backdropFilter: "blur(14px)",
-                }}
-                variants={fadeIn}
-                initial="hidden"
-                animate={introComplete ? "show" : "hidden"}
-                transition={{ duration: 0.45, delay: 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  FIELD NOTES
-                </p>
-                <div className="space-y-1 text-gray-300 text-xs sm:text-sm leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  <p>50+ evaluated / 4 retained</p>
-                  <p>blind test / n=30+ / p95</p>
-                  <p>deployed 02.21.26</p>
-                  <p>lvmh collaboration</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="space-y-3"
-                variants={fadeIn}
-                initial="hidden"
-                animate={introComplete ? "show" : "hidden"}
-                transition={{ duration: 0.45, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <p className="text-gray-300 text-[11px] tracking-[0.26em] px-1" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  SET CONTENTS
-                </p>
-                <div className="group space-y-3">
-                  {LINEUP_SEQUENCE.map((coffee) => (
-                    <div
-                      key={coffee.id}
-                      className="rounded-sm border p-4 sm:p-5 transition-all duration-200 group-hover:opacity-60 hover:opacity-100 hover:border-white/30"
-                      style={{
-                        backgroundColor: SHOP_SURFACE.panel,
-                        borderColor: SHOP_SURFACE.panelBorder,
-                        backdropFilter: "blur(14px)",
-                      }}
-                    >
-                      <p className="text-gray-200 text-xs tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-                        {coffee.id}  {coffee.name}
-                      </p>
-                      <div className="space-y-1 text-gray-200 text-xs leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                        <p>coffee: {coffee.coffee}</p>
-                        <p>state: {coffee.state}</p>
-                        <p>spec: {coffee.spec}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 order-2 lg:order-none lg:col-start-2 lg:row-span-2">
               <motion.div
                 className="rounded-sm border p-5 sm:p-6 lg:sticky lg:top-24"
                 style={{
@@ -421,28 +364,118 @@ function ShopContent() {
                   )}
                 </div>
               </motion.div>
+            </div>
 
+            <div className="space-y-6 order-3 lg:order-none lg:col-start-1">
               <motion.div
                 className="rounded-sm border p-5 sm:p-6"
                 style={{
-                  backgroundColor: SHOP_SURFACE.panel,
+                  backgroundColor: "rgba(23, 21, 21, 0.74)",
                   borderColor: SHOP_SURFACE.panelBorder,
                   backdropFilter: "blur(14px)",
                 }}
                 variants={fadeIn}
                 initial="hidden"
                 animate={introComplete ? "show" : "hidden"}
-                transition={{ duration: 0.45, delay: 0.14, ease: [0.25, 0.46, 0.45, 0.94] }}
+                transition={{ duration: 0.45, delay: 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                <p
-                  className="text-gray-200 text-xs tracking-[0.28em] mb-4 text-left"
-                  style={{ fontFamily: "FragmentMono, monospace" }}
-                >
-                  BREW PROTOCOL
+                <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
+                  FIELD NOTES
+                </p>
+                <div className="space-y-1 text-gray-300 text-xs sm:text-sm leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
+                  <p>50+ evaluated / 4 retained</p>
+                  <p>blind test / n=30+ / p95</p>
+                  <p>deployed 02.21.26</p>
+                  <p>lvmh collaboration</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="space-y-3"
+                variants={fadeIn}
+                initial="hidden"
+                animate={introComplete ? "show" : "hidden"}
+                transition={{ duration: 0.45, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                <p className="text-gray-300 text-[11px] tracking-[0.26em] px-1" style={{ fontFamily: "FragmentMono, monospace" }}>
+                  SET CONTENTS
                 </p>
 
-                <div className="space-y-4" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  <div className="space-y-4 text-gray-200 text-xs sm:text-sm leading-relaxed">
+                {/* Mobile: horizontal sequence rail */}
+                <div className="md:hidden -mx-6 px-6 overflow-x-auto snap-x snap-mandatory">
+                  <div className="flex gap-3 pb-2">
+                    {LINEUP_SEQUENCE.map((coffee) => (
+                      <div
+                        key={coffee.id}
+                        className="snap-start shrink-0 w-[84vw] max-w-[420px] rounded-sm border p-4"
+                        style={{
+                          backgroundColor: SHOP_SURFACE.panel,
+                          borderColor: SHOP_SURFACE.panelBorder,
+                          backdropFilter: "blur(14px)",
+                        }}
+                      >
+                        <p className="text-gray-200 text-xs tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
+                          {coffee.id}  {coffee.name}
+                        </p>
+                        <div className="space-y-1 text-gray-200 text-xs leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
+                          <p>coffee: {coffee.coffee}</p>
+                          <p>state: {coffee.state}</p>
+                          <p>spec: {coffee.spec}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Desktop+: vertical stack */}
+                <div className="hidden md:block group space-y-3">
+                  {LINEUP_SEQUENCE.map((coffee) => (
+                    <div
+                      key={coffee.id}
+                      className="rounded-sm border p-4 sm:p-5 transition-all duration-200 group-hover:opacity-60 hover:opacity-100 hover:border-white/30"
+                      style={{
+                        backgroundColor: SHOP_SURFACE.panel,
+                        borderColor: SHOP_SURFACE.panelBorder,
+                        backdropFilter: "blur(14px)",
+                      }}
+                    >
+                      <p className="text-gray-200 text-xs tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
+                        {coffee.id}  {coffee.name}
+                      </p>
+                      <div className="space-y-1 text-gray-200 text-xs leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
+                        <p>coffee: {coffee.coffee}</p>
+                        <p>state: {coffee.state}</p>
+                        <p>spec: {coffee.spec}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+
+            <motion.div
+              className="rounded-sm border p-5 sm:p-6 order-4 lg:order-none lg:col-start-2"
+              style={{
+                backgroundColor: SHOP_SURFACE.panel,
+                borderColor: SHOP_SURFACE.panelBorder,
+                backdropFilter: "blur(14px)",
+              }}
+              variants={fadeIn}
+              initial="hidden"
+              animate={introComplete ? "show" : "hidden"}
+              transition={{ duration: 0.45, delay: 0.14, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <p className="text-gray-200 text-xs tracking-[0.28em] mb-4 text-left" style={{ fontFamily: "FragmentMono, monospace" }}>
+                BREW PROTOCOL
+              </p>
+
+              {/* Mobile: keep it short; expand for full detail */}
+              <div className="md:hidden space-y-3" style={{ fontFamily: "FragmentMono, monospace" }}>
+                <details className="border border-white/10 rounded-sm px-4 py-3">
+                  <summary className="text-gray-300 text-xs tracking-[0.18em] cursor-pointer select-none">
+                    EXPAND
+                  </summary>
+                  <div className="mt-3 space-y-4 text-gray-200 text-xs leading-relaxed">
                     <div>
                       <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">IMMERSION (PRIMARY)</p>
                       <div className="space-y-0.5">
@@ -453,7 +486,6 @@ function ShopContent() {
                         <p>break 4:00 / strain 8:00</p>
                       </div>
                     </div>
-
                     <div>
                       <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">PERCOLATION (SECONDARY)</p>
                       <div className="space-y-0.5">
@@ -461,7 +493,6 @@ function ShopContent() {
                         <p>4x bloom 1:00 / 4 pours / 1:15</p>
                       </div>
                     </div>
-
                     <div>
                       <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">HYBRID</p>
                       <div className="space-y-0.5">
@@ -470,32 +501,85 @@ function ShopContent() {
                         <p>+2 pours / 1:15</p>
                       </div>
                     </div>
+                    <div>
+                      <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">grind references</p>
+                      <div className="space-y-0.5 text-gray-300 text-xs leading-relaxed">
+                        <p>ek43 9–10.5</p>
+                        <p>zp6 5.0–5.4</p>
+                        <p>k ultra 7.5–8.3</p>
+                        <p>k6 80–100</p>
+                        <p>j manual 3.2–3.7</p>
+                        <p>comandante 19–24</p>
+                        <p>ode gen 2 6–7.2</p>
+                        <p>sculptor 078 6–7</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">MISUSE</p>
+                      <div className="space-y-1 text-gray-300 text-xs leading-relaxed">
+                        <p>out-of-order use reduces contrast</p>
+                        <p>oxygen / moisture exposure degrades aromatics and flavor separation</p>
+                      </div>
+                    </div>
                   </div>
+                </details>
+              </div>
 
+              {/* Desktop+: full detail */}
+              <div className="hidden md:block space-y-4" style={{ fontFamily: "FragmentMono, monospace" }}>
+                <div className="space-y-4 text-gray-200 text-xs sm:text-sm leading-relaxed">
                   <div>
-                    <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">grind references</p>
-                    <div className="space-y-0.5 text-gray-300 text-xs leading-relaxed">
-                      <p>ek43 9–10.5</p>
-                      <p>zp6 5.0–5.4</p>
-                      <p>k ultra 7.5–8.3</p>
-                      <p>k6 80–100</p>
-                      <p>j manual 3.2–3.7</p>
-                      <p>comandante 19–24</p>
-                      <p>ode gen 2 6–7.2</p>
-                      <p>sculptor 078 6–7</p>
+                    <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">IMMERSION (PRIMARY)</p>
+                    <div className="space-y-0.5">
+                      <p>teapot / cup / bowl</p>
+                      <p>95°C / 80–95 ppm</p>
+                      <p>Mg:Ca:K 4:1:2</p>
+                      <p>1:15</p>
+                      <p>break 4:00 / strain 8:00</p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">MISUSE</p>
-                    <div className="space-y-1 text-gray-300 text-xs leading-relaxed">
-                      <p>out-of-order use reduces contrast</p>
-                      <p>oxygen / moisture exposure degrades aromatics and flavor separation</p>
+                    <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">PERCOLATION (SECONDARY)</p>
+                    <div className="space-y-0.5">
+                      <p>v60 / origami / orea</p>
+                      <p>4x bloom 1:00 / 4 pours / 1:15</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">HYBRID</p>
+                    <div className="space-y-0.5">
+                      <p>pulsar / switch</p>
+                      <p>1:30 immersion (½ volume)</p>
+                      <p>+2 pours / 1:15</p>
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            </div>
+
+                <div>
+                  <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">grind references</p>
+                  <div className="space-y-0.5 text-gray-300 text-xs leading-relaxed">
+                    <p>ek43 9–10.5</p>
+                    <p>zp6 5.0–5.4</p>
+                    <p>k ultra 7.5–8.3</p>
+                    <p>k6 80–100</p>
+                    <p>j manual 3.2–3.7</p>
+                    <p>comandante 19–24</p>
+                    <p>ode gen 2 6–7.2</p>
+                    <p>sculptor 078 6–7</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">MISUSE</p>
+                  <div className="space-y-1 text-gray-300 text-xs leading-relaxed">
+                    <p>out-of-order use reduces contrast</p>
+                    <p>oxygen / moisture exposure degrades aromatics and flavor separation</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </section>
 
         </div>
