@@ -48,6 +48,7 @@ function getDisplayName(booking: Booking): string | null {
   // 1) Preferred name from guest form (if submitted)
   // 2) Stripe billing name stored in booking "Name" field
   // 3) Fallback: email local-part (before "@")
+  //
   const preferredName = booking.guestForm?.fields?.['Preferred Name']?.trim();
   if (preferredName) return preferredName;
 
