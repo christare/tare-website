@@ -217,12 +217,12 @@ function ShopContent() {
       )}
 
       <motion.div
-        className="relative z-10 px-6 py-24 sm:py-28"
+        className="relative z-10 min-w-0 px-6 py-24 sm:py-28"
         initial={reduceMotion ? false : { opacity: 0 }}
         animate={reduceMotion ? undefined : { opacity: introHidden ? 1 : 0 }}
         transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        <div className="relative max-w-5xl mx-auto">
+        <div className="relative mx-auto max-w-5xl min-w-0">
           <div
             aria-hidden
             className="absolute inset-x-2 top-10 bottom-0 -z-10 rounded-[28px] sm:inset-x-0"
@@ -231,8 +231,8 @@ function ShopContent() {
               backdropFilter: "blur(8px)",
             }}
           />
-          <section className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] items-start">
-            <div className="pt-2 lg:pt-8 order-1 lg:order-none lg:col-start-1">
+          <section className="grid min-w-0 gap-8 lg:grid-cols-[0.92fr_1.08fr] items-start">
+            <div className="min-w-0 pt-2 lg:pt-8 order-1 lg:order-none lg:col-start-1">
               <motion.div
                 className="rounded-sm border px-5 py-6 sm:px-8 sm:py-7"
                 style={{
@@ -267,7 +267,7 @@ function ShopContent() {
               </motion.div>
             </div>
 
-            <div className="space-y-4 order-2 lg:order-none lg:col-start-2 lg:row-span-2">
+            <div className="min-w-0 space-y-4 order-2 lg:order-none lg:col-start-2 lg:row-span-2">
               <motion.div
                 className="rounded-sm border p-5 sm:p-6 lg:sticky lg:top-24"
                 style={{
@@ -366,7 +366,7 @@ function ShopContent() {
               </motion.div>
             </div>
 
-            <div className="space-y-6 order-3 lg:order-none lg:col-start-1">
+            <div className="min-w-0 space-y-6 order-3 lg:order-none lg:col-start-1">
               <motion.div
                 className="rounded-sm border p-5 sm:p-6"
                 style={{
@@ -391,39 +391,49 @@ function ShopContent() {
               </motion.div>
 
               <motion.div
-                className="space-y-3"
+                className="min-w-0 space-y-3"
                 variants={fadeIn}
                 initial="hidden"
                 animate={introComplete ? "show" : "hidden"}
                 transition={{ duration: 0.45, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                <p className="text-gray-300 text-[11px] tracking-[0.26em] px-1" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  SET CONTENTS
-                </p>
+                <div className="flex items-baseline justify-between gap-3 px-1 md:block">
+                  <p className="text-gray-300 text-[11px] tracking-[0.26em]" style={{ fontFamily: "FragmentMono, monospace" }}>
+                    SET CONTENTS
+                  </p>
+                  <p
+                    className="md:hidden shrink-0 text-gray-500 text-[10px] tracking-[0.22em]"
+                    style={{ fontFamily: "FragmentMono, monospace" }}
+                  >
+                    SWIPE
+                  </p>
+                </div>
 
-                {/* Mobile: horizontal sequence rail */}
-                <div className="md:hidden -mx-6 px-6 overflow-x-auto snap-x snap-mandatory">
-                  <div className="flex gap-3 pb-2">
-                    {LINEUP_SEQUENCE.map((coffee) => (
-                      <div
-                        key={coffee.id}
-                        className="snap-start shrink-0 w-[84vw] max-w-[420px] rounded-sm border p-4"
-                        style={{
-                          backgroundColor: SHOP_SURFACE.panel,
-                          borderColor: SHOP_SURFACE.panelBorder,
-                          backdropFilter: "blur(14px)",
-                        }}
-                      >
-                        <p className="text-gray-200 text-xs tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-                          {coffee.id}  {coffee.name}
-                        </p>
-                        <div className="space-y-1 text-gray-200 text-xs leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                          <p>coffee: {coffee.coffee}</p>
-                          <p>state: {coffee.state}</p>
-                          <p>spec: {coffee.spec}</p>
+                {/* Mobile: horizontal rail — narrower cards so the next panel peeks (no overlays on content) */}
+                <div className="md:hidden min-w-0">
+                  <div className="min-w-0 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-proximity [-webkit-overflow-scrolling:touch] [scrollbar-width:thin]">
+                    <div className="flex w-max max-w-none gap-3 pb-2 pe-6">
+                      {LINEUP_SEQUENCE.map((coffee) => (
+                        <div
+                          key={coffee.id}
+                          className="snap-start shrink-0 w-[min(70vw,16.5rem)] max-w-[420px] rounded-sm border p-4"
+                          style={{
+                            backgroundColor: SHOP_SURFACE.panel,
+                            borderColor: SHOP_SURFACE.panelBorder,
+                            backdropFilter: "blur(14px)",
+                          }}
+                        >
+                          <p className="text-gray-200 text-xs tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
+                            {coffee.id}  {coffee.name}
+                          </p>
+                          <div className="space-y-1 text-gray-200 text-xs leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
+                            <p>coffee: {coffee.coffee}</p>
+                            <p>state: {coffee.state}</p>
+                            <p>spec: {coffee.spec}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
 
