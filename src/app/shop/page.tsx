@@ -45,6 +45,43 @@ const LINEUP_SEQUENCE = [
   },
 ] as const;
 
+/** Portrait assets from `public/images/TARE Products 1 Edits` (height > width). */
+const SHOP_PRODUCT_VERTICAL_IMAGES = [
+  "/images/TARE%20Products%201%20Edits/Sel1.jpg",
+  "/images/TARE%20Products%201%20Edits/SEl2.jpg",
+  "/images/TARE%20Products%201%20Edits/Sel4.jpg",
+  "/images/TARE%20Products%201%20Edits/Sel9.jpg",
+  "/images/TARE%20Products%201%20Edits/Sel11.jpg",
+] as const;
+
+/** Brighter, clearer treatment (contrast reads as “sharper” on photos). */
+const SHOP_CAROUSEL_IMAGE_FILTER = "contrast(1.14) saturate(1.1) brightness(1.08)";
+
+const SHOP_CAROUSEL_LEGACY_IMAGES = [
+  "/images/still5.png",
+  "/images/beans.jpg",
+  "/images/cups.jpg",
+  "/images/brew.jpg",
+] as const;
+
+function interleaveArrays<A, B>(first: readonly A[], second: readonly B[]): (A | B)[] {
+  const n = Math.max(first.length, second.length);
+  const out: (A | B)[] = [];
+  for (let i = 0; i < n; i++) {
+    if (i < first.length) out.push(first[i]);
+    if (i < second.length) out.push(second[i]);
+  }
+  return out;
+}
+
+const SHOP_LINEUP_INTERLEAVED = interleaveArrays(SHOP_CAROUSEL_LEGACY_IMAGES, SHOP_PRODUCT_VERTICAL_IMAGES);
+/** Former 6th slide (1-based) brought to front: Sel4.jpg */
+const SHOP_LINEUP_LEAD = "/images/TARE%20Products%201%20Edits/Sel4.jpg";
+const SHOP_LINEUP_IMAGES = [
+  SHOP_LINEUP_LEAD,
+  ...SHOP_LINEUP_INTERLEAVED.filter((src) => src !== SHOP_LINEUP_LEAD),
+];
+
 type ShopConfigResponse = {
   enabled: boolean;
   displayPrice?: string;
@@ -63,7 +100,7 @@ function ShopContent() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [introComplete, setIntroComplete] = useState(false);
 
-  const lineupImages = ["/images/still5.png", "/images/beans.jpg", "/images/cups.jpg", "/images/brew.jpg"];
+  const lineupImages = SHOP_LINEUP_IMAGES;
 
   useEffect(() => {
     const fromCanceled = new URLSearchParams(window.location.search).get("from");
@@ -128,11 +165,12 @@ function ShopContent() {
   };
 
   useEffect(() => {
+    if (reduceMotion) return;
     const interval = window.setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % lineupImages.length);
     }, 4200);
     return () => window.clearInterval(interval);
-  }, [lineupImages.length]);
+  }, [lineupImages.length, reduceMotion]);
 
   const [introHidden, setIntroHidden] = useState(false);
   useEffect(() => {
@@ -217,7 +255,7 @@ function ShopContent() {
       )}
 
       <motion.div
-        className="relative z-10 min-w-0 px-6 py-24 sm:py-28"
+        className="relative z-10 min-w-0 px-6 pt-3 pb-20 sm:pt-6 sm:pb-24 lg:pt-24 lg:pb-28"
         initial={reduceMotion ? false : { opacity: 0 }}
         animate={reduceMotion ? undefined : { opacity: introHidden ? 1 : 0 }}
         transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -231,8 +269,8 @@ function ShopContent() {
               backdropFilter: "blur(8px)",
             }}
           />
-          <section className="grid min-w-0 gap-8 lg:grid-cols-[0.92fr_1.08fr] items-start">
-            <div className="min-w-0 pt-2 lg:pt-8 order-1 lg:order-none lg:col-start-1">
+          <section className="grid min-w-0 gap-6 sm:gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-8 items-start">
+            <div className="min-w-0 pt-0 sm:pt-1 lg:pt-8 order-1 lg:order-none lg:col-start-1">
               <motion.div
                 className="rounded-sm border px-5 py-6 sm:px-8 sm:py-7"
                 style={{
@@ -280,7 +318,7 @@ function ShopContent() {
                 animate={introComplete ? "show" : "hidden"}
                 transition={{ duration: 0.5, delay: 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                <div className="relative aspect-[4/5] overflow-hidden rounded-sm border mb-3" style={{ borderColor: SHOP_SURFACE.panelBorder }}>
+                <div className="relative mb-3 aspect-[4/5] overflow-hidden rounded-sm border" style={{ borderColor: SHOP_SURFACE.panelBorder }}>
                   {lineupImages.map((src, idx) => (
                     <Image
                       key={src}
@@ -288,11 +326,12 @@ function ShopContent() {
                       alt="TARE Lineup 01"
                       fill
                       sizes="(max-width: 1024px) 100vw, 40vw"
+                      priority={idx === 0}
                       className={`object-cover transition-opacity duration-700 ${idx === activeSlide ? "opacity-100" : "opacity-0"}`}
-                      style={{ filter: "contrast(1.08) brightness(0.94) saturate(0.92)" }}
+                      style={{ filter: SHOP_CAROUSEL_IMAGE_FILTER }}
                     />
                   ))}
-                  <div className="absolute inset-0" style={{ backgroundColor: "rgba(0, 0, 0, 0.16)" }} />
+                  <div className="absolute inset-0" style={{ backgroundColor: "rgba(0, 0, 0, 0.06)" }} />
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       {lineupImages.map((_, idx) => (
