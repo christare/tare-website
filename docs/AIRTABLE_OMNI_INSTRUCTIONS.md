@@ -1,4 +1,4 @@
-# Instructions for Airtable Omni — Copy and paste this to Omni
+# Instructions for Airtable Omni  ·  Copy and paste this to Omni
 
 Use this in Airtable’s Omni (AI) so it creates the right bases/tables and fields. **Field names and types must match exactly** or the TARE website will break.
 
@@ -9,53 +9,53 @@ Use this in Airtable’s Omni (AI) so it creates the right bases/tables and fiel
 **Say to Omni:**
 
 ```
-I need one Airtable base for a coffee studio website. Create it with exactly these tables and fields. Use these exact field names and types — the app expects them precisely.
+I need one Airtable base for a coffee studio website. Create it with exactly these tables and fields. Use these exact field names and types  ·  the app expects them precisely.
 
 ---
 
-TABLE 1 — name: "Studio Bookings" (or "Bookings")
-- Name — Single line text
-- Phone — Phone number (or Single line text)
-- Email — Email
-- Amount Paid — Single line text (we store values like "$50.00")
-- Coupon Used — Single line text
-- Event — Single line text (e.g. "TARE STUDIO")
-- Event Date — Single line text (format YYYY-MM-DD, e.g. 2026-02-01). Required for seat counting.
+TABLE 1  ·  name: "Studio Bookings" (or "Bookings")
+- Name  ·  Single line text
+- Phone  ·  Phone number (or Single line text)
+- Email  ·  Email
+- Amount Paid  ·  Single line text (we store values like "$50.00")
+- Coupon Used  ·  Single line text
+- Event  ·  Single line text (e.g. "TARE STUDIO")
+- Event Date  ·  Single line text (format YYYY-MM-DD, e.g. 2026-02-01). Required for seat counting.
 
 ---
 
-TABLE 2 — name: "Queue"
+TABLE 2  ·  name: "Queue"
 In-person tasting queue. Create these fields with exact names:
-- Guest Name — Single line text
-- Phone Number — Phone number (or Single line text)
-- Party Size — Number (integer)
-- Notes — Long text
-- Special Requests — Long text
-- Text/Call Preference — Single select: options "text", "call" (default "text")
-- Status — Single select: options "waiting", "notified", "in_service", "served", "skipped", "no_show", "removed", "error"
-- Check-in Timestamp — Date (include time) or Single line text for ISO datetime
-- Served Timestamp — Date (include time) or Single line text
-- Last Notified At — Date (include time) or Single line text
-- Claimed At — Single line text
-- Claimed By — Single line text
-- Attempt Counter — Number (integer)
-- Call/Text Log — Long text
-- Priority Flag (VIP) — Checkbox
-- Re-added to Queue — Checkbox
-- Skip Reason — Single line text
-- No-show Reason — Single line text
-- Sort Order — Number (integer)
+- Guest Name  ·  Single line text
+- Phone Number  ·  Phone number (or Single line text)
+- Party Size  ·  Number (integer)
+- Notes  ·  Long text
+- Special Requests  ·  Long text
+- Text/Call Preference  ·  Single select: options "text", "call" (default "text")
+- Status  ·  Single select: options "waiting", "notified", "in_service", "served", "skipped", "no_show", "removed", "error"
+- Check-in Timestamp  ·  Date (include time) or Single line text for ISO datetime
+- Served Timestamp  ·  Date (include time) or Single line text
+- Last Notified At  ·  Date (include time) or Single line text
+- Claimed At  ·  Single line text
+- Claimed By  ·  Single line text
+- Attempt Counter  ·  Number (integer)
+- Call/Text Log  ·  Long text
+- Priority Flag (VIP)  ·  Checkbox
+- Re-added to Queue  ·  Checkbox
+- Skip Reason  ·  Single line text
+- No-show Reason  ·  Single line text
+- Sort Order  ·  Number (integer)
 
 ---
 
-TABLE 3 — name: "Event RSVPs"
+TABLE 3  ·  name: "Event RSVPs"
 Blind Test RSVPs. Same base as Queue. Exact field names:
-- Event Id — Single line text (e.g. 2026-03-13)
-- Guest Name — Single line text
-- Phone Number — Phone number (or Single line text)
-- RSVP At — Date (include time) or Single line text (ISO datetime)
-- Message Log — Long text (append-only log of SMS sent)
-- Show on list — Checkbox (optional). Uncheck to hide this guest from the public "Who's Coming" list (opt-out). If the column is missing, all guests are shown.
+- Event Id  ·  Single line text (e.g. 2026-03-13)
+- Guest Name  ·  Single line text
+- Phone Number  ·  Phone number (or Single line text)
+- RSVP At  ·  Date (include time) or Single line text (ISO datetime)
+- Message Log  ·  Long text (append-only log of SMS sent)
+- Show on list  ·  Checkbox (optional). Uncheck to hide this guest from the public "Who's Coming" list (opt-out). If the column is missing, all guests are shown.
 
 ---
 
@@ -80,27 +80,27 @@ After Omni creates the base:
 
 If you prefer **separate bases** (e.g. one for Studio, one for Queue + Event RSVPs), tell Omni:
 
-**Base 1 — Studio**
+**Base 1  ·  Studio**
 ```
 Create one table in this base named "Studio Bookings" (or "Bookings") with exactly these fields:
-- Name — Single line text
-- Phone — Phone number or Single line text
-- Email — Email
-- Amount Paid — Single line text
-- Coupon Used — Single line text
-- Event — Single line text
-- Event Date — Single line text (YYYY-MM-DD). Required.
+- Name  ·  Single line text
+- Phone  ·  Phone number or Single line text
+- Email  ·  Email
+- Amount Paid  ·  Single line text
+- Coupon Used  ·  Single line text
+- Event  ·  Single line text
+- Event Date  ·  Single line text (YYYY-MM-DD). Required.
 Use these exact field names.
 ```
 
-**Base 2 — Queue & Event RSVPs**
+**Base 2  ·  Queue & Event RSVPs**
 ```
 Create two tables in this base.
 
-TABLE 1 — name: "Queue"
+TABLE 1  ·  name: "Queue"
 Fields (exact names): Guest Name, Phone Number, Party Size, Notes, Special Requests, Text/Call Preference (single select: text, call), Status (single select: waiting, notified, in_service, served, skipped, no_show, removed, error), Check-in Timestamp, Served Timestamp, Last Notified At, Claimed At, Claimed By, Attempt Counter (number), Call/Text Log (long text), Priority Flag (VIP) (checkbox), Re-added to Queue (checkbox), Skip Reason, No-show Reason, Sort Order (number).
 
-TABLE 2 — name: "Event RSVPs"
+TABLE 2  ·  name: "Event RSVPs"
 Fields (exact names): Event Id (single line text), Guest Name, Phone Number, RSVP At (date/time or text), Message Log (long text). Optional: Show on list (checkbox; uncheck to hide guest from public "Who's Coming").
 ```
 

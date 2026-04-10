@@ -1,4 +1,4 @@
-# TARE Website — Full Setup Guide
+# TARE Website  ·  Full Setup Guide
 
 This guide covers everything needed to run the site: Airtable, environment variables, Twilio, Stripe, and team login.
 
@@ -11,7 +11,7 @@ Create a `.env.local` in the project root (and add the same vars in Vercel/hosti
 ### Airtable (shared PAT)
 
 ```env
-# Personal Access Token — create at https://airtable.com/create/tokens
+# Personal Access Token  ·  create at https://airtable.com/create/tokens
 # Use scope: data.records:read, data.records:write, schema.bases:read
 AIRTABLE_PAT=patxxxxxxxxxxxx
 NEXT_PUBLIC_AIRTABLE_PAT=patxxxxxxxxxxxx
@@ -20,23 +20,23 @@ NEXT_PUBLIC_AIRTABLE_PAT=patxxxxxxxxxxxx
 ### Airtable bases and tables
 
 ```env
-# STUDIO — paid session bookings (homepage, Stripe webhooks)
+# STUDIO  ·  paid session bookings (homepage, Stripe webhooks)
 NEXT_PUBLIC_AIRTABLE_STUDIO_BASE_ID=appxxxxxxxxxxxx
 NEXT_PUBLIC_AIRTABLE_STUDIO_TABLE=tblxxxxxxxxxxxx
 
-# WAITLIST — email signup
+# WAITLIST  ·  email signup
 NEXT_PUBLIC_AIRTABLE_WAITLIST_BASE_ID=appxxxxxxxxxxxx
 NEXT_PUBLIC_AIRTABLE_WAITLIST_TABLE=tblxxxxxxxxxxxx
 
-# FEEDBACK — post-experience form
+# FEEDBACK  ·  post-experience form
 AIRTABLE_FEEDBACK_BASE_ID=appxxxxxxxxxxxx
 AIRTABLE_FEEDBACK_TABLE_ID=tblxxxxxxxxxxxx
 
-# QUEUE — in-person tasting queue (join, notify, list)
+# QUEUE  ·  in-person tasting queue (join, notify, list)
 AIRTABLE_QUEUE_BASE_ID=appxxxxxxxxxxxx
 AIRTABLE_QUEUE_TABLE=YourQueueTableNameOrId
 
-# EVENT RSVPs — Blind Test RSVPs (own base or same as Queue)
+# EVENT RSVPs  ·  Blind Test RSVPs (own base or same as Queue)
 AIRTABLE_EVENTS_RSVP_BASE_ID=appxxxxxxxxxxxx
 AIRTABLE_EVENTS_RSVP_TABLE=RSVPs
 # If AIRTABLE_EVENTS_RSVP_BASE_ID is unset, the app uses AIRTABLE_QUEUE_BASE_ID.
@@ -171,7 +171,7 @@ Used by: `/queue` (join), `/team/queue` (list, update, notify, reorder).
 
 ---
 
-### Event RSVPs (Blind Test) — same base as Queue
+### Event RSVPs (Blind Test)  ·  same base as Queue
 
 Create a **second table** in the **same base** as the Queue table.
 
@@ -212,7 +212,7 @@ SMS is used for:
 
 1. Create a Stripe account and get **Secret key** and **Publishable key**.
 2. Create a **Product** (e.g. “TARE Studio Session”) and a **Price** (one-time). Copy the **Price ID** (e.g. `price_xxxx`).
-3. In the code, set the studio **Price ID** where checkout is created (e.g. `src/app/page.tsx` or `src/app/api/checkout/route.ts` — search for `price_` or `STUDIO_PRICE_ID`).
+3. In the code, set the studio **Price ID** where checkout is created (e.g. `src/app/page.tsx` or `src/app/api/checkout/route.ts`  ·  search for `price_` or `STUDIO_PRICE_ID`).
 4. **Webhook** (production):
    - Stripe Dashboard → Developers → Webhooks → Add endpoint.
    - URL: `https://yourdomain.com/api/webhooks/stripe`

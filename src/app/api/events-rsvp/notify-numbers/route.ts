@@ -10,11 +10,11 @@ function formatPhoneDisplay(raw: string): string {
   if (digits.length === 11 && digits.startsWith("1")) {
     return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
   }
-  return raw || "—";
+  return raw || "·";
 }
 
 /**
- * GET — Team only. Returns the list of numbers that receive RSVP notifications.
+ * GET · Team only. Returns the list of numbers that receive RSVP notifications.
  * Set RSVP_NOTIFY_PHONE in env: single number or comma-separated (e.g. "4157079319,5551234567").
  */
 export async function GET(request: Request) {

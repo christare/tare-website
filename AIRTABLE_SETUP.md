@@ -26,7 +26,7 @@ You have **THREE separate Airtable bases** for different purposes:
 - **Fields**: Phone, Name, Stood Out, Different, Improve, Recommend Score, Testimonial
 - **Used by**: Feedback page (`/feedback`)
 
-### 4. **Event RSVPs (Blind Test)** — same base as Queue
+### 4. **Event RSVPs (Blind Test)**  ·  same base as Queue
 - **Base**: Use the same base as the in-person queue (`AIRTABLE_QUEUE_BASE_ID`)
 - **Table**: Create a new table; set `AIRTABLE_EVENTS_RSVP_TABLE` to its name or ID
 - **Fields** (exact names): **Event Id** (text), **Guest Name** (text), **Phone Number** (phone/text), **RSVP At** (datetime or text), **Message Log** (long text)

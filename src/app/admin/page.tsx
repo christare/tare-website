@@ -664,7 +664,7 @@ export default function AdminPage() {
               RESERVED
             </p>
             <p className="text-4xl font-light text-[#D4A574]" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-              {loading ? '—' : bookedSeats}
+              {loading ? '·' : bookedSeats}
             </p>
           </motion.div>
 
@@ -678,7 +678,7 @@ export default function AdminPage() {
               AVAILABLE
             </p>
             <p className="text-4xl font-light text-[#7FB069]" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-              {realAvailableSeats !== null ? realAvailableSeats : '—'}
+              {realAvailableSeats !== null ? realAvailableSeats : '·'}
             </p>
           </motion.div>
         </div>
@@ -792,16 +792,16 @@ export default function AdminPage() {
                       className="border-b border-[#3A3736] hover:bg-[#33302E] transition-colors"
                     >
                       <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {b.fields['Event Date'] || '—'}
+                        {b.fields['Event Date'] || '·'}
                       </td>
                       <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {b.fields['Name'] || '—'}
+                        {b.fields['Name'] || '·'}
                       </td>
                       <td className="p-4 text-sm text-[#A39B8B] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {b.fields['Phone'] || '—'}
+                        {b.fields['Phone'] || '·'}
                       </td>
                       <td className="p-4 text-sm text-[#A39B8B] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {b.fields['Email'] || '—'}
+                        {b.fields['Email'] || '·'}
                       </td>
                       <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
                         {getBookingStatus(b) === 'Cancelled' ? <span className="text-[#8B7F6F]">Cancelled</span> : <span className="text-[#7FB069]">Active</span>}
@@ -861,7 +861,7 @@ export default function AdminPage() {
                       className="border-b border-[#3A3736] hover:bg-[#33302E] transition-colors"
                     >
                       <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {getDisplayName(booking) || '—'}
+                        {getDisplayName(booking) || '·'}
                       </td>
                       <td className="p-4 text-sm text-[#A39B8B] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
                         {booking.fields['Phone'] ? (
@@ -870,7 +870,7 @@ export default function AdminPage() {
                             <CopyButton text={booking.fields['Phone']} title="Copy phone" />
                           </div>
                         ) : (
-                          '—'
+                          '·'
                         )}
                       </td>
                       <td
@@ -884,20 +884,20 @@ export default function AdminPage() {
                             <CopyButton text={booking.fields['Email']} title="Copy email" />
                           </div>
                         ) : (
-                          '—'
+                          '·'
                         )}
                       </td>
                       <td className="p-4 text-sm text-[#D4A574] whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {booking.fields['Amount Paid'] || '—'}
+                        {booking.fields['Amount Paid'] || '·'}
                       </td>
                       <td className={`p-4 text-xs text-[#8B7F6F] whitespace-nowrap ${showExtraColumns ? '' : 'hidden md:table-cell'}`} style={{ fontFamily: 'FragmentMono, monospace' }} title={booking.fields['Coupon Used']}>
-                        {booking.fields['Coupon Used'] ? '✓' : '—'}
+                        {booking.fields['Coupon Used'] ? '✓' : '·'}
                       </td>
                       <td className={`p-4 text-xs text-[#A39B8B] tracking-wider whitespace-nowrap ${showExtraColumns ? '' : 'hidden md:table-cell'}`} style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {booking.fields['Event'] || '—'}
+                        {booking.fields['Event'] || '·'}
                       </td>
                       <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {booking.fields['Event Date'] || '—'}
+                        {booking.fields['Event Date'] || '·'}
                       </td>
                       <td className="p-4 text-sm whitespace-nowrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
                         {getBookingStatus(booking) === 'Cancelled' ? <span className="text-[#8B7F6F]">Cancelled</span> : <span className="text-[#7FB069]">Active</span>}
@@ -1025,7 +1025,7 @@ export default function AdminPage() {
                       className="border-b border-[#3A3736] hover:bg-[#33302E] transition-colors"
                     >
                       <td className="p-4 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                        {form.fields['Preferred Name'] || '—'}
+                        {form.fields['Preferred Name'] || '·'}
                       </td>
                       <td className="p-4 text-sm text-[#A39B8B]" 
                           style={{ fontFamily: 'FragmentMono, monospace' }}>
@@ -1035,7 +1035,7 @@ export default function AdminPage() {
                             <CopyButton text={form.fields['Phone Number']} title="Copy phone" />
                           </div>
                         ) : (
-                          '—'
+                          '·'
                         )}
                       </td>
                       <td className="p-4 text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
@@ -1113,7 +1113,7 @@ export default function AdminPage() {
                       <CopyButton text={selectedGuestForm.fields['Phone Number']} title="Copy phone" />
                     </div>
                   ) : (
-                    <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>—</p>
+                    <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>·</p>
                   )}
                 </div>
 
@@ -1128,7 +1128,7 @@ export default function AdminPage() {
                     PREFERRED NAME
                   </p>
                   <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['Preferred Name'] || '—'}
+                    {selectedGuestForm.fields['Preferred Name'] || '·'}
                   </p>
                 </div>
                 
@@ -1137,7 +1137,7 @@ export default function AdminPage() {
                     ATTENDING WITH
                   </p>
                   <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['Attending With'] || '—'}
+                    {selectedGuestForm.fields['Attending With'] || '·'}
                   </p>
                 </div>
 
@@ -1146,7 +1146,7 @@ export default function AdminPage() {
                     PRONOUNS
                   </p>
                   <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['Pronouns'] || '—'}
+                    {selectedGuestForm.fields['Pronouns'] || '·'}
                   </p>
                 </div>
 
@@ -1161,7 +1161,7 @@ export default function AdminPage() {
                     RELATIONSHIP WITH COFFEE
                   </p>
                   <p className="text-sm whitespace-pre-wrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['Coffee Relationship'] || '—'}
+                    {selectedGuestForm.fields['Coffee Relationship'] || '·'}
                   </p>
                 </div>
 
@@ -1176,7 +1176,7 @@ export default function AdminPage() {
                     WELLNESS EXPERIENCE
                   </p>
                   <p className="text-sm whitespace-pre-wrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['Wellness Experience'] || '—'}
+                    {selectedGuestForm.fields['Wellness Experience'] || '·'}
                   </p>
                 </div>
 
@@ -1191,7 +1191,7 @@ export default function AdminPage() {
                     WHAT THEY'RE HOPING TO GET
                   </p>
                   <p className="text-sm whitespace-pre-wrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['Intentions'] || '—'}
+                    {selectedGuestForm.fields['Intentions'] || '·'}
                   </p>
                 </div>
 
@@ -1206,7 +1206,7 @@ export default function AdminPage() {
                     DIETARY RESTRICTIONS
                   </p>
                   <p className="text-sm whitespace-pre-wrap" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['Dietary Restrictions'] || '—'}
+                    {selectedGuestForm.fields['Dietary Restrictions'] || '·'}
                   </p>
                 </div>
 
@@ -1215,7 +1215,7 @@ export default function AdminPage() {
                     SCENT SENSITIVITY
                   </p>
                   <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['Scent Sensitivity'] || '—'}
+                    {selectedGuestForm.fields['Scent Sensitivity'] || '·'}
                   </p>
                 </div>
 
@@ -1227,7 +1227,7 @@ export default function AdminPage() {
                     HOW THEY HEARD ABOUT TARE
                   </p>
                   <p className="text-sm" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                    {selectedGuestForm.fields['How Heard'] || '—'}
+                    {selectedGuestForm.fields['How Heard'] || '·'}
                   </p>
                 </div>
               </div>

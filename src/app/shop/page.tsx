@@ -14,6 +14,12 @@ const SHOP_SURFACE = {
   imageOverlay: "rgba(0, 0, 0, 0.44)",
 } as const;
 
+/** Hero + intro: why this edition exists (site-first). */
+const SHOP_HERO_VALUE_LINES = [
+  "FOUR RETAINED FROM THIS SEASON'S EVENTS & BLIND RUNS",
+  "SEALED EDITION · NOT A STANDING SKU",
+] as const;
+
 const LINEUP_SEQUENCE = [
   {
     id: "01",
@@ -21,6 +27,11 @@ const LINEUP_SEQUENCE = [
     coffee: "agaro",
     state: "clean / stable",
     spec: "ethiopia / washed",
+    blindPulls: [
+      "if i hated coffee but liked tea this is valid",
+      "it smelled like normal coffee but now it's… soft",
+      "it's fruity but not fruit like the punchy one",
+    ],
   },
   {
     id: "02",
@@ -28,6 +39,11 @@ const LINEUP_SEQUENCE = [
     coffee: "sidra",
     state: "dense / saturated",
     spec: "colombia / thermal shock washed",
+    blindPulls: [
+      "those chocolates with the berry jam",
+      "yeah cherry yeah chocolate i see that",
+      "ok this is the first time i get the notes",
+    ],
   },
   {
     id: "03",
@@ -35,6 +51,11 @@ const LINEUP_SEQUENCE = [
     coffee: "nogales",
     state: "unstable / drifting",
     spec: "colombia / mosto anaerobic",
+    blindPulls: [
+      "it's sour but not like lemon more like vinegar",
+      "almost like soy sauce… first sip was like huh but i kept going",
+      "yeah funky for sure not my favorite but it made the next one crazy",
+    ],
   },
   {
     id: "04",
@@ -42,8 +63,53 @@ const LINEUP_SEQUENCE = [
     coffee: "nitro",
     state: "cool / controlled",
     spec: "colombia / nitrogen washed",
+    blindPulls: [
+      "shit i saw melon so i know… yeah, melon",
+      "at first i thought cucumber maybe tomato then you said melon… yeah",
+      "this is a good closer it's sweet you thought this through",
+    ],
   },
 ] as const;
+
+function LineupCoffeeBody({ coffee }: { coffee: (typeof LINEUP_SEQUENCE)[number] }) {
+  return (
+    <>
+      <p className="text-gray-200 text-xs tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
+        {coffee.id} {coffee.name}
+      </p>
+      <div className="space-y-1 text-gray-200 text-xs leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
+        <p>coffee: {coffee.coffee}</p>
+        <p>state: {coffee.state}</p>
+        <p>spec: {coffee.spec}</p>
+      </div>
+      <div className="mt-3 border-t border-white/[0.08] pt-3">
+        <p className="text-gray-500 text-[10px] tracking-[0.18em] mb-0.5" style={{ fontFamily: "FragmentMono, monospace" }}>
+          BLIND PULL · VERBATIM
+        </p>
+        <p className="text-gray-600 text-[9px] tracking-[0.12em] mb-2.5 normal-case" style={{ fontFamily: "FragmentMono, monospace" }}>
+          same session · uncorrected · n mixed
+        </p>
+        <ul className="space-y-2.5 list-none">
+          {coffee.blindPulls.map((line) => (
+            <li
+              key={line}
+              className="text-gray-200/92 text-[11px] sm:text-xs leading-[1.55] border-l-2 border-white/20 pl-3 -ml-px"
+              style={{ fontFamily: "FragmentMono, monospace" }}
+            >
+              <span className="text-gray-500 select-none" aria-hidden>
+                “
+              </span>
+              {line}
+              <span className="text-gray-500 select-none" aria-hidden>
+                ”
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
+}
 
 /** Portrait assets from `public/images/TARE Products 1 Edits` (height > width). */
 const SHOP_PRODUCT_VERTICAL_IMAGES = [
@@ -250,6 +316,17 @@ function ShopContent() {
             >
               &quot;NOISE&quot;
             </motion.p>
+            <motion.div
+              className="mt-6 max-w-md mx-auto space-y-2 text-gray-300 text-[11px] sm:text-xs leading-relaxed tracking-[0.14em] px-2"
+              style={{ fontFamily: "FragmentMono, monospace" }}
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={reduceMotion ? undefined : { opacity: 1 }}
+              transition={{ duration: 0.18, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              {SHOP_HERO_VALUE_LINES.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </motion.div>
           </div>
         </motion.div>
       )}
@@ -270,7 +347,9 @@ function ShopContent() {
             }}
           />
           <section className="grid min-w-0 gap-6 sm:gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-8 items-start">
-            <div className="min-w-0 pt-0 sm:pt-1 lg:pt-8 order-1 lg:order-none lg:col-start-1">
+            {/* Mobile: contents = children keep order-1 / order-3 in flow. Desktop: one column cell spanning rows 1–2 so hero isn’t stretched under a tall purchase row. */}
+            <div className="contents lg:flex lg:flex-col lg:gap-8 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:min-w-0">
+            <div className="min-w-0 pt-0 sm:pt-1 lg:pt-8 order-1 lg:order-none">
               <motion.div
                 className="rounded-sm border px-5 py-6 sm:px-8 sm:py-7"
                 style={{
@@ -296,18 +375,113 @@ function ShopContent() {
                 >
                   &quot;NOISE&quot;
                 </p>
-                <p className="text-gray-200 text-sm sm:text-[15px] mb-1 max-w-md leading-relaxed tracking-[0.12em]" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  LATEST FOUR-COFFEE SEQUENCE
-                </p>
-                <p className="text-gray-300 text-sm sm:text-[15px] mb-3 max-w-md leading-relaxed tracking-[0.12em]" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  FROM TARE STUDIO IN NYC
+                <div className="max-w-md space-y-2 mb-3">
+                  {SHOP_HERO_VALUE_LINES.map((line) => (
+                    <p
+                      key={line}
+                      className="text-gray-200 text-sm sm:text-[15px] leading-relaxed tracking-[0.12em]"
+                      style={{ fontFamily: "FragmentMono, monospace" }}
+                    >
+                      {line}
+                    </p>
+                  ))}
+                </div>
+                <p className="text-gray-400 text-xs sm:text-[13px] max-w-md leading-relaxed tracking-[0.1em]" style={{ fontFamily: "FragmentMono, monospace" }}>
+                  TARE STUDIO · NYC
                 </p>
               </motion.div>
             </div>
 
-            <div className="min-w-0 space-y-4 order-2 lg:order-none lg:col-start-2 lg:row-span-2">
+            <div className="min-w-0 space-y-6 order-3 lg:order-none">
               <motion.div
-                className="rounded-sm border p-5 sm:p-6 lg:sticky lg:top-24"
+                className="rounded-sm border p-5 sm:p-6"
+                style={{
+                  backgroundColor: "rgba(23, 21, 21, 0.74)",
+                  borderColor: SHOP_SURFACE.panelBorder,
+                  backdropFilter: "blur(14px)",
+                }}
+                variants={fadeIn}
+                initial="hidden"
+                animate={introComplete ? "show" : "hidden"}
+                transition={{ duration: 0.45, delay: 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
+                  FIELD NOTES
+                </p>
+                <div className="space-y-1 text-gray-300 text-xs sm:text-sm leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
+                  <p>50+ evaluated / 4 retained</p>
+                  <p>blind test / n=30+ / p95</p>
+                  <p>deployed 02.21.26</p>
+                  <p>lvmh collaboration</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="min-w-0 space-y-3"
+                variants={fadeIn}
+                initial="hidden"
+                animate={introComplete ? "show" : "hidden"}
+                transition={{ duration: 0.45, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                <p className="text-gray-500 text-[10px] tracking-[0.2em] px-1 mb-1" style={{ fontFamily: "FragmentMono, monospace" }}>
+                  ORIGIN · PROCESS · BLIND PULL
+                </p>
+                <div className="flex items-baseline justify-between gap-3 px-1 md:block">
+                  <p className="text-gray-300 text-[11px] tracking-[0.26em]" style={{ fontFamily: "FragmentMono, monospace" }}>
+                    SET CONTENTS
+                  </p>
+                  <p
+                    className="md:hidden shrink-0 text-gray-500 text-[10px] tracking-[0.22em]"
+                    style={{ fontFamily: "FragmentMono, monospace" }}
+                  >
+                    SWIPE
+                  </p>
+                </div>
+
+                {/* Mobile: horizontal rail · narrower cards so the next panel peeks (no overlays on content) */}
+                <div className="md:hidden min-w-0">
+                  <div className="min-w-0 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-proximity [-webkit-overflow-scrolling:touch] [scrollbar-width:thin]">
+                    <div className="flex w-max max-w-none gap-3 pb-2 pe-6">
+                      {LINEUP_SEQUENCE.map((coffee) => (
+                        <div
+                          key={coffee.id}
+                          className="snap-start shrink-0 w-[min(70vw,16.5rem)] max-w-[420px] rounded-sm border p-4"
+                          style={{
+                            backgroundColor: SHOP_SURFACE.panel,
+                            borderColor: SHOP_SURFACE.panelBorder,
+                            backdropFilter: "blur(14px)",
+                          }}
+                        >
+                          <LineupCoffeeBody coffee={coffee} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Desktop+: vertical stack */}
+                <div className="hidden md:block group space-y-3">
+                  {LINEUP_SEQUENCE.map((coffee) => (
+                    <div
+                      key={coffee.id}
+                      className="rounded-sm border p-4 sm:p-5 transition-all duration-200 group-hover:opacity-60 hover:opacity-100 hover:border-white/30"
+                      style={{
+                        backgroundColor: SHOP_SURFACE.panel,
+                        borderColor: SHOP_SURFACE.panelBorder,
+                        backdropFilter: "blur(14px)",
+                      }}
+                    >
+                      <LineupCoffeeBody coffee={coffee} />
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+            </div>
+
+            <div className="contents lg:flex lg:flex-col lg:gap-5 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:min-w-0">
+              <motion.div
+                className="rounded-sm border p-5 sm:p-6 lg:sticky lg:top-24 order-2 lg:order-none w-full min-w-0"
                 style={{
                   backgroundColor: SHOP_SURFACE.panelStrong,
                   borderColor: SHOP_SURFACE.panelBorder,
@@ -323,7 +497,7 @@ function ShopContent() {
                     <Image
                       key={src}
                       src={src}
-                      alt="TARE Lineup 01"
+                      alt="TARE SET 01 · product imagery"
                       fill
                       sizes="(max-width: 1024px) 100vw, 40vw"
                       priority={idx === 0}
@@ -369,10 +543,13 @@ function ShopContent() {
 
                 <div className="flex flex-col items-end text-right">
                   <p className="text-gray-200 text-xs sm:text-sm" style={{ fontFamily: "FragmentMono, monospace" }}>
-                    4 × 100g (whole bean)
+                    400g total · whole bean
                   </p>
                   <p className="mt-1 text-gray-400 text-[11px] leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                    vacuum sealed or resealable
+                    each coffee: 50g resealable + 50g vacuum sealed
+                  </p>
+                  <p className="mt-2 text-gray-500 text-[11px] tracking-[0.18em]" style={{ fontFamily: "FragmentMono, monospace" }}>
+                    SET 01 · &quot;NOISE&quot; · 2026
                   </p>
                   <p className="mt-3 text-white text-3xl sm:text-[2.1rem]" style={{ fontFamily: "NonBureauExtended, sans-serif", fontWeight: 300 }}>
                     {displayPrice}
@@ -403,107 +580,9 @@ function ShopContent() {
                   )}
                 </div>
               </motion.div>
-            </div>
-
-            <div className="min-w-0 space-y-6 order-3 lg:order-none lg:col-start-1">
-              <motion.div
-                className="rounded-sm border p-5 sm:p-6"
-                style={{
-                  backgroundColor: "rgba(23, 21, 21, 0.74)",
-                  borderColor: SHOP_SURFACE.panelBorder,
-                  backdropFilter: "blur(14px)",
-                }}
-                variants={fadeIn}
-                initial="hidden"
-                animate={introComplete ? "show" : "hidden"}
-                transition={{ duration: 0.45, delay: 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  FIELD NOTES
-                </p>
-                <div className="space-y-1 text-gray-300 text-xs sm:text-sm leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                  <p>50+ evaluated / 4 retained</p>
-                  <p>blind test / n=30+ / p95</p>
-                  <p>deployed 02.21.26</p>
-                  <p>lvmh collaboration</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="min-w-0 space-y-3"
-                variants={fadeIn}
-                initial="hidden"
-                animate={introComplete ? "show" : "hidden"}
-                transition={{ duration: 0.45, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <div className="flex items-baseline justify-between gap-3 px-1 md:block">
-                  <p className="text-gray-300 text-[11px] tracking-[0.26em]" style={{ fontFamily: "FragmentMono, monospace" }}>
-                    SET CONTENTS
-                  </p>
-                  <p
-                    className="md:hidden shrink-0 text-gray-500 text-[10px] tracking-[0.22em]"
-                    style={{ fontFamily: "FragmentMono, monospace" }}
-                  >
-                    SWIPE
-                  </p>
-                </div>
-
-                {/* Mobile: horizontal rail — narrower cards so the next panel peeks (no overlays on content) */}
-                <div className="md:hidden min-w-0">
-                  <div className="min-w-0 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-proximity [-webkit-overflow-scrolling:touch] [scrollbar-width:thin]">
-                    <div className="flex w-max max-w-none gap-3 pb-2 pe-6">
-                      {LINEUP_SEQUENCE.map((coffee) => (
-                        <div
-                          key={coffee.id}
-                          className="snap-start shrink-0 w-[min(70vw,16.5rem)] max-w-[420px] rounded-sm border p-4"
-                          style={{
-                            backgroundColor: SHOP_SURFACE.panel,
-                            borderColor: SHOP_SURFACE.panelBorder,
-                            backdropFilter: "blur(14px)",
-                          }}
-                        >
-                          <p className="text-gray-200 text-xs tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-                            {coffee.id}  {coffee.name}
-                          </p>
-                          <div className="space-y-1 text-gray-200 text-xs leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                            <p>coffee: {coffee.coffee}</p>
-                            <p>state: {coffee.state}</p>
-                            <p>spec: {coffee.spec}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Desktop+: vertical stack */}
-                <div className="hidden md:block group space-y-3">
-                  {LINEUP_SEQUENCE.map((coffee) => (
-                    <div
-                      key={coffee.id}
-                      className="rounded-sm border p-4 sm:p-5 transition-all duration-200 group-hover:opacity-60 hover:opacity-100 hover:border-white/30"
-                      style={{
-                        backgroundColor: SHOP_SURFACE.panel,
-                        borderColor: SHOP_SURFACE.panelBorder,
-                        backdropFilter: "blur(14px)",
-                      }}
-                    >
-                      <p className="text-gray-200 text-xs tracking-[0.22em] mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-                        {coffee.id}  {coffee.name}
-                      </p>
-                      <div className="space-y-1 text-gray-200 text-xs leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
-                        <p>coffee: {coffee.coffee}</p>
-                        <p>state: {coffee.state}</p>
-                        <p>spec: {coffee.spec}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
 
             <motion.div
-              className="rounded-sm border p-5 sm:p-6 order-4 lg:order-none lg:col-start-2"
+              className="rounded-sm border p-5 sm:p-6 order-4 lg:order-none w-full min-w-0"
               style={{
                 backgroundColor: SHOP_SURFACE.panel,
                 borderColor: SHOP_SURFACE.panelBorder,
@@ -629,6 +708,7 @@ function ShopContent() {
                 </div>
               </div>
             </motion.div>
+            </div>
           </section>
 
         </div>

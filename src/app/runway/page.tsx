@@ -402,7 +402,7 @@
                                     >
                                       <h3 className="text-xl font-light mb-4">Corporate Offsites</h3>
                                       <p className="text-gray-400 mb-4">
-                                        Immersive sensory journeys designed for teams seeking an experiential reset — where coffee becomes a medium for awakening creativity.
+                                        Immersive sensory journeys designed for teams seeking an experiential reset · where coffee becomes a medium for awakening creativity.
                                       </p>
                                     </motion.div>
 
@@ -443,11 +443,11 @@
                                   </motion.p>
                                   
                                   <motion.p className="text-gray-300 mb-8 leading-relaxed" variants={fadeIn}>
-                                    Every detail — from flavor arcs to emotional pacing to visual design — is constructed to feel deliberate, timeless, and mythic.
+                                    Every detail · from flavor arcs to emotional pacing to visual design · is constructed to feel deliberate, timeless, and mythic.
                                   </motion.p>
                                   
                                   <motion.p className="text-gray-300 leading-relaxed" variants={fadeIn}>
-                                    We approach each collaboration as a culinary atelier would a signature creation — where coffee becomes merely the foundation for experimental compositions that engage all senses in unexpected ways.
+                                    We approach each collaboration as a culinary atelier would a signature creation · where coffee becomes merely the foundation for experimental compositions that engage all senses in unexpected ways.
                                   </motion.p>
                                 </motion.div>
                               </section>

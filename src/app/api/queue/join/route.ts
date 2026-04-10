@@ -76,7 +76,7 @@ export async function POST(request: Request) {
           "You're in the tasting queue, {name}. Spot: {position}. We'll text you when it's your turn.";
         const message = template
           .replaceAll("{name}", guestName)
-          .replaceAll("{position}", position ? String(position) : "—");
+          .replaceAll("{position}", position ? String(position) : "·");
 
         const client = twilio(
           process.env.TWILIO_ACCOUNT_SID,

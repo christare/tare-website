@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { CURRENT_EVENT_CONFIG } from "@/config/events";
+import { SHOP_PRODUCT } from "@/config/shop";
 
 function formatSessionDate(dateStr: string | null): string | null {
   if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
@@ -30,7 +31,7 @@ function SuccessContent() {
   const isBeans = type === "beans";
   const isLineup = type === "lineup";
   const productName =
-    type === "studio" ? "TARE STUDIO" : isLineup ? "TARE LINEUP 01" : isBeans ? "TARE BEANS" : "TARE ROOM";
+    type === "studio" ? "TARE STUDIO" : isLineup ? SHOP_PRODUCT.name : isBeans ? "TARE BEANS" : "TARE ROOM";
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -52,7 +53,7 @@ function SuccessContent() {
       initial="hidden"
       animate="visible"
     >
-      {/* Content card — compact, no scroll */}
+      {/* Content card · compact, no scroll */}
       <div className="relative border border-white/25 rounded-sm bg-[#2A2726]/80 backdrop-blur-[1px] py-5 sm:py-6 px-5 sm:px-8 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
         {/* Artifact */}
       <motion.div className="relative z-10 flex justify-center mb-3" variants={itemVariants}>
@@ -95,7 +96,7 @@ function SuccessContent() {
           <div className="space-y-2.5 text-sm text-gray-300">
             <div>
               <span className="text-gray-500 text-xs tracking-wider block mb-0.5">PRODUCT</span>
-              <span className="text-white">TARE Lineup 01 · 4 x 100g</span>
+              <span className="text-white">{SHOP_PRODUCT.name}</span>
             </div>
             <div>
               <span className="text-gray-500 text-xs tracking-wider block mb-0.5">STATUS</span>

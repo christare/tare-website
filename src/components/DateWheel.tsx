@@ -27,9 +27,9 @@ export function DateWheel({ dates, loadingDate, onSelect, error }: DateWheelProp
         Booking closes Thursday 11pm EST for that weekend.
       </p>
 
-      {/* Wheel container — fixed size for consistent circle math */}
+      {/* Wheel container · fixed size for consistent circle math */}
       <div className="relative flex items-center justify-center sm:scale-110" style={{ width: size, height: size }}>
-        {/* Outer ring — echoes the hero dial */}
+        {/* Outer ring · echoes the hero dial */}
         <div
           className="absolute rounded-full border border-white/25"
           style={{ width: size, height: size }}

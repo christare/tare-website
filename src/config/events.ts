@@ -32,11 +32,11 @@ export const CURRENT_EVENT_CONFIG = {
   doorsOpen: '1:50 PM', // 10 mins before start
   
   // Location details
-  // Full address (with unit) — only for post-purchase: success page, SMS/email, print
+  // Full address (with unit) · only for post-purchase: success page, SMS/email, print
   address: '2959 Northern Blvd 49D, Long Island City, NY 11101',
   addressLine1: '2959 Northern Blvd 49D',
   addressLine2: 'Long Island City, NY 11101',
-  // Public address (no unit) — shown before purchase (homepage, etc.)
+  // Public address (no unit) · shown before purchase (homepage, etc.)
   addressLine1Public: '2959 Northern Blvd',
   buzzer: '1207',
   contactPhone: '4157079319',

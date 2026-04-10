@@ -91,7 +91,7 @@ function asBoolean(value: unknown): boolean {
   return value === true;
 }
 
-function mapRecord(record: Airtable.Record<any>): QueueRecord {
+function mapRecord(record:  Airtable.Record<any>): QueueRecord {
   const f = record.fields as Record<string, unknown>;
 
   return {

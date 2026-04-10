@@ -31,7 +31,7 @@ function PrivatePageContent() {
 
   return (
     <main className="min-h-screen text-white relative" style={{ backgroundColor: "#2A2726" }}>
-      {/* Hero — same structure as homepage */}
+      {/* Hero · same structure as homepage */}
       <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
         <div aria-hidden="true" className="absolute inset-0 z-0 pointer-events-none">
           <div className="absolute inset-0 md:hidden">
@@ -140,7 +140,7 @@ function PrivatePageContent() {
               textWrap: "balance",
             }}
           >
-            We also offer custom coffee experiences for companies, brand activations, and private celebrations—we can bring TARE to you.
+            We also offer custom coffee experiences for companies, brand activations, and private celebrations · we can bring TARE to you.
           </motion.p>
 
           {/* CTAs: Email button + Copy */}

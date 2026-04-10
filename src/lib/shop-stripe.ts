@@ -1,4 +1,5 @@
 import { getStripe } from "@/lib/stripe";
+import { SHOP_PRODUCT } from "@/config/shop";
 
 const DEFAULT_LINEUP_PRODUCT_ID = "prod_UFcllGsM79YoRp";
 
@@ -28,7 +29,7 @@ export async function resolveStripeShopSource(): Promise<StripeShopSource> {
     expand: ["default_price"],
   });
 
-  const productName = "name" in product ? product.name : "TARE Lineup 01";
+  const productName = "name" in product ? product.name : SHOP_PRODUCT.name;
 
   let resolvedPrice: any = null;
   if (product.default_price) {

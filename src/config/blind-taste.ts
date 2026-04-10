@@ -1,5 +1,5 @@
 /**
- * Blind test event — sensory testing (coffee, aromatics, etc.), Partiful-style RSVP.
+ * Blind test event · sensory testing (coffee, aromatics, etc.), Partiful-style RSVP.
  * First event: Friday March 13, 2026, 4pm–8pm.
  * Passcode accepts anything for now.
  */

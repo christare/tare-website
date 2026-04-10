@@ -443,7 +443,7 @@ export default function TeamQueuePage() {
                         className="text-base md:text-lg font-light truncate"
                         style={{ fontFamily: "NonBureauExtended, sans-serif" }}
                       >
-                        {r.guestName || "—"}
+                        {r.guestName || "·"}
                       </p>
                       {r.priorityFlagVip && (
                         <span
@@ -464,7 +464,7 @@ export default function TeamQueuePage() {
                     </div>
 
                     <p className="text-gray-400 text-xs mt-1" style={{ fontFamily: "FragmentMono, monospace" }}>
-                      Party {r.partySize || "—"} • ****{last4(r.phoneNumber)}{" "}
+                      Party {r.partySize || "·"} • ****{last4(r.phoneNumber)}{" "}
                       {joinedMins !== null ? `• ${joinedMins}m` : ""}
                       {notifiedMins !== null ? ` • notified ${notifiedMins}m` : ""}
                     </p>

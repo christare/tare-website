@@ -352,7 +352,7 @@ export default function GuestFormPage() {
                   What's your relationship with coffee?
                 </p>
                 <p className="text-gray-400 text-sm italic" style={{ fontFamily: 'FragmentMono, monospace' }}>
-                  Tell us how coffee fits into your life—casual drinker, daily ritual, enthusiast, professional, or something else entirely.
+                  Tell us how coffee fits into your life · casual drinker, daily ritual, enthusiast, professional, or something else entirely.
                 </p>
               </motion.div>
               <textarea

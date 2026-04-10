@@ -221,7 +221,7 @@ function StudioPageContent() {
             A guided session using coffee in multiple forms to elevate your mood and sharpen your senses.
           </motion.p>
 
-          {/* Primary CTA — scrolls to date selection */}
+          {/* Primary CTA · scrolls to date selection */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -243,7 +243,7 @@ function StudioPageContent() {
         </div>
       </div>
 
-      {/* Grid lines — right under hero */}
+      {/* Grid lines · right under hero */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -267,7 +267,7 @@ function StudioPageContent() {
         />
       </motion.div>
 
-      {/* What it is — experience only (scroll target for BOOK A SESSION) */}
+      {/* What it is · experience only (scroll target for BOOK A SESSION) */}
       <div id="book-section" ref={bookSectionRef} className="w-full scroll-mt-24">
         <motion.div
           initial="hidden"
@@ -325,7 +325,7 @@ function StudioPageContent() {
         </motion.div>
       </div>
 
-      {/* Event logistics — where, when, book */}
+      {/* Event logistics · where, when, book */}
       <div ref={detailsRef} className="w-full py-10 sm:py-14 border-t border-white/20" style={{ backgroundColor: '#32302E' }}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}

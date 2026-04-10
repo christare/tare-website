@@ -64,7 +64,7 @@ export default function Header() {
         className="fixed top-0 left-0 right-0 z-40 transition-all duration-300"
         style={{ minHeight: 0 }}
       >
-        {/* Mobile: minimal bar — hamburger + Instagram, fixed height so content doesn't overlap */}
+        {/* Mobile: minimal bar · hamburger + Instagram, fixed height so content doesn't overlap */}
         <div
           className="fixed top-0 left-0 right-0 z-50 flex lg:hidden items-center justify-between h-14 px-4 safe-area-inset"
           style={{

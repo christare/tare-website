@@ -11,7 +11,7 @@ import { BLIND_TASTE_EVENT } from "@/config/blind-taste";
  *   Public list: returns { attendees: string[] } (first name + last initial, opted-in only).
  *
  * GET ?eventId=xxx&phone=5551234567
- *   Identity lookup: returns { found: boolean, attendees: string[] } — other guests (display names).
+ *   Identity lookup: returns { found: boolean, attendees: string[] } · other guests (display names).
  */
 export async function GET(request: Request) {
   try {

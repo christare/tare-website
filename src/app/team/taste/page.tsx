@@ -25,13 +25,13 @@ type EventRsvpRecord = {
 };
 
 function last4(phone: string | null) {
-  if (!phone) return "—";
+  if (!phone) return "·";
   const digits = phone.replace(/\D/g, "");
-  return digits.length >= 4 ? `****${digits.slice(-4)}` : "—";
+  return digits.length >= 4 ? `****${digits.slice(-4)}` : "·";
 }
 
 function formatRsvpAt(iso: string | null) {
-  if (!iso) return "—";
+  if (!iso) return "·";
   try {
     const d = new Date(iso);
     return d.toLocaleString("en-US", {
@@ -330,7 +330,7 @@ export default function TeamTastePage() {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <p className="text-base font-light" style={{ fontFamily: "NonBureauExtended, sans-serif" }}>
-                        {r.guestName || "—"}
+                        {r.guestName || "·"}
                         {r.showOnList === false && (
                           <span className="ml-2 text-gray-500 text-xs" style={{ fontFamily: "FragmentMono, monospace" }}>
                             (hidden from list)

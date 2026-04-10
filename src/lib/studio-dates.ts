@@ -1,6 +1,6 @@
 /**
  * Bookable weekend dates for Studio sessions.
- * Cutoff: Thursday 11pm EST — booking for a given weekend closes at that time.
+ * Cutoff: Thursday 11pm EST · booking for a given weekend closes at that time.
  */
 
 function getESTDateParts(now: Date): { year: number; month: number; day: number } {
@@ -43,7 +43,7 @@ export function getBookableWeekendDates(maxDates = 12): WeekendDateOption[] {
   const est = getESTDateParts(now);
   const start = new Date(est.year, est.month - 1, est.day);
   const dayOfWeek = start.getDay();
-  // Start from this week's Saturday (may be in the past — we filter those out)
+  // Start from this week's Saturday (may be in the past · we filter those out)
   const daysToThisWeekSaturday = (dayOfWeek + 1) % 7;
   let sat = new Date(start);
   sat.setDate(start.getDate() - daysToThisWeekSaturday);
