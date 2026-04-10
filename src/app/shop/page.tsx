@@ -20,6 +20,13 @@ const SHOP_HERO_VALUE_LINES = [
   "SEALED EDITION · NOT A STANDING SKU",
 ] as const;
 
+/** How NOISE maps to what ships: roles are the design; coffees update with the live lineup. */
+const SHOP_LINEUP_SYSTEM_LINES = [
+  "NOISE · FOUR ROLES · FIXED BY DESIGN",
+  "BEANS PER ROLE ROTATE WITH WHAT IS LIVE NOW",
+  "STUDIO STILLS · NOT INDEXED TO THOSE ROLES",
+] as const;
+
 const LINEUP_SEQUENCE = [
   {
     id: "01",
@@ -120,8 +127,16 @@ const SHOP_PRODUCT_VERTICAL_IMAGES = [
   "/images/TARE%20Products%201%20Edits/Sel11.jpg",
 ] as const;
 
-/** Brighter, clearer treatment (contrast reads as “sharper” on photos). */
-const SHOP_CAROUSEL_IMAGE_FILTER = "contrast(1.14) saturate(1.1) brightness(1.08)";
+/**
+ * Product carousel: lightly archival · softened contrast, drained saturation, hint of sepia,
+ * a touch more grain + cream haze (file / print fade) without the heavy lab vignette pass.
+ */
+const SHOP_CAROUSEL_IMAGE_FILTER =
+  "brightness(0.97) contrast(0.93) saturate(0.88) sepia(0.055) blur(0.18px)";
+
+const SHOP_CAROUSEL_GRAIN_BG = `url("data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.76" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>',
+)}")`;
 
 const SHOP_CAROUSEL_LEGACY_IMAGES = [
   "/images/still5.png",
@@ -148,6 +163,54 @@ const SHOP_LINEUP_IMAGES = [
   ...SHOP_LINEUP_INTERLEAVED.filter((src) => src !== SHOP_LINEUP_LEAD),
 ];
 
+/** Pulled out of the product carousel for the full-width strip above the fold. */
+const SHOP_GALLERY_FEATURED = [
+  "/images/TARE%20Products%201%20Edits/Sel4.jpg",
+  "/images/TARE%20Products%201%20Edits/Sel1.jpg",
+  "/images/TARE%20Products%201%20Edits/SEl2.jpg",
+] as const;
+
+const SHOP_GALLERY_FEATURED_SET = new Set<string>(SHOP_GALLERY_FEATURED);
+
+/** 4th & 5th vertical product stills (Sel9, Sel11) close the archive carousel. */
+const SHOP_CAROUSEL_END_STILLS = [
+  "/images/TARE%20Products%201%20Edits/Sel9.jpg",
+  "/images/TARE%20Products%201%20Edits/Sel11.jpg",
+] as const;
+
+const SHOP_CAROUSEL_END_STILLS_SET = new Set<string>(SHOP_CAROUSEL_END_STILLS);
+
+const SHOP_CAROUSEL_REST = SHOP_LINEUP_IMAGES.filter(
+  (src) => !SHOP_GALLERY_FEATURED_SET.has(src) && !SHOP_CAROUSEL_END_STILLS_SET.has(src),
+);
+
+const SHOP_CAROUSEL_LINEUP = [...SHOP_CAROUSEL_REST, ...SHOP_CAROUSEL_END_STILLS];
+
+function ShopStillsOverlays() {
+  return (
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[1] mix-blend-soft-light opacity-[0.044]"
+        style={{
+          backgroundImage: SHOP_CAROUSEL_GRAIN_BG,
+          backgroundSize: "108px 108px",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[2]"
+        style={{ backgroundColor: "rgba(238, 228, 210, 0.055)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[3]"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.038)" }}
+      />
+    </>
+  );
+}
+
 type ShopConfigResponse = {
   enabled: boolean;
   displayPrice?: string;
@@ -166,7 +229,7 @@ function ShopContent() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [introComplete, setIntroComplete] = useState(false);
 
-  const lineupImages = SHOP_LINEUP_IMAGES;
+  const lineupImages = SHOP_CAROUSEL_LINEUP;
 
   useEffect(() => {
     const fromCanceled = new URLSearchParams(window.location.search).get("from");
@@ -346,7 +409,40 @@ function ShopContent() {
               backdropFilter: "blur(8px)",
             }}
           />
-          <section className="grid min-w-0 gap-6 sm:gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-8 items-start">
+          <section className="flex flex-col gap-6 sm:gap-7 lg:gap-8 min-w-0">
+            <motion.div
+              className="min-w-0 order-first"
+              variants={fadeIn}
+              initial="hidden"
+              animate={introComplete ? "show" : "hidden"}
+              transition={{ duration: 0.45, delay: 0, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <p className="text-gray-500 text-[10px] tracking-[0.22em] mb-2" style={{ fontFamily: "FragmentMono, monospace" }}>
+                SET STILLS · THREE UP
+              </p>
+              <div className="flex lg:grid lg:grid-cols-3 gap-2 sm:gap-3 -mx-1 px-1 sm:mx-0 sm:px-0 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-proximity lg:overflow-visible lg:snap-none [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] pb-1 lg:pb-0">
+                {SHOP_GALLERY_FEATURED.map((src, idx) => (
+                  <div
+                    key={src}
+                    className="relative shrink-0 w-[min(82vw,17.5rem)] sm:w-[min(78vw,18rem)] lg:w-auto lg:shrink snap-start aspect-[4/5] overflow-hidden rounded-sm border"
+                    style={{ borderColor: SHOP_SURFACE.panelBorder }}
+                  >
+                    <Image
+                      src={src}
+                      alt={`TARE SET 01 · still ${idx + 1} of ${SHOP_GALLERY_FEATURED.length}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 82vw, 33vw"
+                      priority={idx < 3}
+                      style={{ filter: SHOP_CAROUSEL_IMAGE_FILTER }}
+                    />
+                    <ShopStillsOverlays />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <div className="grid min-w-0 gap-6 sm:gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:gap-8 items-start">
             {/* Mobile: contents = children keep order-1 / order-3 in flow. Desktop: one column cell spanning rows 1–2 so hero isn’t stretched under a tall purchase row. */}
             <div className="contents lg:flex lg:flex-col lg:gap-8 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:min-w-0">
             <div className="min-w-0 pt-0 sm:pt-1 lg:pt-8 order-1 lg:order-none">
@@ -437,6 +533,20 @@ function ShopContent() {
                     SWIPE
                   </p>
                 </div>
+                <div className="px-1 mb-3 max-w-xl space-y-1">
+                  <p className="text-gray-500 text-[10px] tracking-[0.2em]" style={{ fontFamily: "FragmentMono, monospace" }}>
+                    LINEUP
+                  </p>
+                  {SHOP_LINEUP_SYSTEM_LINES.map((line) => (
+                    <p
+                      key={line}
+                      className="text-gray-400 text-[10px] sm:text-[11px] leading-relaxed tracking-[0.12em]"
+                      style={{ fontFamily: "FragmentMono, monospace" }}
+                    >
+                      {line}
+                    </p>
+                  ))}
+                </div>
 
                 {/* Mobile: horizontal rail · narrower cards so the next panel peeks (no overlays on content) */}
                 <div className="md:hidden min-w-0">
@@ -492,12 +602,15 @@ function ShopContent() {
                 animate={introComplete ? "show" : "hidden"}
                 transition={{ duration: 0.5, delay: 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                <div className="relative mb-3 aspect-[4/5] overflow-hidden rounded-sm border" style={{ borderColor: SHOP_SURFACE.panelBorder }}>
+                <p className="text-gray-500 text-[10px] tracking-[0.2em] mb-2" style={{ fontFamily: "FragmentMono, monospace" }}>
+                  ARCHIVE CAROUSEL
+                </p>
+                <div className="relative mb-3 aspect-[4/5] max-h-[min(78vh,640px)] overflow-hidden rounded-sm border" style={{ borderColor: SHOP_SURFACE.panelBorder }}>
                   {lineupImages.map((src, idx) => (
                     <Image
                       key={src}
                       src={src}
-                      alt="TARE SET 01 · product imagery"
+                      alt="TARE SET 01 · archive carousel"
                       fill
                       sizes="(max-width: 1024px) 100vw, 40vw"
                       priority={idx === 0}
@@ -505,8 +618,8 @@ function ShopContent() {
                       style={{ filter: SHOP_CAROUSEL_IMAGE_FILTER }}
                     />
                   ))}
-                  <div className="absolute inset-0" style={{ backgroundColor: "rgba(0, 0, 0, 0.06)" }} />
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                  <ShopStillsOverlays />
+                  <div className="absolute bottom-3 left-3 right-3 z-[4] flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       {lineupImages.map((_, idx) => (
                         <button
@@ -547,6 +660,9 @@ function ShopContent() {
                   </p>
                   <p className="mt-1 text-gray-400 text-[11px] leading-relaxed" style={{ fontFamily: "FragmentMono, monospace" }}>
                     each coffee: 50g resealable + 50g vacuum sealed
+                  </p>
+                  <p className="mt-2 text-gray-500 text-[10px] sm:text-[11px] tracking-[0.14em] sm:tracking-[0.16em] leading-snug" style={{ fontFamily: "FragmentMono, monospace" }}>
+                    ORDER INCLUDES · BREW PROTOCOL VIDEO (REPLAY)
                   </p>
                   <p className="mt-2 text-gray-500 text-[11px] tracking-[0.18em]" style={{ fontFamily: "FragmentMono, monospace" }}>
                     SET 01 · &quot;NOISE&quot; · 2026
@@ -593,69 +709,23 @@ function ShopContent() {
               animate={introComplete ? "show" : "hidden"}
               transition={{ duration: 0.45, delay: 0.14, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
-              <p className="text-gray-200 text-xs tracking-[0.28em] mb-4 text-left" style={{ fontFamily: "FragmentMono, monospace" }}>
+              <p className="text-gray-200 text-xs tracking-[0.28em] mb-3 text-left" style={{ fontFamily: "FragmentMono, monospace" }}>
                 BREW PROTOCOL
               </p>
 
-              {/* Mobile: keep it short; expand for full detail */}
-              <div className="md:hidden space-y-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-                <details className="border border-white/10 rounded-sm px-4 py-3">
-                  <summary className="text-gray-300 text-xs tracking-[0.18em] cursor-pointer select-none">
-                    EXPAND
-                  </summary>
-                  <div className="mt-3 space-y-4 text-gray-200 text-xs leading-relaxed">
-                    <div>
-                      <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">IMMERSION (PRIMARY)</p>
-                      <div className="space-y-0.5">
-                        <p>teapot / cup / bowl</p>
-                        <p>95°C / 80–95 ppm</p>
-                        <p>Mg:Ca:K 4:1:2</p>
-                        <p>1:15</p>
-                        <p>break 4:00 / strain 8:00</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">PERCOLATION (SECONDARY)</p>
-                      <div className="space-y-0.5">
-                        <p>v60 / origami / orea</p>
-                        <p>4x bloom 1:00 / 4 pours / 1:15</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">HYBRID</p>
-                      <div className="space-y-0.5">
-                        <p>pulsar / switch</p>
-                        <p>1:30 immersion (½ volume)</p>
-                        <p>+2 pours / 1:15</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">grind references</p>
-                      <div className="space-y-0.5 text-gray-300 text-xs leading-relaxed">
-                        <p>ek43 9–10.5</p>
-                        <p>zp6 5.0–5.4</p>
-                        <p>k ultra 7.5–8.3</p>
-                        <p>k6 80–100</p>
-                        <p>j manual 3.2–3.7</p>
-                        <p>comandante 19–24</p>
-                        <p>ode gen 2 6–7.2</p>
-                        <p>sculptor 078 6–7</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">MISUSE</p>
-                      <div className="space-y-1 text-gray-300 text-xs leading-relaxed">
-                        <p>out-of-order use reduces contrast</p>
-                        <p>oxygen / moisture exposure degrades aromatics and flavor separation</p>
-                      </div>
-                    </div>
-                  </div>
-                </details>
-              </div>
+              <details
+                className="group border border-white/[0.12] rounded-sm px-4 py-3 open:pb-4"
+                style={{ fontFamily: "FragmentMono, monospace" }}
+              >
+                <summary className="cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden flex flex-col gap-2 text-left outline-none focus-visible:ring-1 focus-visible:ring-white/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(23,21,21,0.95)] rounded-sm -mx-1 -mt-1 px-1 pt-1">
+                  <p className="text-gray-300 text-[11px] sm:text-xs leading-relaxed tracking-[0.08em]">
+                    IMMERSION-FIRST · MATCHED ION WATER (Mg:Ca:K) · PERC + HYBRID FORKS · GRINDER DIAL-IN GRID
+                  </p>
+                  <p className="text-gray-500 text-[10px] tracking-[0.2em] group-open:hidden">OPEN IF CURIOUS</p>
+                  <p className="text-gray-500 text-[10px] tracking-[0.2em] hidden group-open:block">COLLAPSE</p>
+                </summary>
 
-              {/* Desktop+: full detail */}
-              <div className="hidden md:block space-y-4" style={{ fontFamily: "FragmentMono, monospace" }}>
-                <div className="space-y-4 text-gray-200 text-xs sm:text-sm leading-relaxed">
+                <div className="mt-4 pt-4 border-t border-white/10 space-y-4 text-gray-200 text-xs sm:text-sm leading-relaxed">
                   <div>
                     <p className="text-gray-400 text-[11px] tracking-[0.22em] mb-2">IMMERSION (PRIMARY)</p>
                     <div className="space-y-0.5">
@@ -683,31 +753,32 @@ function ShopContent() {
                       <p>+2 pours / 1:15</p>
                     </div>
                   </div>
-                </div>
 
-                <div>
-                  <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">grind references</p>
-                  <div className="space-y-0.5 text-gray-300 text-xs leading-relaxed">
-                    <p>ek43 9–10.5</p>
-                    <p>zp6 5.0–5.4</p>
-                    <p>k ultra 7.5–8.3</p>
-                    <p>k6 80–100</p>
-                    <p>j manual 3.2–3.7</p>
-                    <p>comandante 19–24</p>
-                    <p>ode gen 2 6–7.2</p>
-                    <p>sculptor 078 6–7</p>
+                  <div>
+                    <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">grind references</p>
+                    <div className="space-y-0.5 text-gray-300 text-xs leading-relaxed">
+                      <p>ek43 9–10.5</p>
+                      <p>zp6 5.0–5.4</p>
+                      <p>k ultra 7.5–8.3</p>
+                      <p>k6 80–100</p>
+                      <p>j manual 3.2–3.7</p>
+                      <p>comandante 19–24</p>
+                      <p>ode gen 2 6–7.2</p>
+                      <p>sculptor 078 6–7</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">MISUSE</p>
+                    <div className="space-y-1 text-gray-300 text-xs leading-relaxed">
+                      <p>out-of-order use reduces contrast</p>
+                      <p>oxygen / moisture exposure degrades aromatics and flavor separation</p>
+                    </div>
                   </div>
                 </div>
-
-                <div>
-                  <p className="text-gray-500 text-[11px] tracking-[0.22em] mb-2">MISUSE</p>
-                  <div className="space-y-1 text-gray-300 text-xs leading-relaxed">
-                    <p>out-of-order use reduces contrast</p>
-                    <p>oxygen / moisture exposure degrades aromatics and flavor separation</p>
-                  </div>
-                </div>
-              </div>
+              </details>
             </motion.div>
+            </div>
             </div>
           </section>
 
