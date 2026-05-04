@@ -43,6 +43,29 @@ export const CURRENT_EVENT_CONFIG = {
   contactName: 'Chris'
 };
 
+function parseLocalYmd(dateStr: string): Date | null {
+  const parts = dateStr.split('-').map((s) => parseInt(s, 10));
+  if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return null;
+  const [y, mo, day] = parts;
+  return new Date(y, mo - 1, day);
+}
+
+/** e.g. "Saturday, January 31" — for compact callouts tied to `eventId`. */
+export function formatEventBannerDate(dateStr: string = CURRENT_EVENT_CONFIG.eventId): string {
+  const date = parseLocalYmd(dateStr);
+  if (!date) return dateStr;
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+/** e.g. "Saturday · January 31 · 2026" — for print / schedule-style lines. */
+export function formatEventPrintDateLine(dateStr: string = CURRENT_EVENT_CONFIG.eventId): string {
+  const date = parseLocalYmd(dateStr);
+  if (!date) return dateStr;
+  const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  return `${weekday} · ${month} ${date.getDate()} · ${date.getFullYear()}`;
+}
+
 // Export individual values for convenience
 export const CURRENT_EVENT_ID = CURRENT_EVENT_CONFIG.eventId;
 export const TOTAL_SEATS = CURRENT_EVENT_CONFIG.totalSeats;

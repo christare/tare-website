@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { formatEventBannerDate } from "@/config/events";
 
 export default function RoomPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -92,7 +93,7 @@ export default function RoomPage() {
       <div className="w-full py-4 md:py-6 px-6 mb-4">
         <div className="max-w-4xl mx-auto text-center space-y-3">
           <p className="text-white text-sm md:text-base font-light flex items-center justify-center gap-3" style={{ fontFamily: 'NonBureauExtended, sans-serif' }}>
-            <span>Saturday January 10</span>
+            <span>{formatEventBannerDate()}</span>
             <span className="text-xs md:text-sm">•</span>
             <span>Seats Available</span>
           </p>

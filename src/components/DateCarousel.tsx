@@ -52,7 +52,7 @@ export function DateCarousel({ dates, loadingDate, onSelect, error }: DateCarous
   return (
     <div className="relative flex flex-col items-center w-full max-w-lg mx-auto">
       <p className="text-gray-500 text-[10px] sm:text-xs mb-3" style={{ fontFamily: "FragmentMono, monospace" }}>
-        Booking closes Thursday 11pm EST for that weekend.
+        Booking closes Thursday 11pm Eastern for that Saturday.
       </p>
 
       <div className="relative w-full flex items-center gap-2">

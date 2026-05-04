@@ -21,10 +21,10 @@ export function DateWheel({ dates, loadingDate, onSelect, error }: DateWheelProp
   return (
     <div className="relative flex flex-col items-center">
       <p className="text-gray-400 text-xs tracking-widest mb-2" style={{ fontFamily: "FragmentMono, monospace", letterSpacing: "0.2em" }}>
-        SELECT SATURDAY OR SUNDAY
+        SELECT A SATURDAY
       </p>
       <p className="text-gray-500 text-[10px] sm:text-xs mb-6" style={{ fontFamily: "FragmentMono, monospace" }}>
-        Booking closes Thursday 11pm EST for that weekend.
+        Booking closes Thursday 11pm Eastern for that Saturday.
       </p>
 
       {/* Wheel container · fixed size for consistent circle math */}

@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getBookableWeekendDates } from "@/lib/studio-dates";
+import { getBookableSaturdayDates } from "@/lib/studio-dates";
 import { DateCarousel } from "@/components/DateCarousel";
 import { CURRENT_EVENT_CONFIG } from "@/config/events";
 
@@ -28,7 +28,7 @@ function StudioPageContent() {
   ];
 
   // Fresh dates on load and when user returns to the tab (e.g. next day or after Thursday cutoff)
-  const refreshDates = () => setBookableDates(getBookableWeekendDates(12));
+  const refreshDates = () => setBookableDates(getBookableSaturdayDates(12));
   useEffect(() => {
     refreshDates();
   }, []);

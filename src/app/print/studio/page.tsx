@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CURRENT_EVENT_CONFIG } from "@/config/events";
+import { CURRENT_EVENT_CONFIG, formatEventPrintDateLine } from "@/config/events";
 
 export const dynamic = "force-static";
 
@@ -104,7 +104,7 @@ export default function StudioPrintPage() {
                 className="text-[18px] mb-1"
                 style={{ fontFamily: "NonBureauExtended, sans-serif", fontWeight: 300 }}
               >
-                Saturday · January 10 · 2026
+                {formatEventPrintDateLine()}
               </div>
               <div
                 className="text-[14px] text-gray-300 mb-3"

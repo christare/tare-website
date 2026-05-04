@@ -1,6 +1,6 @@
 /**
- * Bookable weekend dates for Studio sessions.
- * Cutoff: Thursday 11pm EST · booking for a given weekend closes at that time.
+ * Bookable Saturday session dates for Studio.
+ * Cutoff: Thursday 11pm Eastern · booking for that Saturday closes at that time.
  */
 
 function getESTDateParts(now: Date): { year: number; month: number; day: number } {
@@ -24,31 +24,31 @@ function formatYYYYMMDD(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-function formatLabel(d: Date, shortDay: 'Sat' | 'Sun'): string {
+function formatSaturdayLabel(d: Date): string {
   const month = d.toLocaleString('en-US', { month: 'short' });
   const day = d.getDate();
-  return `${shortDay}, ${month} ${day}`;
+  return `Sat, ${month} ${day}`;
 }
 
-export type WeekendDateOption = { date: string; label: string; bookable: boolean };
+export type StudioDateOption = { date: string; label: string; bookable: boolean };
 
 /**
- * Returns the next X upcoming Saturday and Sunday dates.
- * - Past dates (day already happened in EST) are not shown.
- * - Dates for the immediate weekend are greyed out (bookable: false) once Thursday 11pm EST has passed.
+ * Returns the next X upcoming Saturday session dates.
+ * - Past Saturdays (day already ended in Eastern) are not shown.
+ * - The upcoming Saturday is greyed out (bookable: false) once Thursday 11pm Eastern before it has passed.
  */
-export function getBookableWeekendDates(maxDates = 12): WeekendDateOption[] {
-  const results: WeekendDateOption[] = [];
+export function getBookableSaturdayDates(maxDates = 12): StudioDateOption[] {
+  const results: StudioDateOption[] = [];
   const now = new Date();
   const est = getESTDateParts(now);
   const start = new Date(est.year, est.month - 1, est.day);
   const dayOfWeek = start.getDay();
-  // Start from this week's Saturday (may be in the past · we filter those out)
+  // This week's Saturday (may be in the past · we filter below)
   const daysToThisWeekSaturday = (dayOfWeek + 1) % 7;
   let sat = new Date(start);
   sat.setDate(start.getDate() - daysToThisWeekSaturday);
 
-  for (let w = 0; w < 6 && results.length < maxDates; w++) {
+  for (let w = 0; w < 24 && results.length < maxDates; w++) {
     const satStr = formatYYYYMMDD(sat);
     const thursday = new Date(sat);
     thursday.setDate(sat.getDate() - 2);
@@ -56,17 +56,9 @@ export function getBookableWeekendDates(maxDates = 12): WeekendDateOption[] {
     const cutoff = new Date(thursdayStr + 'T23:00:00-05:00');
     const stillBookable = now < cutoff;
 
-    // Saturday: only include if the day hasn't passed (today in EST <= sat)
     const satEnd = new Date(satStr + 'T23:59:59-05:00');
     if (now <= satEnd) {
-      results.push({ date: satStr, label: formatLabel(sat, 'Sat'), bookable: stillBookable });
-    }
-    const sun = new Date(sat);
-    sun.setDate(sat.getDate() + 1);
-    const sunStr = formatYYYYMMDD(sun);
-    const sunEnd = new Date(sunStr + 'T23:59:59-05:00');
-    if (now <= sunEnd) {
-      results.push({ date: sunStr, label: formatLabel(sun, 'Sun'), bookable: stillBookable });
+      results.push({ date: satStr, label: formatSaturdayLabel(sat), bookable: stillBookable });
     }
 
     sat.setDate(sat.getDate() + 7);
