@@ -1,3 +1,4 @@
+import { requireAdmin } from '../_auth';
 import { NextResponse } from 'next/server';
 import Airtable from 'airtable';
 
@@ -11,6 +12,8 @@ function normalizePhone(phone: string): string {
 }
 
 export async function GET(request: Request) {
+  const unauthorized = requireAdmin(request);
+  if (unauthorized) return unauthorized;
   try {
     const { searchParams } = new URL(request.url);
     const phoneNumber = searchParams.get('phone');
@@ -36,7 +39,8 @@ export async function GET(request: Request) {
         .all();
     }
 
-    const guestForms = records.map(record => ({
+    const orderedRecords = Array.from(records).sort((a, b) => String((a as any)._rawJson?.createdTime || '').localeCompare(String((b as any)._rawJson?.createdTime || '')));
+    const guestForms = orderedRecords.map(record => ({
       id: record.id,
       fields: record.fields
     }));

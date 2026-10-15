@@ -1,7 +1,2 @@
-// Temporarily hide the Story page by returning a 404 for /story
-import { notFound } from 'next/navigation';
-
-export default function StoryPage() {
-  notFound();
-}
-
+import Link from "next/link";
+export default function Story(){return <main className="editorial simple-page"><p className="micro">TARE / ABOUT</p><h1>Coffee,<br/><em>considered.</em></h1><div className="prose"><p>TARE is an independent coffee experience founded by Chris Jereza in New York.</p><p>We explore coffee through taste, aroma, texture, and the way it’s served. The formats change; the attention stays the same.</p><p>Our home tastings bring that work to a small table in Chris’s home in Long Island City. We also create coffee experiences with brands and private groups.</p><Link className="text-link" href="/">Explore the tasting ↗</Link></div></main>}

@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     const fields = record.fields as any;
     const phone = fields['Phone'];
     const name = fields['Name'] || null;
-    const eventDate = fields['Event'] || CURRENT_EVENT_CONFIG.eventId;
+    const eventDate = fields['Event Date'] || fields['Event'] || CURRENT_EVENT_CONFIG.eventId;
 
     if (!phone) {
       return NextResponse.json(

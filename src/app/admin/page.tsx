@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { CURRENT_EVENT_ID, CURRENT_EVENT_CONFIG } from '@/config/events';
-import { generateConfirmationMessage } from '@/lib/confirmation-message';
+import { generateConfirmationMessage, personalMessageHref } from '@/lib/confirmation-message';
 
 interface Booking {
   id: string;
@@ -209,17 +209,19 @@ export default function AdminPage() {
           const phone =
             (form.fields as any)['Phone Normalized'] || normalizePhone(form.fields['Phone Number'] || '');
           if (phone) {
-            formsMap.set(phone, form);
+            const session = (form.fields['Intentions'] || '').match(/^Session: (\d{4}-\d{2}-\d{2})/);
+            formsMap.set(`${phone}:${session?.[1] || ''}`, form);
           }
         });
 
         // Match bookings with forms (only for the selected event date)
         const enhancedBookings = currentEventBookings.map((booking: Booking) => {
           const bookingPhone = normalizePhone(booking.fields['Phone'] || '');
-          const matchedForm = formsMap.get(bookingPhone);
+          const formKey = formsMap.has(`${bookingPhone}:${selectedEventDate}`) ? `${bookingPhone}:${selectedEventDate}` : `${bookingPhone}:`;
+          const matchedForm = formsMap.get(formKey);
 
           if (matchedForm) {
-            formsMap.delete(bookingPhone);
+            formsMap.delete(formKey);
           }
 
           return {
@@ -264,7 +266,7 @@ export default function AdminPage() {
   // Generate preview message
   const generatePreviewMessage = (booking: Booking): string => {
     const name = getDisplayName(booking);
-    const eventDate = booking.fields['Event'] || CURRENT_EVENT_CONFIG.eventId;
+    const eventDate = booking.fields['Event Date'] || booking.fields['Event'] || CURRENT_EVENT_CONFIG.eventId;
 
     return generateConfirmationMessage(name, eventDate);
   };
@@ -1306,6 +1308,8 @@ export default function AdminPage() {
                   />
                 </div>
 
+                <p className="text-xs text-[#A39B8B]">Open Messages to send from your own number. Nothing is sent until you press send in Messages. The Twilio button uses your configured service number.</p>
+                <a className="block w-full text-center border border-[#E8E3DD] p-4" href={personalMessageHref(confirmationPreview.booking.fields['Phone'] || '', editedMessage)}>Open in Messages ↗</a>
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={() => setConfirmationPreview(null)}
@@ -1320,7 +1324,7 @@ export default function AdminPage() {
                     className="flex-1 px-6 py-3 bg-[#D4A574] text-black text-sm tracking-wide hover:bg-[#C4956A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ fontFamily: 'FragmentMono, monospace' }}
                   >
-                    {sendingConfirmation === confirmationPreview.booking.id ? 'Sending...' : 'Send SMS →'}
+                    {sendingConfirmation === confirmationPreview.booking.id ? 'Sending...' : 'Send via Twilio →'}
                   </button>
                 </div>
               </div>
