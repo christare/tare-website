@@ -19,13 +19,13 @@
 
 export const CURRENT_EVENT_CONFIG = {
   // Event Date in YYYY-MM-DD format (CHANGE THIS FOR NEW EVENTS!)
-  eventId: '2026-10-17',
+  eventId: '2026-02-01',
   
   // Total seats available for this event
   totalSeats: 4,
   
   // Event display name (optional)
-  displayName: 'TARE — Home tasting · October 17, 2026',
+  displayName: 'TARE STUDIO - February 1, 2026',
   
   // Event time details for confirmation messages
   eventTime: '2:00 PM - 3:30 PM',

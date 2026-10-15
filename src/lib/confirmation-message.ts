@@ -1,24 +1,46 @@
 import { CURRENT_EVENT_CONFIG } from "@/config/events";
-export function generateConfirmationMessage(name: string | null,eventDate: string): string {
- const first=(name||"").trim().split(/\s+/)[0];
- const date=new Date(`${eventDate}T12:00:00`).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
- return `Hey${first?` ${first}`:" there"}, Chris from TARE here. Your spot on ${date} is confirmed.
 
-This session will be a small home tasting at my place in LIC.
+function formatEventDateLong(dateString: string): string {
+  const date = new Date(`${dateString}T12:00:00`); // avoid timezone rollover
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
 
-Complete your pre-event form so I can tailor the experience to our group:
-https://tarestudionyc.com/form?date=${encodeURIComponent(eventDate)}
+function formatEventDateShort(dateString: string): string {
+  const date = new Date(`${dateString}T12:00:00`); // avoid timezone rollover
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+export function generateConfirmationMessage(
+  name: string | null,
+  eventDate: string
+): string {
+  const formattedDateLong = formatEventDateLong(eventDate);
+  const formattedDateShort = formatEventDateShort(eventDate);
+  const eventTimeDisplay = CURRENT_EVENT_CONFIG.eventTime.replace(" - ", " – ");
+
+  return `Hey there, your spot at TARE on ${formattedDateLong} is confirmed.
+
+Quick location update for ${formattedDateShort}:
+This session will now take place at our larger studio a few blocks from our usual space.
 
 ${CURRENT_EVENT_CONFIG.address}
-${CURRENT_EVENT_CONFIG.eventTime.replace(" - "," – ")} Eastern
-Arrive from ${CURRENT_EVENT_CONFIG.doorsOpen}.
+Same time, same format.
 
-When you arrive, text me and I’ll help you up. Let me know if you have any questions!
-Chris`;
+Please complete the pre-event form so we can tailor the experience to the group:
+tarestudionyc.com/form
+
+📍 ${CURRENT_EVENT_CONFIG.address}
+
+🕐 ${eventTimeDisplay}
+Doors open at ${CURRENT_EVENT_CONFIG.doorsOpen}
+
+When you arrive, a team member will guide you up, or you can text ${CURRENT_EVENT_CONFIG.contactName} at ${CURRENT_EVENT_CONFIG.contactPhone}.`;
 }
-export function personalMessageHref(phone:string,message:string):string {
- const digits=phone.replace(/\D/g,"");const recipient=digits.length===10?`+1${digits}`:`+${digits}`;
- // Apple's Messages uses &body; other SMS handlers use ?body.
- const apple=typeof navigator!=="undefined"&&/iPhone|iPad|Macintosh/.test(navigator.userAgent);
- return `sms:${recipient}${apple?"&":"?"}body=${encodeURIComponent(message)}`;
-}
+

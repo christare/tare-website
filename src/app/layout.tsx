@@ -1,10 +1,21 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "./client-layout";
 
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "TARE",
-  description: "Small-group coffee tastings at Chris’s home in Long Island City, New York. A selection of specialty coffees, prepared and served by Chris.",
+  description: "Official website for TARE",
   icons: {
     icon: {
       url: '/favicon.png',
@@ -28,7 +39,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body
-        className="antialiased"
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ClientLayout>
           {children}

@@ -1,2 +1,7 @@
-import Link from "next/link";
-export default function Story(){return <main className="editorial simple-page"><p className="micro">TARE / ABOUT</p><h1>About<br/><em>TARE.</em></h1><div className="prose"><p>I’m Chris. I run TARE, a coffee project in New York.</p><p>I put together tastings with coffees I’m excited about and try different ways of preparing and serving them.</p><p>The home tastings happen at my place in LIC, with up to four guests. TARE also does coffee events with brands and private groups.</p><Link className="text-link" href="/">Explore the tasting ↗</Link></div></main>}
+// Temporarily hide the Story page by returning a 404 for /story
+import { notFound } from 'next/navigation';
+
+export default function StoryPage() {
+  notFound();
+}
+
