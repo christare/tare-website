@@ -2,16 +2,18 @@ import { CURRENT_EVENT_CONFIG } from "@/config/events";
 export function generateConfirmationMessage(name: string | null,eventDate: string): string {
  const first=(name||"").trim().split(/\s+/)[0];
  const date=new Date(`${eventDate}T12:00:00`).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
- return `Hey${first?` ${first}`:""}, Chris from TARE here. Thanks for reserving a spot on ${date}. I’ll be hosting a small coffee tasting at my home in LIC — looking forward to having you.
+ return `Hey${first?` ${first}`:" there"}, Chris from TARE here. Your spot on ${date} is confirmed.
 
-A few quick preferences so I can prepare for your visit:
+This session will be a small home tasting at my place in LIC.
+
+Complete your pre-event form so I can tailor the experience to our group:
 https://tarestudionyc.com/form?date=${encodeURIComponent(eventDate)}
 
-${CURRENT_EVENT_CONFIG.eventTime.replace(" - "," – ")} Eastern
 ${CURRENT_EVENT_CONFIG.address}
-Arrive from ${CURRENT_EVENT_CONFIG.doorsOpen}. Text me when you’re downstairs and I’ll help you up.
+${CURRENT_EVENT_CONFIG.eventTime.replace(" - "," – ")} Eastern
+Arrive from ${CURRENT_EVENT_CONFIG.doorsOpen}.
 
-Any questions, just reply here.
+When you arrive, text me and I’ll help you up. Let me know if you have any questions!
 Chris`;
 }
 export function personalMessageHref(phone:string,message:string):string {

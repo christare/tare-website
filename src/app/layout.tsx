@@ -4,7 +4,7 @@ import ClientLayout from "./client-layout";
 
 export const metadata: Metadata = {
   title: "TARE",
-  description: "Private coffee tastings with TARE founder Chris Jereza, hosted at his home in Long Island City, New York. Rare coffees. A small table. Ninety minutes.",
+  description: "Small-group coffee tastings at Chris’s home in Long Island City, New York. A selection of specialty coffees, prepared and served by Chris.",
   icons: {
     icon: {
       url: '/favicon.png',
